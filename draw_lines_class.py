@@ -20,6 +20,8 @@ class draw_lines:  # line objects for rfc-draw
         super().__init__()
         self.drawing = parent;  self.root = root
         self.rdg = rdg;  self.a_line = alc.a_line
+        self.l_text = ""
+        self.debug = False
 
         self.d_step = 12  # Path distances: initial step, deviation,
         self.d_dev =   8  #   used to decide line direction (multiples of 90)
@@ -30,18 +32,27 @@ class draw_lines:  # line objects for rfc-draw
         self.drawing.bind_class('Canvas','<Button1-Motion>',  self.ln_b1_motion)
         self.drawing.bind_class('Canvas','<ButtonRelease-1>',self.ln_b1_release)
 
+        self.root.bind('<KeyPress-a>',self.on_key_press_repeat) # arrows
+        self.root.bind('<KeyPress-n>',self.on_key_press_repeat) # no arrows
+        self.root.bind('<KeyPress-e>',self.on_key_press_repeat) # syn ends
+        self.root.bind('<KeyPress-b>',self.on_key_press_repeat) # bare ends
+        self.root.bind('<KeyPress-f>',self.on_key_press_repeat) # flip
+        self.root.bind('<KeyPress-r>',self.on_key_press_repeat) # reverse
+        self.root.bind("<KeyPress-equal>", self.on_key_press_repeat)
+        self.root.bind('<KeyPress-u>',self.on_key_press_repeat) # ungroup
+        
         self.ln_mode = "move"
-        print("@@@ event handlers set @@@  mode %s" % self.ln_mode)
+        #print("@@@ event handlers set @@@  mode %s" % self.ln_mode)
 
     def set_option(self, key):
         self.abd = self.rdg.current_object.object 
-        print("set_option: self.abd = %s" % self.abd)
+        #print("set_option: self.abd = %s" % self.abd)
         self.abd.set_option(key)
 
     def inside_seg(self, x0,y0, mx,my, x1,y1):
         x_in = x0 <= mx and mx <= x1
         y_in = y0 <= my and my <= y1
-        print("   x_in %s, y_in %s" % (x_in, y_in))
+        #print("   x_in %s, y_in %s" % (x_in, y_in))
         return x_in or y_in
 
     def rel_to_line(self, mx,my, l_coords):  # Where is cursor rel to line?
@@ -113,43 +124,44 @@ class draw_lines:  # line objects for rfc-draw
     def ln_closest(self, mx,my):
         item = self.drawing.find_closest(mx,my) 
         if len(item) == 0:  # Empty tuple
-            print("ln_closest(0): empty tuple")
+            #print("ln_closest(0): empty tuple")
             return None, None
         item_id = item[0]
         item_type = self.drawing.type(item_id)
-        print("@@@ ln_closest, item_id %d, type %s" % (item_id, item_type))
+        #print("@@@ ln_closest, item_id %d, type %s" % (item_id, item_type))
         if item_type != "line":
             return None, None
-        print("@ln@ closest(1): item %s (%s), mx,my %d,%d, ln_mode %s" % (
-            item, item_type, mx,my, self.ln_mode))
+        #print("@ln@ closest(1): item %s (%s), mx,my %d,%d, ln_mode %s" % (
+        #    item, item_type, mx,my, self.ln_mode))
  
         if item_id in self.rdg.objects:
             obj = self.rdg.objects[item_id]  # item_id is a tkinter object id
             # object (e.g. nro) has: key, obj, obj_ type, in_n_rect
-            print("-> closest %s is in objects, obj >%s<" % (item, obj))
+            #print("-> closest %s is in objects, obj >%s<" % (item, obj))
             # Now, is mx,my too far from this (closest) line?
-            print("ln_closest(2): Nearest line %d, %s, mxy %d,%d" % (
-                obj.key, obj.object.lbd, mx,my))
+            #print("ln_closest(2): Nearest line %d, %s, mxy %d,%d" % (
+            #    obj.key, obj.object.lbd, mx,my))
             #self.abd = obj.object 
             #print("   ", end='');  self.abd.print_a_line_object()
 
             ns, loc = self.rel_to_line(mx,my, obj.object.lbd)
-            print("ln_closest(4): ns %d, loc %d, mode %s" % (
-                ns, loc, self.ln_mode))
+            #print("ln_closest(4): ns %d, loc %d, mode %s" % (
+            #    ns, loc, self.ln_mode))
             if loc == 5:  # Far from that line
                 return None, None
             else:
                 self.ln_mode = "exist_ln"
             self.rdg.current_object = obj
             a_coords = self.rdg.current_object.object.lbd
-            print(">> 2 >> a_coords %s, mode %s" % (a_coords, self.ln_mode))
+            #print(">> 2 >> a_coords %s, mode %s" % (a_coords, self.ln_mode))
             return item, obj
         else:  # Not in objects, assume it's an arrowhead line
-            print("@@@ line %d is not in rdg.objects <<<<" % item_id)
+            if self.debug:
+                print("@@@ line %d is not in rdg.objects <<<<" % item_id)
             return None, None
 
     def start_new_line(self, coords, rdg):
-        print("<><><> coords >%s<, rdg >%s<" % (coords, rdg))
+        #print("<><><> coords >%s<, rdg >%s<" % (coords, rdg))
         self.lx0 = coords[0];  self.ly0 = coords[1]
         self.abd = alc.a_line(self.drawing, coords, rdg)
         self.lbd_id = 0  # Don't draw it yet!
@@ -177,7 +189,7 @@ class draw_lines:  # line objects for rfc-draw
         for c in range(0,len(lbd),2):
             r_coords.append(lbd[c]-bx0)
             r_coords.append(lbd[c+1]-by0)
-        print("r_coords %s" % r_coords)
+        #print("r_coords %s" % r_coords)
         f_coords = [];  # Flipped, rel to bbox
         offset = 0;  m_y = by1-by0  # Height of bbox
         for c in range(0,len(lbd),2):
@@ -221,12 +233,12 @@ class draw_lines:  # line objects for rfc-draw
         old_abd.no_arrows(self.rdg.current_object)
        
     def syntax_end(self, v):
-        print("dlt.syntax_end: on_of %s" % v)
+        #print("dlt.syntax_end: on_of %s" % v)
         old_abd = self.rdg.current_object.object
         sx0,sy0, sx1,sy1 = old_abd.lbd[0:4]
-        print("syntax_start, start %d,%d, %d,%d" % (sx0,sy0, sx1,sy1))
+        #print("syntax_start, start %d,%d, %d,%d" % (sx0,sy0, sx1,sy1))
         ex0,ey0, ex1,ey1 = old_abd.lbd[-4:]
-        print("syntax_end, start %d,%d, %d,%d" % (ex0,ey0, ex1,ey1))
+        #print("syntax_end, start %d,%d, %d,%d" % (ex0,ey0, ex1,ey1))
         if sy0 != sy1 or ey0 != ey1:
             print(">> line's first and last segments must be horizontal")
             return
@@ -236,11 +248,11 @@ class draw_lines:  # line objects for rfc-draw
     def same_dir(self, x2,y2):  # Do last and new segs have same direction?
         x0,y0, x1,y1 = self.abd.lbd[-6:-2]  # Last seg (2 points)
             # One more point added by release after click !!!
-        print("same_dir: %d,%d %d,%d %d,%d" % (x0,y0, x1,y1, x2,y2))
+        #print("same_dir: %d,%d %d,%d %d,%d" % (x0,y0, x1,y1, x2,y2))
         b_horiz = abs(y0-y1) <= self.d_dev and abs(y1-y2) <= self.d_dev
         b_vert = abs(x0-x1) <= self.d_dev and abs(x1-x2) <= self.d_dev
-        print("bh %s, bv %s, bh or bv %s" % (
-            b_horiz, b_vert, b_horiz or b_vert))
+        #print("bh %s, bv %s, bh or bv %s" % (
+        #    b_horiz, b_vert, b_horiz or b_vert))
         return b_horiz or b_vert
 
     def modify_line(self, ns, mx,my):  # Cursor is near segment self.ns
@@ -263,13 +275,13 @@ class draw_lines:  # line objects for rfc-draw
     def modify_end(self, ns, mx,my):  # Cursor is near segment self.ns
         x0,y0, x1,y1 = self.abd.lbd[ns*2:ns*2+4]
         if ns == 0:  # Modify start of first segment
-            print("modify_end, seg %d, %d,%d to %d,%d" % (ns, x0,y0, x1,y1))
+            #print("modify_end, seg %d, %d,%d to %d,%d" % (ns, x0,y0, x1,y1))
             if abs(y0-y1) <= self.d_dev:  # Horizontal
                 self.abd.lbd[ns*2:ns*2+4] = [mx,y0, x1,y1]
             elif abs(x0-x1) <= self.d_dev:  # vertical
                 self.abd.lbd[ns*2:ns*2+4] = [x0,my, x1,y1]
         else:  # Modify end of last segment
-            print("modify_end, seg %d, %d,%d to %d,%d" % (ns, x0,y0, x1,y1))
+            #print("modify_end, seg %d, %d,%d to %d,%d" % (ns, x0,y0, x1,y1))
             if abs(y0-y1) <= self.d_dev:  # Horizontal
                 self.abd.lbd[ns*2:ns*2+4] = [x0,y0, mx,y1]
             elif abs(x0-x1) <= self.d_dev:  # vertical
@@ -292,62 +304,115 @@ class draw_lines:  # line objects for rfc-draw
         abd.lbd = new_lbd
         abd.draw_line()
 
+    def on_key_press_repeat(self, event):
+       self.has_prev_key_press = True
+       self.drawing.after(150, self.on_key_press, event)
+       #print("on_key_press_repeat >%s<" % repr(event.char))
+   
+    def on_key_press(self, event):
+        self.has_prev_key_press = False
+        key = event.char
+        abd = self.rdg.current_object.object  # Works on current line
+        if key == "r":
+            self.reverse_line()  # Arrows in opposite direction
+        elif key == "f":
+            self.flip_line()
+        elif key == "=":
+            self.equal_end_coords()
+        elif key == "e":  # syntax End
+            self.syntax_end(True)
+        elif key == "b":  # Bare end
+            self.syntax_end(False)
+        elif key == "a":
+            abd.set_arrows(key)
+        elif key == "n":
+            abd.set_arrows(key)
+
+    def on_b3_click(self, event):  # b3 (Right button) to edit a text object
+        mx, my = (event.x, event.y)  # Mouse position
+        item, obj = self.rdg_closest(mx,my)
+        #print(": : : item %s, obj %s" % (item, obj))
+        if item:
+            item_x = item[0]
+            item_type = self.drawing.type(item_x) 
+            if item_type != "text":        
+                print("\aYour b3 click was not on a text object!")
+            else:
+                #print("b3_click: obj = %s" % obj)
+                self.edit_text_object(obj)
+
+    def justify(self, str, rq_len):
+        la = str.split("\n")
+        mx_len = 0;  fm = None
+        for line in la:
+            if len(line) > mx_len:
+                mx_len = len(line)
+        self.w2 = max(mx_len/2, 1)
+        j_text = ""
+        for line in la:
+            pb = max(int(self.w2 - len(line)/2), 0)
+            pad = ' '*pb
+            j_line = pad+line+"\n"
+            j_text += j_line
+        return j_text[0:-1]
+
     def ln_b1_click(self, event):  # b1 (left button)
-        print("@ b1_click(--0--): %d objects known" % (len(self.rdg.objects)))
+        #print("@ b1_click(--0--): %d objects known" % (len(self.rdg.objects)))
         self.mx, self.my = (event.x, event.y)  # Mouse position
-        print("ln_b1_click(0): mx,my = %d,%d ln_mode %s <<<" % (
-            self.mx,self.my, self.ln_mode))
+        #print("ln_b1_click(0): mx,my = %d,%d ln_mode %s <<<" % (
+        #    self.mx,self.my, self.ln_mode))
 
         if self.ln_mode == "mod_end":
-            print("click(1.5), mode %s" % self.ln_mode)
+            pass
+            #print("click(1.5), mode %s" % self.ln_mode)
         else:
             item, obj = self.ln_closest(self.mx,self.my)  # Closest tk object
             if not item:  # Near non-line object, or not near existing line
                 item_id = -1
-                print("@b1_click(--2--): closest = None (start new line)")
+                #print("@b1_click(--2--): closest = None (start new line)")
                 coords = [self.mx,self.my, self.mx+3,self.my+3]
                 self.start_new_line(coords, self.rdg)
                     # Sets self.abd, self.lbd_id  && 1
                     # abd = (a)_line (b)eing (d)rawn
-                print("    coords %s" % self.abd.lbd)
-                print("b1_click, not item, mode %s" % self.ln_mode)
+                #print("    coords %s" % self.abd.lbd)
+                #print("b1_click, not item, mode %s" % self.ln_mode)
                 self.ln_mode = "new_ln"
             else:
                 item_id = item[0]  # Near existing line
                 self.abd = obj.object
                 self.lbd_id = self.abd.lbd_id
                 self.ln_mode = "exist_ln"
-                print("b1_click, near a line, mode %s" % self.ln_mode)
+                #print("b1_click, near a line, mode %s" % self.ln_mode)
             self.ln_dir = self.left = self.right = self.up = self.down = False
             #print("click(2): old_line %s,  up %s, down %s, left %s, right %s" % (
             #    self.old_line, self.up, self.down, self.left, self.right))
-        print("click(2.5): item_id %d, ln_mode %s" % (item_id, self.ln_mode))
+        #print("click(2.5): item_id %d, ln_mode %s" % (item_id, self.ln_mode))
 
         a_coords = self.abd.lbd
-        print("b1_click(3): lbd %s" % a_coords)
+        #print("b1_click(3): lbd %s" % a_coords)
         self.ns, self.loc = self.rel_to_line(self.mx,self.my, a_coords)
         if self.loc == 1 and self.ln_mode != "new_ln":  # Start of line
             self.ln_mode = "mod_end"
             self.modify_end(self.ns, self.mx,self.my)
         if self.loc == 2:  # End of line
-            print("b1_click(): At end of line")
+            #print("b1_click(): At end of line")
             if self.ln_mode == "end_seg":
                 self.modify_end(self.ns, self.mx,self.my)
             else:
                 self.lx0, self.ly0 = self.abd.lbd[-2:]  # Start new seg
                 self.abd.lbd = self.abd.lbd + [self.mx,self.my]
-                print("+++ end of line, lbd now = %s" % self.abd.lbd)
+                #print("+++ end of line, lbd now = %s" % self.abd.lbd)
                 self.ln_mode = "new_ln"
         elif self.loc == 3:  # Internal junction
             self.ln_mode = "move"
         elif self.loc == 4:  # Middle of segment
-            print("ln_closest: Near middle of seg %d" % self.ns)
+            #print("ln_closest: Near middle of seg %d" % self.ns)
             self.ln_mode = "modify"
         elif self.loc == 5:  # Far from line
-            print("ln_closest, far from line %d" % item_id)
+            #print("ln_closest, far from line %d" % item_id)
             coords = [self.mx,self.my, self.mx+3,self.my+3]
             self.start_new_line(coords)  # Sets self.abd, with abd.lbd_id = 0
-            print("+++ far from line, lbd now = %s" % self.abd.lbd)
+            #print("+++ far from line, lbd now = %s" % self.abd.lbd)
             self.ln_mode = "new_ln"
         elif self.loc == 6:  # Outside last segment
             if self.ln_mode == "end_seg":
@@ -356,23 +421,25 @@ class draw_lines:  # line objects for rfc-draw
         self.rdg.last_mx = self.mx;  self.rdg.last_my = self.my  # Last mouse position
     def ln_b1_motion(self, event):  # Move the current_object
         mx, my = (event.x, event.y)
-        print("b1_motion(0): lbd %s, ln_mode %s" % (self.abd.lbd,self.ln_mode))
+        if self.debug:
+            print("b1_motion(0): lbd %s, ln_mode %s" % (
+                self.abd.lbd,self.ln_mode))
         if self.ln_mode == "mod_end":
             self.modify_end(self.ns, mx,my)
             self.abd.draw_line()
-        elif self.ln_mode == "move":
-            self.rdg.current_object.object.move(  # move() is in arrow_lines_class
-                mx-self.rdg.last_mx, my-self.rdg.last_my)
+        elif self.ln_mode == "move":  # 1 Oct this was "move" or "modify" <<<<
+            alc.a_line.move(self.abd, mx-self.rdg.last_mx, my-self.rdg.last_my)
+            #print("@@@ ln_b1_motion about top call current_object move()")
         elif self.ln_mode == "new_ln":  # Creating a new line
-            print("b1_motion(1), new_ln: lbd %s, mxy %d,%d" % (
-                self.abd.lbd, mx,my))
+            #print("b1_motion(1), new_ln: lbd %s, mxy %d,%d" % (
+            #    self.abd.lbd, mx,my))
             if not self.ln_dir:  # Just starting a segment
                 #print("b1_motion(2), ln_dir F, start seg, lx,y %d,%d" % (
                 #    self.lx0, self.ly0))
                 dx = mx-self.lx0;  dy = my-self.ly0
                 if abs(dx) >= self.d_step or abs(dy) >= self.d_step:
                     self.ln_dir = True
-                    print("=== d_step reached, dx %d, dy %d" % (dx,dy))
+                    #print("=== d_step reached, dx %d, dy %d" % (dx,dy))
                     if len(self.abd.lbd) > 4 and self.same_dir(mx,my):
                         print("\a>> Direction must change at a junction!")
                         self.abd.lbd = self.abd.lbd[0:-2]  # Remove new point
@@ -389,8 +456,8 @@ class draw_lines:  # line objects for rfc-draw
                                 self.up = True
                             else:
                                 self.down = True
-                        print("ln_dir set: up %s, dwn %s, left %s, rght %s" % (
-                            self.up, self.down, self.left, self.right))
+                        #print("ln_dir set: up %s, dwn %s, left %s, rght %s" % (
+                        #    self.up, self.down, self.left, self.right))
                         self.ln_mode = "extend"
         elif self.ln_mode == "extend":
             self.x1,self.y1 = mx,my
@@ -401,12 +468,21 @@ class draw_lines:  # line objects for rfc-draw
             self.abd.extend_line(self.x1,self.y1)
             self.abd.draw_line()  # Sets abd.lbd_id
             if self.lbd_id == 0:
-                print("extend: new line started,  lbd_id now %d" % (
-                    self.abd.lbd_id))
-                self.rdg.dump_objects("extend:new line started")
+                #print("extend: new line started,  lbd_id now %d" % (
+                #    self.abd.lbd_id))
+                #self.rdg.dump_objects("extend:new line started")
                 self.lbd_id = self.abd.lbd_id  # line id
-                line_obj = self.rdg.object(
-                    self.lbd_id, self.abd, "line", 0, 0, 0, 0)
+                self.l_text = ""
+                print("self.a_line = >%s<" % self.a_line)
+                #if self.a_line.arrowheads:
+                if self.abd.arrowheads:
+                    self.l_text += "a"
+                if self.abd.syntax_end_mark:
+                    self.l_text += "e"
+                line_obj = self.rdg.object(       # c  t  g  in_nrect
+                    #self.lbd_id, self.abd, "line", 0, 0, 0, 0)
+                    self.lbd_id, self.abd, "line",  self.abd.lbd,
+                                                       self.l_text, 0, 0)
                 self.rdg.current_object = line_obj
                 self.rdg.objects[self.lbd_id] = line_obj
         elif self.ln_mode == "modify":
@@ -419,8 +495,10 @@ class draw_lines:  # line objects for rfc-draw
         mx, my = (event.x, event.y)  # Mouse position
         mode_before = self.ln_mode
         self.ln_mode = "move"
-        #print("b1_release: line now = %s" % self.abd.lbd)
-        #print("b1_release() before %s, now %s" % (mode_before, self.ln_mode))
+        print("b1_release: line now = %s" % self.abd.lbd)
+        line_obj = self.rdg.object( 
+            self.lbd_id, self.abd, "line", self.abd.lbd, self.l_text, 0, 0)
+        self.rdg.objects[self.lbd_id] = line_obj
         self.rdg.last_mx = mx;  self.rdg.last_my = my  # Last mouse position
         #print("   last mx,my = %d,%d" % (self.rdg.last_mx, self.rdg.last_my))
 

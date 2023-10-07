@@ -1,5 +1,5 @@
-# 1719, Wed 12 Oct 2022 (NZDT)
 # 1232, Wed 28 Sep 2022 (NZDT)
+# 1603, Sat  1 Oct 2023 (NZDT)
 #
 # rfc-draw: Nevil's tkinter program to draw images for SVG-RFC-1.2 diagrams
 #
@@ -18,15 +18,6 @@ import draw_lines_class as dlc    # Handles line objects
 import draw_texts_class as dtc    # Handles text objects
 import draw_groups_class as dgr   # Handles rfc-draw groups
 
-if len(sys.argv) == 2:
-    #print("sys.argv[1] = >%s<" % sys.argv[1])
-    save_file_name = sys.argv[1]
-    if sys.argv[1][-4:] != ".rdd":
-        print("\aExpected to Save to an .rdd file <<<")
-else:
-    print("\a>>> No Save file specified <<<")
-    save_file_name = "save-file.rdd"
-
 root = Tk()  # Main window
 root.title("RFC-draw")
 root.geometry('800x600+5+5')
@@ -43,8 +34,8 @@ class RFC_Canvas(Canvas):  # Base Class Name
     def on_resize(self, event):
         d_canvas.drawing.config(width=event.width-18, height=event.height-69)
         d_canvas.r_buttons.b_frame.place(x=9, y=event.height-52)
-        x_empty = event.width-300  #260  # Width of empty space on buttons line
-        new_width = int(x_empty*0.8)  # x_empty*3/4
+        x_empty = event.width-330  # Width of empty space on buttons line
+        new_width = int(x_empty*0.92)
         d_canvas.message.config(width=new_width)
         d_canvas.message.place(
             x=event.width-new_width-8, y=event.height-47)
@@ -115,10 +106,12 @@ d_canvas.drawing = Canvas(d_canvas, width=782, height=530,
     bg="white")  # Drawing area
 d_canvas.drawing.place(x=8, y=8)
 
-d_canvas.message = Frame(d_canvas, height=35, width=450,
-    bg="azure")  # Message Area, dynamically set in on_resize() above
+#d_canvas.message = Frame(d_canvas, height=35, width=450,
+d_canvas.message = Frame(d_canvas, height=35, width=500,
+    bg="azure")  # Message area, dynamically set in on_resize() above
 
-d_canvas.message.place(x=316, y=552)
+#d_canvas.message.place(x=316, y=552)
+d_canvas.message.place(x=255, y=552)
 d_canvas.message.update()
 #print("message width %d" % d_canvas.message.winfo_width())
 
@@ -127,6 +120,15 @@ d_canvas.m_text = Text(d_canvas.message, fg="black", bg="azure",
 d_canvas.m_text.place(x=7, y=7)
 
 rdg = rdgc.rdglob(d_canvas.drawing, root, d_canvas.m_text)   # rfc-draw globals
+
+if len(sys.argv) == 2:
+    save_file_name = sys.argv[1]
+    if sys.argv[1][-4:] != ".rdd":
+        print("\a\aExpected to Save to an .rdd file <<<")
+else:
+    save_file_name = "save-file.rdd"
+    rdg.display_msg("No file %s, will write it on closing" % save_file_name,
+        "warning")
 
 dlc_tool = dlc.draw_lines(d_canvas.drawing, root, rdg)
     # sets draw_lines ln_b1 handlers

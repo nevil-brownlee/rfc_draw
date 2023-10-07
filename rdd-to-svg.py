@@ -32,7 +32,7 @@ class svg_drawing:
            #   NOT allowed for rfc7996 svg !
            # We use find_words instead,
            #   draw_text() writes each word in it's correct position
-        # Other fonts tested:  droidsansmono, nimbusmono        
+        # Other fonts tested:  droidsansmono, nimbusmono, Consolas
         self.dwg = svgwrite.Drawing(filename=svg_filename,
             profile='tiny', version='1.2',
             size=(2*self.border+x_size, y_size+2*self.border))

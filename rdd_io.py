@@ -115,6 +115,7 @@ class rdd_rw:
             s_key = fields[2]  # object's key in save file
             coords = self.s_to_ilist(fields[3])
             text = fields[4].replace("\\n", "\n")
+            text = text.replace('\\"', '"')
             g_nbr = int(fields[5])  # Group nbr
             g_type = fields[6]  # Group type
             t_width = 0

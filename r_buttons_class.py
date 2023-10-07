@@ -23,24 +23,24 @@ class r_buttons:
         self.b_frame.place(x=50, y=5)
 
         self.b_rect = Button(self.b_frame, text="Rectangle", relief=SUNKEN,
-            padx=8, pady=6)
-        self.b_rect.grid(row=0, column=0, padx=8, pady=6)
+            padx=6, pady=6)
+        self.b_rect.grid(row=0, column=0, padx=6, pady=6)
         self.b_rect.configure(command=self.b_rect_pressed)
 
-        self.b_line = Button(self.b_frame, text="Line", padx=8, pady=6)
-        self.b_line.grid(row=0, column=1, padx=8, pady=6)
+        self.b_line = Button(self.b_frame, text="Line", padx=6, pady=6)
+        self.b_line.grid(row=0, column=1, padx=6, pady=6)
         self.b_line.configure(command=self.b_line_pressed)
 
-        self.b_text = Button(self.b_frame, text="Text", padx=8, pady=6)
-        self.b_text.grid(row=0, column=2, padx=8, pady=6)
+        self.b_text = Button(self.b_frame, text="Text", padx=6, pady=6)
+        self.b_text.grid(row=0, column=2, padx=6, pady=6)
         self.b_text.configure(command=self.b_text_pressed)
 
-        self.b_group = Button(self.b_frame, text="Group", padx=8, pady=6)
-        self.b_group.grid(row=0, column=3, padx=8, pady=6)
+        self.b_group = Button(self.b_frame, text="Group", padx=6, pady=6)
+        self.b_group.grid(row=0, column=3, padx=6, pady=6)
         self.b_group.configure(command=self.b_group_pressed)
 
-        self.b_save = Button(self.b_frame, text="Save", padx=8, pady=6)
-        self.b_save.grid(row=0, column=4, padx=8, pady=6)
+        self.b_save = Button(self.b_frame, text="Save", padx=6, pady=6)
+        self.b_save.grid(row=0, column=4, padx=6, pady=6)
         self.b_save.configure(command=self.b_save_pressed)
 
         self.ba = {"rect":self.b_rect, "line":self.b_line, "text":self.b_text,
