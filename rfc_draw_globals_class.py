@@ -639,6 +639,7 @@ class rdglob:  # Global variables for rfc-draw's objects
                 return s_key, self.restore_group(coords, text)    # g_rect_id
 
     def read_from_rdd(self, fn):
+        print("+++ About to read from %s" % fn)
         if not os.path.exists(fn):
             self.display_msg("No file %s, will write it on closing" % fn, \
                 "warning")
@@ -730,6 +731,9 @@ class rdglob:  # Global variables for rfc-draw's objects
         self.drawing.update()
         dw = self.drawing.winfo_reqwidth()
         dh = self.drawing.winfo_reqheight()
+        dirname = os.path.dirname(save_file_name)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
         s_file = open(save_file_name, "w")
         root_geometry = self.root.geometry()
         s_file.write("root_geometry %s\n" % root_geometry)
@@ -1082,13 +1086,10 @@ class rdglob:  # Global variables for rfc-draw's objects
         self.w2 = max(mx_len/2, 1)
         j_text = ""
         for line in la:
-            if line[0] != " ":
-                pb = max(int(self.w2 - len(line)/2), 0)
-                pad = ' '*pb
-                j_line = pad+line
-            else:  # Don't justify lines starting with blank
-                j_line = line
-            j_text += j_line+"\n"
+            pb = max(int(self.w2 - len(line)/2), 0)
+            pad = ' '*pb
+            j_line = pad+line+"\n"
+            j_text += j_line
         return j_text[0:-1]
 
     def edit_esc_key(self, event):  # Edit text in pop-up window
