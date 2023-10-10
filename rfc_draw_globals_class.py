@@ -1,7 +1,7 @@
+# 1609, Sat  1 Oct 2023 (NZDT)
 # 1055, Wed  6 Sep 2023 (NZST)
 # 1600, Tue 25 Jul 2023 (NZST)
 # 1411, Sun 22 Jan 2023 (NZDT)
-# 1609, Sat  1 Oct 2023 (NZDT)
 #
 # rfc_draw_globals_class:
 #                   contains rfc-draw global data (for event handlers)
@@ -23,9 +23,6 @@ import draw_n_rects_class as drc  # Handles n_rect objects
 class rdglob:  # Global variables for rfc-draw's objects
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls)  # New instance of rdglob
-
-    def test_fn(self):
-        print("$$$ from rdglob.test_fn")
 
     def __init__(self, parent, root, m_text):
         super().__init__()
@@ -443,7 +440,6 @@ class rdglob:  # Global variables for rfc-draw's objects
         return None  # Unknown type
             
     def dump_objects(self, header):
-        ###return  # Disable dumps !
         print("dump_objects -- %s --" % header)
         for j,key in enumerate(self.objects):
             val = self.objects[key]
@@ -491,10 +487,10 @@ class rdglob:  # Global variables for rfc-draw's objects
             self.drawing.lift(layer)
 
     def restore_rect(self, r_coords, r_text, g_nbr):
-        print("restore_rect: r_coords %s, r_text %s, g_nbr %d" % \
-            (r_coords, r_text, g_nbr))
+        #print("restore_rect: r_coords %s, r_text %s, g_nbr %d" % \
+        #    (r_coords, r_text, g_nbr))
         rdo = self.n_rect(self.rdg, self.drawing, r_coords, r_text, g_nbr)
-        print("restore_rect: ", end="");  rdo.print_n_rect()
+        #print("restore_rect: ", end="");  rdo.print_n_rect()
         self.objects[rdo.rect_id] = self.object(rdo.rect_id,
             rdo, "n_rect", r_coords, r_text, g_nbr, 0)  # n_rect obj
         self.objects[rdo.text_id] = self.object(rdo.text_id,
@@ -528,7 +524,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         self.drawing.delete(text_id)
 
     def restore_line(self, l_coords, l_text, g_nbr):
-        print("restore_line: l_coords %s, l_text >%s<" % (l_coords, l_text))
+        #print("restore_line: l_coords %s, l_text >%s<" % (l_coords, l_text))
         a_line = alc.a_line(self.drawing, l_coords, self)
                                            # rdg is self here!
         #print("restore_line: l_text >%s<" % l_text)        
@@ -537,7 +533,7 @@ class rdglob:  # Global variables for rfc-draw's objects
                 a_line.set_arrows(c)
             elif c in "ue":
                 a_line.syntax_end(c)
-            print("restore_line: option c = %s" % c)
+            #print("restore_line: option c = %s" % c)
         self.lbd_id = a_line.draw_line()
         line_obj = self.object(
             self.lbd_id, a_line, "line", l_coords, l_text, g_nbr, 0)
@@ -614,10 +610,10 @@ class rdglob:  # Global variables for rfc-draw's objects
             self.objects[g_key].object.g_members.append(m)
             return m_key, g_key
         else:  # Ordinary object
-            print("Ordinary object == ds %s ==" % ds)
+            #print("Ordinary object == ds %s ==" % ds)
             fields = self.rrd_re.search(ds).groups()
-            print("@@@ fields = ", end="");  print(fields)
-            print("0: >%s< %s" % (fields[0], type(fields[0])))
+            #print("@@@ fields = ", end="");  print(fields)
+            #print("0: >%s< %s" % (fields[0], type(fields[0])))
             obj_id = int(fields[0])  # Ignore line_nbr (field 0)
             obj_type = fields[1]
             #s_key = int(self.s_to_stuple(fields[2]))  # object's key in save file
@@ -639,7 +635,7 @@ class rdglob:  # Global variables for rfc-draw's objects
                 return s_key, self.restore_group(coords, text)    # g_rect_id
 
     def read_from_rdd(self, fn):
-        print("+++ About to read from %s" % fn)
+        #print("+++ About to read from %s" % fn)
         if not os.path.exists(fn):
             self.display_msg("No file %s, will write it on closing" % fn, \
                 "warning")
@@ -668,7 +664,6 @@ class rdglob:  # Global variables for rfc-draw's objects
                     #print("mono_font width %d, height %.1f pixels" % (
                     #    self.f_width, self.f_height))
                 else:
-                    print("=+= ds = %s" % ds)
                     #print("### r_obj_keys %s" % self.r_obj_keys)
                     s_key, tk_id = self.restore_object(ds)
                     self.r_obj_keys[s_key] = tk_id
@@ -951,7 +946,6 @@ class rdglob:  # Global variables for rfc-draw's objects
             #self.dump_objects("-+- after ncgo completed")
 
             #self.draw_group(ncgo.object)
-            print("= = = = =")
                 
             #--1--
             g_key = obj.key
@@ -1015,7 +1009,7 @@ class rdglob:  # Global variables for rfc-draw's objects
             return None, None
         item_id = item[0]
         item_type = self.drawing.type(item_id)
-        print("@@@ rdg_closest, item_id %d, type %s" % (item_id, item_type))
+        #print("@@@ rdg_closest, item_id %d, type %s" % (item_id, item_type))
         #print("@ln@ closest(1): item %s (%s), mx,my %d,%d" % (
         #    item, item_type, mx,my))
         if item_id in self.objects:
@@ -1096,7 +1090,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         # self.text_edit  is a tk.Text object
         # self.text_id is a create_text object, in objects[] key self.text_id
         new_text = self.text_edit.get('1.0','end-1c')
-        print("@@@ new_text >%s<" % new_text)
+        #print("@@@ new_text >%s<" % new_text)
         
         if self.centre_texts:
             self.h2, self.w2 = self.str_h_w(new_text)
@@ -1139,7 +1133,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         if d_obj:
             #print("about to delete %s" % d_obj)
             #input()
-            print("Deleting >%s< (%s)" % (d_obj, d_obj.o_type))
+            #print("Deleting >%s< (%s)" % (d_obj, d_obj.o_type))
             self.deleted_objects.append(d_obj)
             ##print("deleted_objects >%s<" % self.deleted_objects)
             self.delete_object(d_obj)
@@ -1147,12 +1141,12 @@ class rdglob:  # Global variables for rfc-draw's objects
             print("\a    Not in objects ???")
 
     def on_insert_key(self, event):  # Insert key pressed
-        print("len(self.deleted_objects) = %d" % len(self.deleted_objects))
+        #print("len(self.deleted_objects) = %d" % len(self.deleted_objects))
         if len(self.deleted_objects) == 0:
             self.display_msg("No deleted objects", "warning")
         else:
             d_obj = self.deleted_objects.pop()
-            print("inserting d_obj = >%s< (%s)" % (d_obj, d_obj.o_type))
+            #print("inserting d_obj = >%s< (%s)" % (d_obj, d_obj.o_type))
             obj_type = d_obj.o_type
             text = d_obj.i_text;  g_nbr = d_obj.g_nbr
             if obj_type == "n_rect":
@@ -1160,7 +1154,7 @@ class rdglob:  # Global variables for rfc-draw's objects
                 self.restore_rect([x0,y0, x1,y1], text, g_nbr)
             else:
                 coords = d_obj.i_coords
-                print("@@@ coords >%s<, text >%s<" % (coords, text))
+                #print("@@@ coords >%s<, text >%s<" % (coords, text))
                 if obj_type == "text":
                     self.restore_text(coords, text, g_nbr)
                 elif obj_type == "line":
