@@ -1,5 +1,6 @@
 # 1601, Fri  8 Sep 2023 (NZST)
 # 1504, Tue 26 Sep 2023 (NZDT)
+# 1553, Sat 21 Oct 2023 (NZDT)
 #
 # rdd-to-ascii.py: Convert an rfc-draw .rdd file to an ASCII ART image;
 #
@@ -210,10 +211,13 @@ class asc_drawing:
 
 if __name__ == "__main__":
     #print("argv >%s<, len(sys.argv) = %d" % (sys.argv, len(sys.argv)))
+    rdd_fn = None
     if len(sys.argv) == 1:  # sys.argv[0] = name of program 
         print("No .rdd file specified ???")
-        exit()
-    rdd_fn = sys.argv[1]
+        from tkinter.filedialog import askopenfilename
+        rdd_fn = (askopenfilename(title="Select .rdd source file"))
+    if not rdd_fn:
+        rdd_fn = sys.argv[1]
     rdd_name = rdd_fn.split(".rdd")
     if len(rdd_name) != 2:
         print("\ardd filename >%s< didn't end with '.rdd", rdd_fn)

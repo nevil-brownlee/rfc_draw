@@ -1,7 +1,8 @@
 # 1055, Wed  6 Sep 2023 (NZST)
 # 1600, Tue 25 Jul 2023 (NZST)
 # 1411, Sun 22 Jan 2023 (NZDT)
-# 1609, Sat  1 Oct 2023 (NZDT)
+# 1609, Sun  1 Oct 2023 (NZDT)
+# 1531, Sat 21 Oct 2023 (NZDT)
 #
 # rfc_draw_globals_class:
 #                   contains rfc-draw global data (for event handlers)
@@ -12,7 +13,11 @@
 #                      
 # Copyright 2023, Nevil Brownlee, Taupo NZ
 
-import os.path, re, sys, termios, traceback
+import os.path, re, sys, traceback
+try:
+    import termios  # This is POSIX
+except:
+    import msvcrt   # This is Windows
 import tkinter as tk
 
 import arrow_lines_class as alc   # Draw lines with direction arrows
@@ -123,8 +128,13 @@ class rdglob:  # Global variables for rfc-draw's objects
         self.bind_keys()
 
     def bind_keys(self):
-        termios.tcflush(sys.stdin, termios.TCIOFLUSH)
-            # Clear queued key-presses
+        try:
+            # Clear queued key-presses on POSIX
+            termios.tcflush(sys.stdin, termios.TCIOFLUSH)        
+        except:
+            # Clear queued key-presses on Windows
+            while msvcrt.kbhit():
+                msvcrt.getch()
         self.root.bind('<KeyPress>', self.on_key_press_repeat)
         self.has_prev_key_press = None
         self.root.bind('<Escape>',self.on_key_press_repeat) # Clear Msg window

@@ -1,5 +1,6 @@
 # 1549, Fri  8 Sep 2023 (NZST)
 # 1529, Tue 30 May 2023 (NZST)
+# 1544, Sat 21 Oct 2023 (NZDT)
 #
 # rdd-to-svg.py: Convert an rfc-draw .rdd file to an svg image;
 #   that svg image >>> conforms to RFC 7996 requirements <<<
@@ -174,9 +175,12 @@ class svg_drawing:
 
 if __name__ == "__main__":
     #print("argv >%s<, len(sys.argv) = %d" % (sys.argv, len(sys.argv)))
+    rdd_fn = None
     if len(sys.argv) == 1:  # sys.argv[0] = name of program 
         print("No .rdd file specified ???")
-        exit()
+        from tkinter.filedialog import askopenfilename
+        rdd_fn = (askopenfilename(title="Select .rdd source file"))
+
 
     # python3 rdd-to-svg.py  group-line-test.rdd     -> no border around image
     # python3 rdd-to-svg.py  group-line-test.rdd -b  -> 3 px border
@@ -184,7 +188,8 @@ if __name__ == "__main__":
     
     border_width = 3  # Default value
     #print("sys.argv >%s<" % sys.argv)
-    rdd_fn = sys.argv[1]
+    if not rdd_fn:
+        rdd_fn = sys.argv[1]
     if len(sys.argv) >= 3:  # We have a second argument
         arg2 = sys.argv[2]
         if len(arg2) >= 2:

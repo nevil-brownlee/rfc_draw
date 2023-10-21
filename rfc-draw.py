@@ -1,5 +1,6 @@
 # 1232, Wed 28 Sep 2022 (NZDT)
-# 1603, Sat  1 Oct 2023 (NZDT)
+# 1603, Sun  1 Oct 2023 (NZDT)
+# 1613, Sat 21 Oct 2023 (NZDT)
 #
 # rfc-draw: Nevil's tkinter program to draw images for SVG-RFC-1.2 diagrams
 #
@@ -126,8 +127,12 @@ if len(sys.argv) == 2:
     if sys.argv[1][-4:] != ".rdd":
         print("\a\aExpected to Save to an .rdd file <<<")
 else:
-    save_file_name = "save-file.rdd"
-    rdg.display_msg("No file %s, will write it on closing" % save_file_name,
+    save_file_name = None
+    from tkinter.filedialog import askopenfilename
+    save_file_name = (askopenfilename(title="Select .rdd file; cancel box if none"))
+    if not save_file_name:    
+        save_file_name = "save-file.rdd"
+        rdg.display_msg("No file %s, will write it on closing" % save_file_name,
         "warning")
 
 dlc_tool = dlc.draw_lines(d_canvas.drawing, root, rdg)
