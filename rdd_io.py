@@ -1,3 +1,4 @@
+# 1621, Sat 28 Oct 2023 (NZST)
 # 1107, Wed  6 Sep 2023 (NZST)
 # 1455, Wed 31 May 2023 (NZST)
 # 1457, Tue 26 Sep 2023 (NZDT)
@@ -109,7 +110,7 @@ class rdd_rw:
         else:  # Ordinary object
             #print("== ds %s ==" % ds)
             fields = self.rrd_re.search(ds).groups()
-            #print("@@@ fields = ", end="");  print(fields)
+            #print("@@@ rdd_io fields = ", end="");  print(fields)
             obj_id = int(fields[0])  # Ignore line_nbr (field 0)
             obj_type = fields[1]
             s_key = fields[2]  # object's key in save file
@@ -127,7 +128,7 @@ class rdd_rw:
                     if chrs > t_width:
                         t_width = chrs
             obj = self.rdd_obj(obj_id, obj_type, coords, text, t_width, g_nbr)
-            #print("+++ obj = >%s<" % obj)
+            #print("=== obj = >%s<" % obj)
             self.objects.append(obj)  # rdd_io objects are in a list 
             new_key = len(self.objects)-1
             self.r_obj_keys[s_key] = new_key
@@ -135,7 +136,7 @@ class rdd_rw:
             return new_key, obj
 
     def dump_objects(self, header):
-        return
+        #return
         print("dump_objects -- %s --" % header)
         for j, val in enumerate(self.objects):
             print("%4d val >%s<" % (j, val))
@@ -147,6 +148,7 @@ class rdd_rw:
     
     def read_from_rdd(self):
         f = open(self.rdd_fn, "r")
+        self.di = {}
         for line in f:
             #print(">>>%s<" % line)
             if line[0] == "#":  # Ignore comment lines
@@ -156,24 +158,48 @@ class rdd_rw:
             if ds.find("root_geometry") >= 0:
                 la = ds.split(" ");  dims = la[1].split("+")
                 xy = dims[0].split("x")
-                self.xr = int(xy[0]);  self.yr = int(xy[1])
+                self.di["r_width"] = int(xy[0])
+                self.di["r_height"] = int(xy[1])
                 #print("root geometry: x %d, y %d" % (self.xr, self.yr))
             elif ds.find("drawing_size") >= 0:
                 la = ds.split(" ")
                 la_ds = la[1].split("x")
-                self.dw = int(la_ds[0])  # drawing width
-                self.dh = int(la_ds[1])  # drawing height
+                self.di["d_width"]  = int(la_ds[0])  # drawing width
+                self.di["d_height"] = int(la_ds[1])  # drawing height
                 #print("drawing_size %dx%d" % (self.dw,self.dh))
             elif ds.find("mono_font") >= 0:
                 la = ds.split(" ")
-                self.f_width = float(la[2])
-                self.f_height = int(la[4])
                 #print("mono_font width %.2f, height %.2f pixels" % (
                 #    self.f_width, self.f_height))
+                self.di["f_width"] = float(la[2])
+                self.di["f_height"] = int(la[4])
             else:
                 #print("=== ds = %s" % ds)
                 o_key, obj = self.restore_object(ds)
                 #print("--- o_key %s, obj >%s<" % (o_key, obj))
-        return self.xr, self.yr, self.f_width, self.f_height, self.dw, self.dh
-                # xr,ry are rfc-draw's 'drawing' dimension (in px)
-    
+
+        min_x = min_y = 50000;  max_x = max_y = 0
+        for obj in self.objects:
+            coords = obj.i_coords
+            for n in range(0, len(coords), 2):
+                x = coords[n];  y = coords[n+1]
+                if x < min_x:
+                    min_x = x
+                elif x > max_x:
+                    max_x = x
+                if y < min_y:
+                    min_y = y
+                elif y > max_y:
+                    max_y = y
+            self.di["min_x"] = min_x;  self.di["max_x"] = max_x
+            self.di["min_y"] = min_y;  self.di["max_y"] = max_y
+        #print("+++ min_x %d, max_x %d, min_y %d, max_y %d" % (
+        #    min_x, max_x, min_y, max_y))
+                    
+        fs = "Screen: xr %d, yr %d | Drawing: width %d, height %d"
+        fs += " | Font: width %.2f, height %.2f"
+        print(fs % (self.di["r_width"], self.di["r_height"],
+            self.di["d_width"], self.di["d_height"],
+            self.di["f_width"], self.di["f_height"]))
+
+        return self.di

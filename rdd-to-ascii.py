@@ -6,7 +6,7 @@
 #
 # Copyright 2023, Nevil Brownlee, Taupo NZ
 
-import sys, re, math
+import sys, os.path
 import rdd_io
 
 """
@@ -53,10 +53,12 @@ class asc_drawing:
         #print("@map: col %s %s, row %s %s" % (col,type(col), row,type(row)))
         return col, row
         
-    def print_lbuf(self):
-        afn = self.asc_filename.split("/")[-1]
-        #print("a_fname >%s<" % afn)
-        asc_file = open(afn, "w")
+    def print_lbuf(self, txt_fn):
+        print("#### txt_fn >%s<" % txt_fn)
+        #afn = self.asc_filename.split("/")[-1]
+        # Bug reported: becarpenter, 22 Oct 2023 (NZDT)
+        # Will write .txt file to current directory
+        asc_file = open(txt_fn, "w")
         for j in range(self.n_lines):
             asc_file.write("%s \n" % ''.join(self.lines[j]))
         asc_file.close()
@@ -218,16 +220,18 @@ if __name__ == "__main__":
         rdd_fn = (askopenfilename(title="Select .rdd source file"))
     if not rdd_fn:
         rdd_fn = sys.argv[1]
-    rdd_name = rdd_fn.split(".rdd")
-    if len(rdd_name) != 2:
+    path, fn = os.path.split(rdd_fn)
+    print("file path %s, rdd_fn %s" % (path, fn))
+
+    print("$$$ path >%s<, fn >%s<" % ( path, fn))
+    if not fn.endswith(".rdd"):
         print("\ardd filename >%s< didn't end with '.rdd", rdd_fn)
         exit()
 
-    print("rdd_name %s, rdd_fn %s" % (rdd_name, rdd_fn))
     border_width = 1  # Default value (col/row)
     if len(sys.argv) >= 3:  # We have a second argument
         arg2 = sys.argv[2]
-        #print("<><> rdd_fn %s, arg2 %s" % (rdd_fn, arg2))
+        #print("<><> fn %s, arg2 %s" % (fn, arg2))
         if len(arg2) >= 2:
             if arg2[0:2] == "-b":  # First two chars
                 if len(arg2) != 2:
@@ -246,6 +250,7 @@ if __name__ == "__main__":
     print(fs % (xr, yr, d_width, d_height, f_width, f_height))
     print("===================================================")
 
+    txt_fn = path + "/" + fn.replace("rdd","txt")    
     min_x = min_y = 50000;  max_x = max_y = 0
     for obj in rdd_i.objects:
         coords = obj.i_coords
@@ -276,14 +281,14 @@ if __name__ == "__main__":
 
     print("x %d to %d, y %d to %d" % (min_x,max_x, min_y,max_y))
 
-    asc_d = asc_drawing(rdd_name[0]+".txt", border_width,
+    asc_d = asc_drawing(path+".txt", border_width,
         min_x,max_x, min_y,max_y, rdd_i.f_width, rdd_i.f_height)
 
     asc_d.draw_objects("line")   # layer 1
     asc_d.draw_objects("n_rect") # layer 2
     asc_d.draw_objects("text")   # layer 3
 
-    asc_d.print_lbuf()
+    asc_d.print_lbuf(txt_fn)
 
     ##svg_d.draw_frame(min_x,min_y, max_x-min_x, max_y)  # 1:1 scaling
     #svg_d.draw_frame(0,0, rdd_i.xr,rdd_i.yr)  # 1:1 scaling
