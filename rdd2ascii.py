@@ -1,8 +1,6 @@
-# 1601, Fri  8 Sep 2023 (NZST)
-# 1504, Tue 26 Sep 2023 (NZDT)
-# 1553, Sat 21 Oct 2023 (NZDT)
+# 1503, Mon 30 Oct 2023 (NZDT)
 #
-# rdd-to-ascii.py: Convert an rfc-draw .rdd file to an ASCII ART image;
+# rdd2ascii.py: Convert an rfc-draw .rdd file to an ASCII-ast image;
 #
 # Copyright 2023, Nevil Brownlee, Taupo NZ
 
@@ -11,45 +9,112 @@ import rdd_io
 
 """
 In an rdd file, each group has a g_members list.
-Each member also has (n the rdd file) a separate object for each of the
-  group's members, so rfc-draw.py can find them when the user clicks on them.
-That means rdd-to-ascii can just ignore the group objects, their member
-  objects will be used to make each member's ascii images!
-
-python3 rdd-to-ascii.py  group-line-test.rdd     -> no border around image
-python3 rdd-to-ascii.py  group-line-test.rdd -b  -> 1 col/row border
-python3 rdd-to-ascii.py  group-line-test.rdd -b3 -> 3 col/row border
+Each member also has (in the rdd file) a separate object for each of the
+  group's members, so rfc-draw.py can find them when a user clicks on them.
+That means rdd-to-svg can just ignore the group objects, their member
+  objects will be used to make each member's svg images!
 """
-
 class asc_drawing:
-    def __init__(self, asc_filename, border,
-            x_min, x_max, y_min, y_max, font_width, font_height):
-        print("asc_filename %s,border %s,font_width %s, font_height %s" % (
-            asc_filename, border, font_width, font_height))
-        self.asc_filename = asc_filename
-        print("x %s - %s, y %s - %s" % (x_min, x_max, y_min, y_max))
-        self.border = border
-        self.x_min = x_min;  self.y_min = y_min
-        self.f_height = font_height
-        self.f_width = font_width
-        c_min,r_min = self.map(x_min,y_min)
-        #print(" >> c_min %s, r_min %s" % (c_min,r_min))
-        c_max,r_max = self.map(x_max,y_max)
-        #print(" >> c_max %s, r_max %s" % (c_max,r_max))
+    def __init__(self, sys_argv):
+        rdd_fn = None
+        if len(sys_argv) == 1:  # sys_argv[0] = name of program 
+            print("No .rdd file specified ???")
+            from tkinter.filedialog import askopenfilename
+            rdd_fn = (askopenfilename(title="Select .rdd source file"))
 
-        self.n_chars = c_max-c_min+1 + 2*self.border
-        self.n_lines = r_max-r_min + 1 + 2*self.border
+        # python3 rdd2ascii.py  group-line-test.rdd     -> no border
+        # python3 rdd2ascii.py  group-line-test.rdd -b  -> 3 chars/lines border
+        # python3 rdd2ascii.py  group-line-test.rdd -b5 -> 5 chars/lines border
+
+        self.border_width = 1  # Default value
+        #print("sys_argv >%s<" % sys_argv)
+        if not rdd_fn:
+            rdd_fn = sys_argv[1]
+        if len(sys_argv) >= 3:  # We have a second argument
+            arg2 = sys_argv[2]
+            if len(arg2) >= 2:
+                if arg2[0:2] == "-b":  # First two chars
+                    if arg2 == "-b":
+                        pass  #print("bw %d" % self.border_width)
+                    else:
+                        self.border_width = int(arg2[2:])
+                    print("svg border width %d px" % self.border_width)
+                else:
+                    print("Unrecognised option %s" % arg2)
+                    exit()
+
+        print("+1+ border_width %d" % self.border_width)
+        self.rdd_i = rdd_io.rdd_rw(rdd_fn)
+        self.di = self.rdd_i.read_from_rdd()  # {} Info about this Drawing
+        # self.di contains:
+        #   "r_width", "r_height",  # root window size
+        #   "d_width", "d_height",  # drawing Canvas size
+        #   "f_width", "f_height",  # font size (px)
+        #   "min_x", "max_x", "min_y", "max_y"  # extrema of objects in drawing
+
+        self.f_width = self.di["f_width"];  self.f_height = self.di["f_height"]
+        self.min_x = self.di["min_x"];  self.max_x = self.di["max_x"]
+        self.min_y = self.di["min_y"];  self.max_y = self.di["max_y"]
+        print("min_x %d, max_x %d, min_y %d, max_y %d, border_width %d" %
+            (self.min_x, self.max_x, self.min_y, self.max_y ,self.border_width))
+
+        c_min,r_min = self.map(self.min_x,self.min_y)
+        c_max,r_max = self.map(self.max_x,self.max_y)
+        self.n_chars = c_max-c_min+1 + 2*self.border_width
+        self.n_lines = r_max-r_min+1 + 2*self.border_width
+        print("c_min %d, c_max %d, n_chars %d, r_min %d, r_max %d, n_lines %d," %
+              (c_min, c_max, self.n_chars, r_min, r_max, self.n_lines))
+        
         self.lines = [[" " for col in range(self.n_chars)]
                                for row in range(self.n_lines)]
         self.n_n_rect = self.n_line = 0
         self.alphabet = "abcdefghijklmnopqrstuvwxyz"
         self.digits = "0123456789ABC"
-        self.slc = False  # Set line corner digits show which line it is
+        self.slc = False  # Set line corner points to show which line it is
+
+        rdd_name = rdd_io.rdd_rw(rdd_fn)
+        text_fn = rdd_fn.split(".")[0]+".txt"
+
+        min_x = min_y = 50000;  max_x = max_y = 0
+        for obj in self.rdd_i.objects:
+            coords = obj.i_coords
+            for n in range(0, len(coords), 2):
+                x = coords[n];  y = coords[n+1]  # Text centre (tk Canvas units)
+                if obj.type == "text":   ##or obj.type == "n_rect":
+                    tw2 = round(obj.txt_width*f_width/2)  # tk units
+                    #print("$$$ x %d, tw2 %d; -= %d, += %d" % (x,tw2, x-tw2, x+tw2))
+                    if x+tw2 > max_x:
+                        x += tw2;  max_x = x+tw2
+                        #print(">>> text x incr by %d px" % tw2)
+                    if x-tw2 < min_x:
+                        min_x = x-tw2
+                        x -= tw2
+                        #print(">>> text x decr by %d px" % tw2)
+                        #print("text %d, cx %d,  min_x %d, max_x %d" % (
+                        #    obj.id, coords[0], min_x, max_x))
+                else:
+                    #print("..%2d  x %d, y %d" % (n, x,y))
+                    if x < min_x:
+                        min_x = x
+                    elif x > max_x:
+                        max_x = x
+                if y < min_y:
+                    min_y = y
+                elif y > max_y:
+                    max_y = y
+
+        print("x %d to %d, y %d to %d" % (min_x,max_x, min_y,max_y))
+
+        self.draw_objects("line")   # layer 1
+        self.draw_objects("n_rect") # layer 2
+        self.draw_objects("text")   # layer 3
+
+        self.print_lbuf(text_fn)
 
     def map(self, x, y):  # Map x,y (from rdd) to col,row (in lines 2D array)
-        x_sf = 1.0;  y_sf = 1.5
-        col = round((x-self.x_min)*x_sf/self.f_width) + self.border  # LH
-        row = round((y-self.y_min)*y_sf/self.f_height) + self.border  # Top
+        x_sf = 1.0;  y_sf = 1.0
+        col = round((x-self.min_x)*x_sf/self.f_width) + self.border_width  # LH
+        row = round((y-self.min_y)*y_sf/self.f_height) + self.border_width  # Top
         #print("@map: col %s %s, row %s %s" % (col,type(col), row,type(row)))
         return col, row
         
@@ -60,7 +125,7 @@ class asc_drawing:
         # Will write .txt file to current directory
         asc_file = open(txt_fn, "w")
         for j in range(self.n_lines):
-            asc_file.write("%s \n" % ''.join(self.lines[j]))
+            asc_file.write("%s\n" % ''.join(self.lines[j]))
         asc_file.close()
 
     def set_char(self, ch, xc,yr):  # Must not overwrite "+"
@@ -189,11 +254,11 @@ class asc_drawing:
         cx = round((coords[0]+coords[2])/2.0)
         cy = round((coords[1]+coords[3])/2.0)
         #print("cx,cy %d,%d, text >%s<" % (cx,cy, n_r_text))
-        self.draw_text(obj.id, [cx,cy], n_r_text)
+        self.draw_text(id, [cx,cy], n_r_text)
     
     def draw_objects(self, which):
         d_lines = d_rects = d_texts = 0
-        for obj in rdd_i.objects:
+        for obj in self.rdd_i.objects:
             if obj.type == which:
                 if obj.type == "line":
                     self.draw_line(obj.i_coords, obj.i_text)
@@ -201,7 +266,7 @@ class asc_drawing:
                 elif obj.type == "n_rect":
                     #print(">> n_rect id %d, coords %s, text >%s<" % (
                     #    obj.id, obj.i_coords, obj.i_text))
-                    asc_d.draw_n_rect(obj.id, obj.i_coords, obj.i_text)
+                    self.draw_n_rect(obj.id, obj.i_coords, obj.i_text)
                     d_rects += 1
                 if obj.type == "text":
                     #print("|%s|" % obj)
@@ -212,86 +277,4 @@ class asc_drawing:
 
 
 if __name__ == "__main__":
-    #print("argv >%s<, len(sys.argv) = %d" % (sys.argv, len(sys.argv)))
-    rdd_fn = None
-    if len(sys.argv) == 1:  # sys.argv[0] = name of program 
-        print("No .rdd file specified ???")
-        from tkinter.filedialog import askopenfilename
-        rdd_fn = (askopenfilename(title="Select .rdd source file"))
-    if not rdd_fn:
-        rdd_fn = sys.argv[1]
-    path, fn = os.path.split(rdd_fn)
-    print("file path %s, rdd_fn %s" % (path, fn))
-
-    print("$$$ path >%s<, fn >%s<" % ( path, fn))
-    if not fn.endswith(".rdd"):
-        print("\ardd filename >%s< didn't end with '.rdd", rdd_fn)
-        exit()
-
-    border_width = 1  # Default value (col/row)
-    if len(sys.argv) >= 3:  # We have a second argument
-        arg2 = sys.argv[2]
-        #print("<><> fn %s, arg2 %s" % (fn, arg2))
-        if len(arg2) >= 2:
-            if arg2[0:2] == "-b":  # First two chars
-                if len(arg2) != 2:
-                    border_width = int(arg2[2:])
-            print("ascii border width %d cols/rows" % border_width)
-        else:
-            print("Unrecognised option %s" % arg2)
-            exit()
-
-    rdd_i = rdd_io.rdd_rw(rdd_fn)
-    xr, yr, f_width, f_height, d_width, d_height = rdd_i.read_from_rdd()
-    # xr,ry are rfc-draw's 'root' geometry (in px) !!!
-    #rdd_i.dump_objects("after read_from_rdd")
-    fs = "Screen: xr %d, yr %d | Drawing: width %d, height %d"
-    fs += " | Font: width %.2f, height %.2f px"
-    print(fs % (xr, yr, d_width, d_height, f_width, f_height))
-    print("===================================================")
-
-    txt_fn = path + "/" + fn.replace("rdd","txt")    
-    min_x = min_y = 50000;  max_x = max_y = 0
-    for obj in rdd_i.objects:
-        coords = obj.i_coords
-        for n in range(0, len(coords), 2):
-            x = coords[n];  y = coords[n+1]  # Text centre (tk Canvas units)
-            if obj.type == "text":   ##or obj.type == "n_rect":
-                tw2 = round(obj.txt_width*f_width/2)  # tk units
-                #print("$$$ x %d, tw2 %d; -= %d, += %d" % (x,tw2, x-tw2, x+tw2))
-                if x+tw2 > max_x:
-                    x += tw2;  max_x = x+tw2
-                    #print(">>> text x incr by %d px" % tw2)
-                if x-tw2 < min_x:
-                    min_x = x-tw2
-                    x -= tw2
-                    #print(">>> text x decr by %d px" % tw2)
-                #print("text %d, cx %d,  min_x %d, max_x %d" % (
-                #    obj.id, coords[0], min_x, max_x))
-            else:
-                #print("..%2d  x %d, y %d" % (n, x,y))
-                if x < min_x:
-                    min_x = x
-                elif x > max_x:
-                    max_x = x
-            if y < min_y:
-                min_y = y
-            elif y > max_y:
-                max_y = y
-
-    print("x %d to %d, y %d to %d" % (min_x,max_x, min_y,max_y))
-
-    asc_d = asc_drawing(path+".txt", border_width,
-        min_x,max_x, min_y,max_y, rdd_i.f_width, rdd_i.f_height)
-
-    asc_d.draw_objects("line")   # layer 1
-    asc_d.draw_objects("n_rect") # layer 2
-    asc_d.draw_objects("text")   # layer 3
-
-    asc_d.print_lbuf(txt_fn)
-
-    ##svg_d.draw_frame(min_x,min_y, max_x-min_x, max_y)  # 1:1 scaling
-    #svg_d.draw_frame(0,0, rdd_i.xr,rdd_i.yr)  # 1:1 scaling
-    #self.svg_d.draw_frame(min_x-6,min_y-6,
-    #    (max_x-min_x)*2+6, (max_y-min_y)*2+18)
-    #       #  drawing in top left quarter of image
+    asc_drawing(sys.argv)
