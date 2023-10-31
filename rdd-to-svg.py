@@ -1,3 +1,4 @@
+
 # 1228, Fri 27 Oct 2023 (NZDT)
 #
 # rdd-to-svg.py: Convert an rfc-draw .rdd file to an svg image;
@@ -18,44 +19,15 @@ That means rdd-to-svg can just ignore the group objects, their member
 
 class svg_drawing:
     def __init__(self, sys_argv):
-        rdd_fn = None
-        if len(sys_argv) == 1:  # sys_argv[0] = name of program 
-            print("No .rdd file specified ???")
-            from tkinter.filedialog import askopenfilename
-            rdd_fn = (askopenfilename(title="Select .rdd source file"))
-
-        # python3 rdd-to-svg.py  group-line-test.rdd     -> no border
-        # python3 rdd-to-svg.py  group-line-test.rdd -b  -> 3 px border
-        # python3 rdd-to-svg.py  group-line-test.rdd -b5 -> 5 px border
-
-        self.border_width = 3  # Default value
-        #print("sys_argv >%s<" % sys_argv)
-        if not rdd_fn:
-            rdd_fn = sys_argv[1]
-        if len(sys_argv) >= 3:  # We have a second argument
-            arg2 = sys_argv[2]
-            if len(arg2) >= 2:
-                if arg2[0:2] == "-b":  # First two chars
-                    if arg2 == "-b":
-                        pass  #print("bw %d" % self.border_width)
-                    else:
-                        self.border_width = int(arg2[2:])
-                    print("svg border width %d px" % self.border_width)
-                else:
-                    print("Unrecognised option %s" % arg2)
-                    exit()
-        #print("$$$ rdd_fn %s" % rdd_fn)
-        self.rdd_i = rdd_io.rdd_rw(rdd_fn)
-        self.di = self.rdd_i.read_from_rdd()  # {} Info about this Drawing
+        rio = rdd_io.rdd_rw(sys_argv, 3)  # b_w 3 px
+        self.rdd_fn = rio.rdd_fn;  self.border_width = rio.border_width
+        self.objects = rio.objects;  self.di = rio.di
         # self.di contains:
-        #   "r_width", "r_height",  # root window size
-        #   "d_width", "d_height",  # drawing Canvas size
         #   "f_width", "f_height",  # font size (px)
         #   "min_x", "max_x", "min_y", "max_y"  # extrema of objects in drawing
         
-        rdd_name = rdd_fn.split(".")
-        #print("$ $ $ $ self.dwg created len(objects) = %d" % \
-        #    len(self.rdd_i.objects))
+        rdd_name = self.rdd_fn.split(".")
+        #print("$ $ $ $ self.dwg created len(objects) = %d" % len(self.objects))
 
         #self.text_attributes = ("font-family:monospace, font-size:%d, " +
            #"font-weight:bold; white-space:pre") % self.di["f_height"]
@@ -205,11 +177,11 @@ class svg_drawing:
 
     def draw_objects(self, which):
         n_lines = n_n_rects = n_texts = 0
-        for obj in self.rdd_i.objects:
+        for obj in self.objects:
             #print("++ obj >%s<" % obj)
             if obj.type == which:
                 if obj.type == "line":
-                    self.draw_line(self.adj_coords(self.obj.i_coords),
+                    self.draw_line(self.adj_coords(obj.i_coords),
                         obj.i_text)
                     n_lines += 1
                 elif obj.type == "n_rect":
@@ -224,7 +196,6 @@ class svg_drawing:
                     n_texts += 1
         print("=== %d lines, %d n_rects and %d texts drawn" % (
             n_lines, n_n_rects, n_texts))
-                
 
 if __name__ == "__main__":
     svg_drawing(sys.argv)

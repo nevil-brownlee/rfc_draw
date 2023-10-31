@@ -1,4 +1,4 @@
-# 1503, Mon 30 Oct 2023 (NZDT)
+# 1625, Tue 31 Oct 2023 (NZDT)
 #
 # rdd2ascii.py: Convert an rfc-draw .rdd file to an ASCII-ast image;
 #
@@ -16,42 +16,14 @@ That means rdd-to-svg can just ignore the group objects, their member
 """
 class asc_drawing:
     def __init__(self, sys_argv):
-        rdd_fn = None
-        if len(sys_argv) == 1:  # sys_argv[0] = name of program 
-            print("No .rdd file specified ???")
-            from tkinter.filedialog import askopenfilename
-            rdd_fn = (askopenfilename(title="Select .rdd source file"))
-
-        # python3 rdd2ascii.py  group-line-test.rdd     -> no border
-        # python3 rdd2ascii.py  group-line-test.rdd -b  -> 3 chars/lines border
-        # python3 rdd2ascii.py  group-line-test.rdd -b5 -> 5 chars/lines border
-
-        self.border_width = 1  # Default value
-        #print("sys_argv >%s<" % sys_argv)
-        if not rdd_fn:
-            rdd_fn = sys_argv[1]
-        if len(sys_argv) >= 3:  # We have a second argument
-            arg2 = sys_argv[2]
-            if len(arg2) >= 2:
-                if arg2[0:2] == "-b":  # First two chars
-                    if arg2 == "-b":
-                        pass  #print("bw %d" % self.border_width)
-                    else:
-                        self.border_width = int(arg2[2:])
-                    print("svg border width %d px" % self.border_width)
-                else:
-                    print("Unrecognised option %s" % arg2)
-                    exit()
-
-        print("+1+ border_width %d" % self.border_width)
-        self.rdd_i = rdd_io.rdd_rw(rdd_fn)
-        self.di = self.rdd_i.read_from_rdd()  # {} Info about this Drawing
-        # self.di contains:
-        #   "r_width", "r_height",  # root window size
-        #   "d_width", "d_height",  # drawing Canvas size
-        #   "f_width", "f_height",  # font size (px)
-        #   "min_x", "max_x", "min_y", "max_y"  # extrema of objects in drawing
-
+        rio = rdd_io.rdd_rw(sys_argv, 1)  # b_w 1 chars/lines
+        self.rdd_fn = rio.rdd_fn;  self.border_width = rio.border_width
+        self.objects = rio.objects;  self.di = rio.di
+        #print("!!! rrd_fn %s, border_width %d\n" %
+        #    (self.rdd_fn, self.border_width))
+        #print("objects >%s< len %d" % (self.objects, len(self.objects)))
+        #print("di >%s<" % self.di)
+        
         self.f_width = self.di["f_width"];  self.f_height = self.di["f_height"]
         self.min_x = self.di["min_x"];  self.max_x = self.di["max_x"]
         self.min_y = self.di["min_y"];  self.max_y = self.di["max_y"]
@@ -72,16 +44,15 @@ class asc_drawing:
         self.digits = "0123456789ABC"
         self.slc = False  # Set line corner points to show which line it is
 
-        rdd_name = rdd_io.rdd_rw(rdd_fn)
-        text_fn = rdd_fn.split(".")[0]+".txt"
+        text_fn = self.rdd_fn.split(".")[0]+".txt"
 
         min_x = min_y = 50000;  max_x = max_y = 0
-        for obj in self.rdd_i.objects:
+        for obj in self.objects:
             coords = obj.i_coords
             for n in range(0, len(coords), 2):
                 x = coords[n];  y = coords[n+1]  # Text centre (tk Canvas units)
                 if obj.type == "text":   ##or obj.type == "n_rect":
-                    tw2 = round(obj.txt_width*f_width/2)  # tk units
+                    tw2 = round(obj.txt_width*self.f_width/2)  # tk units
                     #print("$$$ x %d, tw2 %d; -= %d, += %d" % (x,tw2, x-tw2, x+tw2))
                     if x+tw2 > max_x:
                         x += tw2;  max_x = x+tw2
@@ -119,10 +90,10 @@ class asc_drawing:
         return col, row
         
     def print_lbuf(self, txt_fn):
-        print("#### txt_fn >%s<" % txt_fn)
+        #print("#### txt_fn >%s<" % txt_fn)
         #afn = self.asc_filename.split("/")[-1]
         # Bug reported: becarpenter, 22 Oct 2023 (NZDT)
-        # Will write .txt file to current directory
+        #   "Will write .txt file to current directory"
         asc_file = open(txt_fn, "w")
         for j in range(self.n_lines):
             asc_file.write("%s\n" % ''.join(self.lines[j]))
@@ -145,8 +116,6 @@ class asc_drawing:
 
         self.n_line += 1
         for p in range(0,len(rc_coords)-2,2):  # Draw the line
-            #print("p %s" % p)
-            #print(">>>>>>>>>>>>>> n_line %d" % self.n_line)
             ch = self.digits[self.n_line]
             x0 = rc_coords[p];  y0 = rc_coords[p+1]  # segment x0,y0 to x1,y1
             x1 = rc_coords[p+2];  y1 = rc_coords[p+3]
@@ -240,11 +209,9 @@ class asc_drawing:
         self.n_n_rect += 1
         ch = self.alphabet[self.n_n_rect]
         h_row = "+" + "-"*(brc-tlc-2) + "+"
-        #h_row = "+" + ch*(brc-tlc-2) + "+"
-        print("h_row %s" % h_row)
+        #print("h_row %s" % h_row)
         v_row = "|" + " "*(brc-tlc-2) + "|"
-        #v_row = ch + " "*(brc-tlc-2) + ch
-        print("v_row %s" % v_row)
+        #print("v_row %s" % v_row)
 
         self.draw_text_row(h_row, tlc,tlr)
         for j in range(tlr+1, brr):
@@ -258,7 +225,7 @@ class asc_drawing:
     
     def draw_objects(self, which):
         d_lines = d_rects = d_texts = 0
-        for obj in self.rdd_i.objects:
+        for obj in self.objects:
             if obj.type == which:
                 if obj.type == "line":
                     self.draw_line(obj.i_coords, obj.i_text)
