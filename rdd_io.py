@@ -1,7 +1,6 @@
-# 1621, Sat 28 Oct 2023 (NZST)
+# 1607, Tue 31 Oct 2023 (NZDT)
 # 1107, Wed  6 Sep 2023 (NZST)
 # 1455, Wed 31 May 2023 (NZST)
-# 1457, Tue 26 Sep 2023 (NZDT)
 #
 # rdd_rw.py: Read/write *.rdd files
 #
@@ -10,11 +9,16 @@
 import re
 
 class rdd_rw:
-    def __init__(self, fn):
-        self.rdd_fn = fn
-        #print("rdd_fn %s" % self.rdd_fn)
+    def __init__(self, sys_argv, default_b_w):
+        self.rdd_fn = None
         self.objects = []   # rfc-draw objects
         self.r_obj_keys = {}  # old-key -> new-key for objects read from rdd
+
+        rdd_fn = None
+        if len(sys_argv) == 1:  # sys_argv[0] = name of program 
+            print("No .rdd file specified ???")
+            from tkinter.filedialog import askopenfilename
+            self.rdd_fn = (askopenfilename(title="Select .rdd source file"))
 
         # Patterns for reading the description string for an object
         self.rrd_re = re.compile(
@@ -26,7 +30,26 @@ class rdd_rw:
                "\s+\((.)(.+)\ member\s(.+)\)\s+(.+)\s\[(.+)\]")
         # field       0  1           2        3       4
         #    blanks  id g_nbr       g_key    type    coords
-       
+        self.border_width = default_b_w  # Default value
+        
+        #print("sys_argv >%s<" % sys_argv)
+        if not self.rdd_fn:
+            self.rdd_fn = sys_argv[1]
+        if len(sys_argv) >= 3:  # We have a second argument
+            arg2 = sys_argv[2]
+            if len(arg2) >= 2:
+                if arg2[0:2] == "-b":  # First two chars
+                    if arg2 == "-b":
+                        pass  #print("bw %d" % self.border_width)
+                    else:
+                        self.border_width = int(arg2[2:])
+                    print("svg border width %d px" % self.border_width)
+                else:
+                    print("Unrecognised option %s" % arg2)
+                    exit()
+
+        #print("+1+ rdd_fn %s, border_width %d" % (self.rdd_fn, self.border_width))
+        self.objects, self.di = self.read_from_rdd()
 
     def s_to_stuple(self, t):
         t1 = t.replace("'", "")
@@ -149,8 +172,10 @@ class rdd_rw:
     def read_from_rdd(self):
         f = open(self.rdd_fn, "r")
         self.di = {}
-        for line in f:
+        for ln in f:
+            line = ln.strip()
             #print(">>>%s<" % line)
+            
             if line[0] == "#":  # Ignore comment lines
                 continue
             ds = line.rstrip('\n')
@@ -176,7 +201,6 @@ class rdd_rw:
             else:
                 #print("=== ds = %s" % ds)
                 o_key, obj = self.restore_object(ds)
-                #print("--- o_key %s, obj >%s<" % (o_key, obj))
 
         min_x = min_y = 50000;  max_x = max_y = 0
         for obj in self.objects:
@@ -193,8 +217,6 @@ class rdd_rw:
                     max_y = y
             self.di["min_x"] = min_x;  self.di["max_x"] = max_x
             self.di["min_y"] = min_y;  self.di["max_y"] = max_y
-        #print("+++ min_x %d, max_x %d, min_y %d, max_y %d" % (
-        #    min_x, max_x, min_y, max_y))
                     
         fs = "Screen: xr %d, yr %d | Drawing: width %d, height %d"
         fs += " | Font: width %.2f, height %.2f"
@@ -202,4 +224,4 @@ class rdd_rw:
             self.di["d_width"], self.di["d_height"],
             self.di["f_width"], self.di["f_height"]))
 
-        return self.di
+        return self.objects, self.di
