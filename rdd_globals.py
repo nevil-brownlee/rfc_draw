@@ -1,0 +1,12 @@
+# 1410, Thu  2 Nov 2023 (NZDT)
+#
+# rdd_globals: globals for rfc-draaw's rdd-to*.py programs
+#
+# Copyright 2023, Nevil Brownlee, Taupo NZ
+
+class rdd_globals:
+    def __init__(self):
+        self.asc_def_b_w = 1  # chars/lines
+        self.svg_def_b_w = 3  # pixels
+ 
+gv = rdd_globals()  # rdd global variables
