@@ -21,4 +21,15 @@ in three layers, with restrictions to allow for ASCII-art:
    &emsp; Rectangles may have line(s) of text at their centre.  
  
 3. Text  
-   &emsp; A text object has one or more (centred) lines of text.
+   &emsp; A text object has one or more (centred) lines of text.  
+
+To use rfc-draw you'll need to install the following python modules:  
+&emsp; tkinter, math, sys, re, os, svgwrite, traceback (for POSIX and windows)  
+&emsp; termios (for POSIX) or msvcrt (for Windows)  
+
+To install a python module, e.g. tkinter, the (POSIX) command is  
+&emsp;&emsp; pip3 install tkinter  
+  
+If that doesn't work, you may need to use a more up-to-date version of pip,  
+i.e. one that matches your version of python, for example pip3.10
+ 
