@@ -1,60 +1,105 @@
-# 1055, Wed  6 Sep 2023 (NZST)
-# 1600, Tue 25 Jul 2023 (NZST)
-# 1411, Sun 22 Jan 2023 (NZDT)
-# 1609, Sun  1 Oct 2023 (NZDT)
-# 1531, Sat 21 Oct 2023 (NZDT)
+# 1409, Sat 16 Mar 2024 (NZDT)  # v2
+# 1531, Sat 21 Oct 2023 (NZDT)  # v1
 #
 # rfc_draw_globals_class:
 #                   contains rfc-draw global data (for event handlers)
 #                   and functions for Objects, e.g.
 #                      class object (rfc_draw objects)
 #                      object dictionary, get_object()
-#                      save_to_rdd(), read_from_rdd()
-#                      
-# Copyright 2023, Nevil Brownlee, Taupo NZ
+#                  
+# Copyright 2024, Nevil Brownlee, Taupo NZ
 
-import os.path, re, sys, traceback
+import os.path, re, sys, time, datetime, threading
+from playsound import playsound
+global posix
 try:
+    posix = True
     import termios  # This is POSIX
 except:
+    posix = False
     import msvcrt   # This is Windows
+
 import tkinter as tk
 
+
+import draw_texts_class as dtc    # Handles text objects
 import arrow_lines_class as alc   # Draw lines with direction arrows
-import draw_groups_class as dgr   # Handles rfc-draw groups
 import draw_lines_class as dlc    # Handles line objects
 import draw_n_rects_class as drc  # Handles n_rect objects
+import draw_headers_class as dhc  # Handles rfc-draw headers
 
 class rdglob:  # Global variables for rfc-draw's objects
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls)  # New instance of rdglob
 
-    def test_fn(self):
-        print("$$$ from rdglob.test_fn")
-
     def __init__(self, parent, root, m_text):
         super().__init__()
         self.drawing = parent;  self.root = root;  self.m_text = m_text
         self.rdg = self
+        print(">>> m-text = >%s<" % self.m_text)
 
         #self.f_font = tk.font.Font(  # Initialise class variables
-        #    family="TkFixedFont")
-        self.f_font = "TkFixedFont"  # This works, above version doesn't <<<
-        #self.f_font = "DroidSansMono 12"  # This works too
-        #self.f_font = "Consolas 12"  # Should work on Windows 11
-        # https://stackoverflow.com/questions/48731746/
-        # how-to-set-a-tkinter-widget-to-a-monospaced-platform-independent-font
-        self.f_width = self.f_height = None
+        #    family= TkFixedFont)  # This doesn't work, below version does <<<
+        self.f_font = "TkFixedFont"  # Looks fine, but a bit too light
+        #self.f_font = ('TkFixedFont', 12)  # , 'bold')  # Too tightly spaced
+        #self.f_font = ('Courier Prime Code', 10)  # Too tightly spaced
+        #self.f_font = ('Monospace Medium', 10) #, 'bold')  # ditto
+        #self.f_font = ('Droid Sans Mono', 10) #, 'bold')  # OK
+        #self.f_font = ('Nimbus Mono', 10, 'bold') # Google  # Too small
+        #self.f_font = ('Noto Sans Mono', 10)  # Google sort of OK
+        #self.f_font = ('Space Mono', 10) #, 'bold')  # Google, r,i i different
+        #self.f_width = 10.333;  self.f_height = 17  # points on screen
+        self.f_width = 8;  self.f_height = 17  # px, from header experiments
 
+        self.new_drawing = False  # True if we have a save_file name
+        
         self.last_button = "rect"
         self.last_key = ""
-        self.ln_mode = "rect"
+        self.last_mode = "rect"
 
-        self.m_text.tag_config('normal', foreground="black")
-        self.m_text.tag_config('warning', foreground="dark orange")
-        self.m_text.tag_config('error', foreground="red3")
+        self.m_text.tag_configure('normal', foreground="black")
+        self.m_text.tag_configure('warning', foreground="deepskyblue2")
+        self.m_text.tag_configure('error', foreground="red3")
 
-        # Rect variables
+        self.objects = {}  # (draw_objects) objects, key (tk object) id
+                           #   Text in an n_rect is part of that n_rect
+        self.current_object = None  # Key to actual object in self.objects
+
+        self.obj_keys = {}  # old-key -> new-key for objects read from rdd
+    
+        self.deleted_objects = []  # Objects deleted (using Delete key)
+
+        # Patterns for reading the description string for an object
+        #   . matches any character, except a newline (\n)
+
+        rere_0_4 = "(\d+)\s+\((.+)\s+(.+)\)\s+\[(.+)\]\s+\"(.+)\""
+            # field   0        1      2          3          4
+            #       objid    type    skey       coords     text 
+
+        rere_v1 = rere_0_4 + "\s+(\S)\s+([\s\S]+)\Z"
+        print("*** rere_v1 %s" % rere_v1)
+        ###rere_v1 = rere_0_4 + "\s+(.+)\s+(.+)\Z"
+            # rdd v1:              5      6
+            #                     g_nbr  g_type
+            #                   '0  N' or '1 group'
+
+        rere_v2 = rere_0_4 + "\s+(\S+)\s+(\S+)\s+(\S+)(\s.+)?"
+            #                      5       6       7      8
+            #              parent_id,     v1,     v2    Optional comment
+        self.rdd_e_v1 = re.compile(rere_v1)
+        self.rdd_e_v2 = re.compile(rere_v2)
+
+        self.last_tag = None  # Tag of last-clicked object
+        self._layers = []  # For add_to_layer()
+
+        self.mx_headers = 4
+        self.hd_colours = ["tan2", "saddlebrown", "red", "darkorange",
+            "gold", "green", "darkblue", "indigo", "darkviolet"]    # Dark
+        self.hl_colours = ["tan1", "peru", "tomato", "kakhi", "palegoldenrod",
+            "palegreen", "skyblue", "royalblue", "palevioletred"]   # Light
+        self.h_colours = self.hd_colours
+ 
+        # n_rect variables
         self.tl   = 0;     self.top = 1;     self.tr = 2  # Mouse regions
         self.left = 3;  self.middle = 4;  self.right = 5
         self.ll   = 6;     self.bot = 7;     self.lr = 8
@@ -63,59 +108,15 @@ class rdglob:  # Global variables for rfc-draw's objects
         self.region = self.lr  # Region mouse pointer is currently in
         self.pos = ["tl",   "top",  "tr",
                   "left", "middle", "right",
-                    "ll", "bottom", "lr",  "too_far", "new"]
-        self.res_px = 4  # Nearness margin
+                    "ll", "bottom", "lr",  "far", "new"]
+        self.res_px = 5  # Nearness margin ** was 4
         self.far_px = 8  # This far away to start a new rect
-
-        self.objects = {}  # (draw_objects) objects, key (tk object) id
-                           #   Text in an n_rect is part of that n_rect
-        self.current_object = None  # Key to actual object in self.objects
-
-        self.r_obj_keys = {}  # old-key -> new-key for objects read from rdd
+        self.hdr_px = 2  # Min up/down change to detect row-bottom dragging
+       
+    # Click b3 to edit a text object
     
-        self.deleted_objects = []  # Objects deleted (using Delete key)
-
-        # Patterns for reading the description string for an object
-        self.rrd_re = re.compile(
-               "(\d+)\s+\((.+)\s+(.+)\)\s+\[(.+)\]\s+\"(.*)\"\s+(\d+)\s+(.)")
-        # field   0        1       2          3          4         5      6
-        #       objid    type    skey       coords     text      g_nbr   g_type
-
-        self.mbr_re = re.compile(
-               "\s+\((.)(.+)\ member\s(.+)\)\s+(.+)\s\[(.+)\]")
-        # field       0  1           2        3       4
-        #    blanks  id g_nbr       g_key    type    coords
-             
-        self.last_tag = None  # Tag of last-clicked object
-        self._layers = []  # For add_to_layer()
-
-        self.mx_groups = 8
-        self.gd_colours = ["tan2", "saddlebrown", "red", "darkorange",
-            "gold", "green", "darkblue", "indigo", "darkviolet"]    # Dark
-        self.gl_colours = ["tan1", "peru", "tomato", "kakhi", "palegoldenrod",
-            "palegreen", "skyblue", "royalblue", "palevioletred"]   # Light
-        self.g_colours = self.gd_colours  # For groups 0, 1..8
-            # group_nbr == 0 means the object isn't in any group <<
-        self.n_groups = 0
-        self.g_o_keys = [None]*(self.mx_groups+1)  # Objects in group
- 
-        self.last_mx = self.last_my = None
-
-        """ 
-        self.add_to_layer(3, self.drawing.create_text,
-            (300,250), fill="blue", text="H  H  H  H  H")
-        self.add_to_layer(3, self.drawing.create_text,
-            (300,400), fill="blue", text="HHHHHHHHHHHHHHH")
-        # draw a square on layer 2:
-        self.add_to_layer(2, self.drawing.create_rectangle,
-            (200,200, 500,300), fill="khaki")
-        # draw a circle on layer 1:
-        self.add_to_layer(1, self.drawing.create_line,
-            (100,100, 400,100, 400,400, 400,400, 100,400, 100,100),
-            fill="red")
-        """
-
-    # Click b3 to edit a text objectg
+        self.new_ids = {}  # For restore_saved_object
+        
         self.drawing.bind_class('Canvas','<ButtonPress-3>', self.on_b3_click)
 
         self.centre_texts = True  # Set by draw_* set_event_handlers()
@@ -127,42 +128,27 @@ class rdglob:  # Global variables for rfc-draw's objects
 
         self.bind_keys()
 
-    def bind_keys(self):
-        try:
-            # Clear queued key-presses on POSIX
-            termios.tcflush(sys.stdin, termios.TCIOFLUSH)        
-        except:
-            # Clear queued key-presses on Windows
-            while msvcrt.kbhit():
-                msvcrt.getch()
-        self.root.bind('<KeyPress>', self.on_key_press_repeat)
-        self.has_prev_key_press = None
-        self.root.bind('<Escape>',self.on_key_press_repeat) # Clear Msg window
-        self.root.bind('<KeyPress-c>',self.on_key_press_repeat) # copy
-      
-    def unbind_keys(self):        # Unbind keys used by
-        self.root.unbind('<KeyPress-u>')  # draw_groups_class
-        self.root.unbind('<KeyPress-a>')  # draw_lines_class
-        self.root.unbind('<KeyPress-n>')
-        self.root.unbind('<KeyPress-e>')
-        self.root.unbind('<KeyPress-b>')
-        self.root.unbind('<KeyPress-f>')
-        self.root.unbind('<KeyPress-r>')
-        self.root.unbind('<KeyPress-equal>')
+        self.dlc_tool = dlc.draw_lines(self.drawing, self.root, self.rdg)
+        self.dtc_tool = dtc.draw_texts(self.drawing, self.root, self.rdg)
+        self.drc_tool = drc.draw_n_rects(self.drawing, self.root, self.rdg)
+        self.dhc_tool = dhc.draw_headers(self.drawing, self.root, self.rdg)
+        print("rgdc, self.dhc_tool %s" % self.dhc_tool)
+        #print(">>> m-text = >%s<" % self.m_text)
 
-    def display_msg(self, text, tag):  # Display text in Message area
-        # tags declared above, i.e. 'normal' and 'error'
-        if tag == "error":
-            print("\a\a")  # BEL
-        elif tag == "warning":
-            print("\a")
-        self.m_text.delete('1.0', tk.END)
-        self.m_text.insert('1.0', text, tag)
+        self.start_t = datetime.datetime.now()
+
+    def time_now(self, where_from):
+        t_now = datetime.datetime.now()
+        t_diff = datetime.timedelta.total_seconds(t_now-self.start_t)
+        ts = "%s" % t_diff
+        print("in time_now: ts %s" % ts)
+        pix = ts.index(".") 
+        print("ELAPSED %s: %s" % (ts[0:pix+4], where_from))
 
     def where(self, rdo, x, y):  # Find region of rdo where b1 is pressed
         #print("... ... where: rdo = %s" % rdo)
-        #print("   coords %d,%d, %d,%d" % (rdo.x0,rdo.y0, rdo.x1,rdo.y1))
-        if y <= rdo.y0 + self.res_px:  # Top row
+        #print("where:  coords %d,%d, %d,%d" % (rdo.x0,rdo.y0, rdo.x1,rdo.y1))
+        if y <= rdo.y0 - self.res_px:  # Top row
             if y < rdo.y0 - self.far_px:  # Too high
                 return self.far
             if x <= rdo.x0 + self.res_px:
@@ -174,7 +160,7 @@ class rdglob:  # Global variables for rfc-draw's objects
                     return self.far
                 return self.tr
             return self.top
-        elif y >= rdo.y1 - self.res_px:  # Bottom row
+        elif y >= rdo.y1 + self.res_px:  # Bottom row
             if y > rdo.y1 + self.far_px:  # Too low
                 return self.far
             if x <= rdo.x0 + self.res_px:
@@ -240,135 +226,76 @@ class rdglob:  # Global variables for rfc-draw's objects
             if y1+dy-min_px < 0: dy = 0 # Stop up
             x0 += dx;  y0 += dy;  x1 += dx;  y1 += dy
         return x0,y0, x1,y1
+        """
+        def test_fn(self):
+            print("$$$ from rdglob.test_fn")
+        self.test_v1 = "12345"
+        self.test_v2 = "67890"
 
-    class n_rect:  # Rectangle with white fill and centred text
-        def __init__(self, rdg, drawing, r_coords, r_text, g_nbr):
-            self.drawing = drawing
-            self.f_font = "TkFixedFont"  # See draw_text_class.py for comments!
-            self.x0, self.y0, self.x1, self.y1 = r_coords
-            #print("create n_rect, coords %d,%d, %d,%d" % (
-            #     self.x0, self.y0, self.x1, self.y1))
-            rdg.region = rdg.lr  # Start with cursor at lower right
-            self.type = "n_rect"
-            self.rect_id = rdg.add_to_layer(2,
-                self.drawing.create_rectangle, r_coords, fill="white")
-            self.cx = (self.x0+self.x1)/2;  self.cy = (self.y0+self.y1)/2
-            if len(r_text) != 0:
-                self.text_id = rdg.add_to_layer(3,
-                    self.drawing.create_text, (self.cx,self.cy),
-                        text=r_text, font=self.f_font, activefill="red", 
-                        anchor=tk.CENTER)
-            self.text = r_text
-            self.g_nbr = g_nbr
+        self.add_to_layer(3, self.drawing.create_text,
+            (300,250), fill="blue", text="H  H  H  H  H")
+        self.add_to_layer(3, self.drawing.create_text,
+            (300,400), fill="blue", text="HHHHHHHHHHHHHHH")
+        # draw a square on layer 2:
+        self.add_to_layer(2, self.drawing.create_rectangle,
+            (200,200, 500,300), fill="khaki")
+        # draw a circle on layer 1:
+        self.add_to_layer(1, self.drawing.create_line,
+            (100,100, 400,100, 400,400, 400,400, 100,400, 100,100),
+            fill="red")
+        """
 
-        def __str__(self):
-            return "type %s, text >%s<" % (self.type, self.text)
+    def bind_keys(self):
+        #print("@@@@ posix = %s" % self.posix)
+        if posix:
+            # Clear queued key-presses on POSIX
+            termios.tcflush(sys.stdin, termios.TCIOFLUSH)        
+        else:
+            # Clear queued key-presses on Windows
+            while msvcrt.kbhit():
+                msvcrt.getch()
+        self.root.bind('<KeyPress>', self.on_key_press_repeat)
+        self.has_prev_key_press = None
+        self.root.bind('<Escape>', self.on_key_press_repeat) # Clear Msg window
+        self.root.bind('<KeyPress-c>',self.on_key_press_repeat) # copy
+      
+    def unbind_keys(self):        # Unbind keys used by
+        print("rdg unbind_keys called <<<")
+        self.root.unbind('<KeyPress-c>')  # rdglob.copy
+        self.root.unbind('<KeyPress-a>')  # draw_lines_class
+        self.root.unbind('<KeyPress-n>')  #        "
+        self.root.unbind('<KeyPress-e>')  #        "
+        self.root.unbind('<KeyPress-b>')  #        "
+        self.root.unbind('<KeyPress-f>')  #        "
+        self.root.unbind('<KeyPress-r>')  #        "
+        self.root.unbind('<KeyPress-equal>')  #    "
+        self.root.unbind('<KeyPress-plus>')
+        self.root.unbind('<KeyPress-minus>')
+
+#    def n_bells(self, n_rings):
+#        for n in range(n_rings):
+#            print("\a",end='')  # BEL
+#            time.sleep(0.5)
+
+    def big_bell(self):
+        playsound("BSB-counter-bell.wav")
+
+    def small_bell(self):
+        playsound("BSB-small-bell.wav")
         
-        def coords(self, x0, y0, x1, y1):  # Set the object's coords
-            self.x0 = x0;  self.y0 = y0;  self.x1 = x1;  self.y1 = y1
-            self.drawing.coords(self.rect_id, x0,y0, x1,y1)  # Move the rect
-            self.cx = (x1+x0)/2;  self.cy = (y1+y0)/2
-            self.drawing.coords(self.text_id, self.cx, self.cy)  # And it's text
-
-        def reorg(self, sx, sy):  # Shift the object's top-left corner
-            w = self.x1-self.x0;  h = self.y1-self.y0
-            self.x0 = sx;  self.y0 = sy;  self.x1 = sx+w;  self.y1 = sy+h
-
-        def bbox(self):  # Gets the current coords
-            return self.x0, self.y0, self.x1, self.y1
-
-        def move(self, dx,dy):  # Move an n_rect
-            nx0 = self.x0+dx;  ny0 = self.y0+dy 
-            nx1 = self.x1+dx;  ny1 = self.y1+dy
-            #print("/// n_rect move %s,%s" % (dx,dy))
-            self.coords(nx0,ny0, nx1,ny1)  # Also moves cx,cy
-
-        def type(self):
-            return "n_rect"
-
-        def print_n_rect(self):
-            print("coords %d,%d, %d,%d, 'rect %s', 'text %s'" % (
-                self.x0, self.y0, self.x1, self.y1, self.rect_id, self.text_id))
-
-        def delete(self):
-            self.drawing.delete(self.rect_id)
-            self.drawing.delete(self.text_id)
-
-    class g_member:  # Holds group info for a group member obj
-        def __init__(self, rdg, g_nbr, oo_key, g_tk_id, g_object, g_rel_coords):
-            self.rdg = rdg;  self.g_nbr = g_nbr;
-            self.oo_key = oo_key  # member's original objects[] key
-            self.g_tk_id = g_tk_id
-            self.g_object = g_object  # class object!
-            self.rel_coords = g_rel_coords
-
-        def __str__(self):
-            return ("<g_nbr %d, g_object %s>" % (self.g_nbr, self.g_object))
-            ##return ("<g_nbr %d, g_object %s>" % (self.g_nbr, "GMGM"))
-
-    def draw_group_edr(self, g):
-        g.g_rect_id = self.rdg.add_to_layer(1, # Draw it's dashed rectangle
-            self.rdg.drawing.create_rectangle, g.g_coords, width=1,
-                dash=(8,3), outline=self.rdg.gd_colours[g.g_nbr],
-                tags=["edr %d" % g.g_nbr])
-                #dash=(8,3), outline="red", tags=["edr %d" % g.g_nbr])
-
-    class group:
-        #   Group objects are drawn with pale-colour edr's, o_type 'group'
-        #     Their group number is saved
-        #     They have their own objects, keeping track of object positions
-        #     Their move function must move all their contained objects
-        def __init__(self, rdg, drawing, g_nbr, g_coords):
-            self.rdg = rdg;  self.drawing = drawing;  self.g_nbr = g_nbr
-            self.g_coords = g_coords  # Of group's edr
-            self.x0, self.y0, self.x1, self.y1 = self.g_coords
-            if not self.x1:
-                self.x1 = self.x0;  self.y1 = self.y0
-            self.g_rect_id = 0
-            self.edr_tag = "edr %d" % g_nbr
-            self.zoom = 1.00,
-            self.g_members = []
-            #print("@1 g_members %s" % self.g_members)
-
-        def __str__(self):
-            m_str = ""
-            for m in self.g_members:
-                m_str += " %s," % m.oo_key
-            g_coords = [self.x0, self.y0, self.x1, self.y1]
-            return ("<<group %d, g_rect_id %s, g_coords %s, members %s>>" % (
-                self.g_nbr, self.g_rect_id, g_coords, m_str))
-
-        def bbox(self):  # Gets the current edr coords
-            return self.x0, self.y0, self.x1, self.y1
-
-        def coords(self, x0, y0, x1, y1):  # Set group's coords
-            #print("? ? ? group g_rect_id %d" % self.g_rect_id)
-            self.x0 = x0;  self.y0 = y0;  self.x1 = x1;  self.y1 = y1
-            self.drawing.coords(self.g_rect_id, x0,y0, x1,y1)
-
-        def move(self, dx,dy):  # Move a group
-            nx0 = self.x0+dx;  ny0 = self.y0+dy 
-            nx1 = self.x1+dx;  ny1 = self.y1+dy
-            #print("+77+ dx/dy %d/%d" % (dx,dy))
-            #print("current_object >%s<" % self.rdg.current_object)
-            self.coords(nx0,ny0, nx1,ny1)  # Move group's edr
-            for gm in self.g_members:  # Now move each of the group's objects
-                #print("@@ gm >%s<" % gm)
-                mo = self.rdg.objects[gm.oo_key]
-                #print("   mo = >%s<" % mo)
-                if mo.o_type == "text" and mo.in_n_rect == 0:
-                    self.drawing.move(mo.key, dx,dy)
-                elif mo.o_type == "line":
-                    a_line = mo.object
-                    a_line.move(dx,dy)
-                elif mo.o_type == "n_rect":
-                    mo.object.move(dx,dy)
-
-        def delete(self):
-            self.drawing.delete(self.g_rect_id)
-            #for m in self.g_members:
-            #    m_str += " %s," % m.oo_key
- 
+    def display_msg(self, text, tag):  # Display text in Message area
+        # tags are declared above, i.e. 'normal' and 'error'
+        print("?=-=-=-=-= starting display_msg(%s), tag %s" % (text, tag))
+        self.m_text.delete('1.0', tk.END)
+        self.m_text.insert('1.0', text, tag)
+        #print("\a")  # BEL without using playsound
+        if tag == "error":
+            bell_thread = threading.Thread(target=self.big_bell, args=(()))
+            bell_thread.start()
+        elif tag == "warning":
+            bell_thread = threading.Thread(target=self.small_bell, args=(()))
+            bell_thread.start()
+        
     def transform_coords(self, del_x,del_y, obj_coords):  # Returns
         # obj_oords with del_x,del_y subtracted from each pair of it's points
         n_points = int(len(obj_coords)/2)
@@ -380,7 +307,7 @@ class rdglob:  # Global variables for rfc-draw's objects
             coords.append(obj_coords[ns*2+1]+del_y)
         #print("== coords >%s<" % coords)
         return coords
-
+    
     def rel_coords(self, edr, s_coords):  # s to r
         n_points = int(len(s_coords)/2)
         #print("++ rel_coords: n_points %d, edr %s, s_coords %s" % (
@@ -406,67 +333,124 @@ class rdglob:  # Global variables for rfc-draw's objects
         return scr_coords
 
     class object:  # n_rect/text/line/grp* Objects for rfc-draw
-        def __init__(self, key, obj, obj_type, coords, text, group, in_n_rect):
-            self.key = key          # key to self.objects
-            self.object = obj       # Actual object
-            self.o_type = obj_type  # Object type
-            self.i_coords = coords  # Initial x,y coords (from rdd)
-            self.i_text = text      # Initial text (from rdd)
-            self.g_nbr = group      # Group this object is part of
-            self.in_n_rect = in_n_rect    # == 0 -> it's just a tk object
-                                #  > 0 -> n_rect's key for it's rectangle
+        def __init__(self, key, obj, obj_type, coords, text, parent_id, v1, v2):
+            #obj_debug = True
+            #if obj_debug:
+            #    s = "OBJECT: key %s, obj %s, obj_type %s, coords %s, " 
+            #    s +="text %s, parent %s, v1 %s, v2 %s"
+            #    print(s % (key, obj, obj_type, coords, text, parent_id, v1, v2))
+            self.key = key             # 0 key to self.objects
+            self.a_obj = obj           # 1  Actual object
+            if not obj:
+                print("a_obj = None");  x = 11/0
+            #elif not str(obj):  # gives TypeError: __str__ returned non-string (type NoneType)
+            #    print("a_obj: str() failed") 
+            #print("&&&  a_obj %s (%s)" % (obj, type(obj)))
+            self.o_type = obj_type     # 2 Object type
+            self.i_coords = coords     # 3 Initial x,y coords (from rdd)
+            self.i_text = text         # 4 Initial text (from rdd)
+            self.parent_id = parent_id # 5 == 0 -> it's just a tk object
+                                #  != 0 -> n_rect's key for it's rectangle
                                 #         don't write to save-file.rdd
-        def __str__(self):
-            return "<Key %s, Object %s, Type %s, I_coords %s, G_nbr %d, In_n_rect %s>" % (
-                self.key, self.object, self.o_type, self.i_coords, self.g_nbr, self.in_n_rect)
+            self.v1 = v1               # 6
+            self.v2 = v2               # 7
 
-    def set_mode(self, which): # Rect/Text/Line buttons use this
-        self.last_button = which  #  ln_mode changes within Line mode
-        if self.ln_mode == "group":  # Returning to rect, line or text
-            self.drawing.bind_class('Canvas','<Button-3>', self.on_b3_click)
-        self.ln_mode = which
-        #print("in rdg: self.ln_mode now = %s" % self.ln_mode)
+        def __str__(self):
+            ##??s = "<Key %s, Object %s, Type %s, I_coords %s, "
+            s = "<Key %s, Object %s, Type %s, I_coords %s, "
+            s += "i_text %s, parent_id %s v1 %s, v2 %s>"
+            ##print("@@ object, s >%s<" % s)
+            """
+            print("self.key %s" % self.key)
+            print("self.a_obj ", end="");  print(self.a_obj)
+            print("self.o_type %s" % self.o_type)
+            print("self.i_coords = ", end="");  print(self.i_coords)
+            print("self.i_text %s" % self.i_text)
+            print("self.parent_id %s" % self.parent_id)
+            print("self.v1 %s" % self.v1)
+            print("self.v2 %s" % self.v2)
+            """
+            ##?rs = s % (self.key, self.a_obj, self.o_type, self.i_coords,
+            #print("->> object str() s = %s" % s)
+            rs = s % (self.key, self.a_obj, self.o_type, self.i_coords,
+                self.i_text, self.parent_id, self.v1, self.v2)
+            ##print("->> object str() rs = %s" % rs)
+            ##print("type(rs) %s" % type(rs))
+            ##exit()
+            return rs
+            
+    def set_mode(self, which): # Rect/Text/Line/Header buttons use this
+        self.last_button = which  #  last_mode changes within Line mode
+        ##if self.last_mode == "header":  # Returning to rect, line or text
+        ##    self.drawing.bind_class('Canvas','<Button-3>', self.on_b3_click)
+        self.last_mode = which
+        #print("in rdg: self.last_mode now = %s" % self.last_mode)
         if which == "line":
-            self.ln_mode = "new_ln"
+            self.last_mode = "new_ln"
 
     def obj_to_str(self, val):
+        print("??? obj_to_str: val >%s<" % val)
         if val.o_type == "n_rect":
-            rect_id = val.object.rect_id;  text_id = val.object.text_id
-            coords = self.drawing.coords(rect_id)
-            str = self.drawing.itemcget(val.object.text_id, "text")
-            return "(%s, %d) %s \"%s\"" % ("n_rect", rect_id, coords, str)
-        elif val.o_type == "text":
-            coords = self.drawing.coords(val.object)
-            str = self.drawing.itemcget(val.object, "text")
-            return"(%s, %s) %s \"%s\"" % ("text", val.object, coords, str)
+            return val.obj.mk_save_str(val)
+        if val.o_type == "text":
+            coords = self.drawing.coords(val.obj)
+            str = self.drawing.itemcget(val.obj, "text")
+            return"(%s, %s) %s \"%s\" 0, 0, 0" % (
+                "text", val.obj, coords, str)
         elif val.o_type == "line":
-            coords = val.object.lbd
-            lbd_id = val.object.lbd_id
-            return "(%s %d) %s" % ("a_line", lbd_id, coords)
-        elif val.o_type == "group":
-            #print("group object >%s<" % val.object)
-            g_key = val.key  # key = g1, etc
-            coords = val.object.bbox()
-            g_nbr = val.object.g_nbr
-            #print("@@@ g_key %s, coords %s" % (g_key, coords))
-            return "(%s %s) %s" % ("group", g_key, coords)
+            #coords = val.obj.lbd
+            #lbd_id = val.obj.lbd_id
+            #return "(%s %d) %s" % ("a_line", lbd_id, coords)
+            #print("@@@ line: about to call val.obj.mk_save_str()")
+            print("    %s" % val.obj)
+            return val.obj.mk_save_str(val)
+        elif val.o_type in ["header", "row", "field", "bar"]:
+            print("obj_to_str: hdr object >%s<" % val.obj)
+            o_ss = val.obj.mk_save_str(val)
+            print("%s o_ss >%s<" % (val.o_type, o_ss))
+            return o_ss
+        else:
+            print(">> obj_to_str, val %s" % val)
         return None  # Unknown type
-            
-    def dump_objects(self, header):
+    
+    def get_save_string(self, val):  # For object val
+        ##print("get_save_string: val %s" % val)
+        if val.o_type == "text":
+            # Texts use an integer instead of an object!
+            ds = self.dtc_tool.mk_save_str(val)
+            ##$return ds  #$$s_proc("%d %s" % (j, ds))
+        elif val.o_type == "header":
+            ds = self.dhc_tool.header.mk_save_str(self, val)
+        elif val.o_type == "row":
+            #print("ROW mk_save_string, dhc_tool.row >%s" % self.dhc_tool.row)
+            ds = self.dhc_tool.row.mk_save_str(self, val)
+            #print(">?>? ds >%s<" % ds)
+        elif val.o_type == "field":
+            ds = self.dhc_tool.field.mk_save_str(self, val)
+        elif val.o_type == "bar":
+            ds = self.dhc_tool.bar.mk_save_str(self, val)
+        else:
+            print("???? val: %s" % val)
+            ds = val.a_obj.mk_save_str(val)
+            #print("   ds: >%s<" % ds)
+        ##print("get_save_string >%s<" % ds)
+        if not ds:
+            x = 0;  j = 99/x
+        return ds
+    
+    def dump_objects(self, heading):
         ###return  # Disable dumps !
-        print("dump_objects -- %s --" % header)
-        for j,key in enumerate(self.objects):
+        print("dump_objects -- %s --" % heading)
+        if len(self.objects) == 0:
+            print("!!! self.objects is empty !!!")
+            return
+        j = 0
+        for key in self.objects:
             val = self.objects[key]
-            print("  j %d, val %s" % (j, val))
-            o_tags = self.drawing.gettags(val.key)
-            s = self.obj_to_str(val)
-            if not s:  # Not a known type
-                print("%2d (%s) <<< unknown type" % (j, val.o_type))
-            else:
-                print("%2d %s tags %s" % (j+1, s, o_tags))
-                if val.o_type == "group":
-                    print("  group %d, o_type %s, <%s>" % (
-                        val.object.g_nbr, val.o_type, val.object))
+            j += 1
+            ##print("!@!@ j %d, val %s" % (j, val))
+            ds = self.get_save_string(val)
+            print("%d %s" % (j, ds))
         print("- - dump - -")  # Trailer line
         
     def get_object(self, item_ix):
@@ -486,9 +470,12 @@ class rdglob:  # Global variables for rfc-draw's objects
     # Function to implement stacking order for widgets
     #     https://stackoverflow.com/questions/9576063
     def add_to_layer(self, layer, command, coords, **kwargs):
+        #print(">> add_to_layer(%d, %s, %s  | %s <<" % (
+        #    layer, command, coords, kwargs))
         layer_tag = "layer %s" % layer
         if layer_tag not in self._layers: self._layers.append(layer_tag)
         tags = kwargs.setdefault("tags", [])
+        #print("ADD_TO_LAYER: tags %s (%s)" % (tags, type(tags)))
         tags.append(layer_tag)
         item_id = command(coords, **kwargs)
         tags = self.drawing.gettags(item_id)
@@ -500,167 +487,41 @@ class rdglob:  # Global variables for rfc-draw's objects
         for layer in sorted(self._layers):
             self.drawing.lift(layer)
 
-    def restore_rect(self, r_coords, r_text, g_nbr):
-        print("restore_rect: r_coords %s, r_text %s, g_nbr %d" % \
-            (r_coords, r_text, g_nbr))
-        rdo = self.n_rect(self.rdg, self.drawing, r_coords, r_text, g_nbr)
-        print("restore_rect: ", end="");  rdo.print_n_rect()
-        self.objects[rdo.rect_id] = self.object(rdo.rect_id,
-            rdo, "n_rect", r_coords, r_text, g_nbr, 0)  # n_rect obj
-        self.objects[rdo.text_id] = self.object(rdo.text_id,
-            rdo.text_id, "text", r_coords, r_text, g_nbr, rdo.rect_id) 
-            # Entry for n_text allows b3 to edit it
-        return rdo.rect_id
-        
-    def new_text(self, mx, my, t_text, g_nbr):
-        text_id = self.add_to_layer(3, 
-            #self.drawing.create_text, (mx,my), fill="green", text=t_text,
-            self.drawing.create_text, (mx,my), text=t_text,
-               font=self.f_font, anchor=tk.CENTER, activefill="red")
-        text_obj = self.object(
-            text_id, text_id, "text", [mx,my], t_text, g_nbr, 0)
-        self.objects[text_id] = text_obj
-        self.current_object = text_obj
-        return text_obj
-
-    def restore_text(self, r_coords, r_text, g_nbr):
-        #print("restore_text: r_coords %s, r_text >%s<, g_nbr %s" % (
-        #    r_coords, r_text, g_nbr))
-        text_id = self.add_to_layer(3, 
-            self.drawing.create_text, r_coords, fill="red", text=r_text,
-            font=self.f_font, anchor=tk.CENTER)  #, activefill="red")
-        text_obj = self.object(
-            text_id, text_id, "text", r_coords, r_text, g_nbr, 0)
-        self.objects[text_id] = text_obj
-        return text_id
-
     def delete_text(self, text_id):
         self.drawing.delete(text_id)
-
-    def restore_line(self, l_coords, l_text, g_nbr):
-        print("restore_line: l_coords %s, l_text >%s<" % (l_coords, l_text))
-        a_line = alc.a_line(self.drawing, l_coords, self)
-                                           # rdg is self here!
-        #print("restore_line: l_text >%s<" % l_text)        
-        for c in l_text:
-            if c in "na":
-                a_line.set_arrows(c)
-            elif c in "ue":
-                a_line.syntax_end(c)
-            print("restore_line: option c = %s" % c)
-        self.lbd_id = a_line.draw_line()
-        line_obj = self.object(
-            self.lbd_id, a_line, "line", l_coords, l_text, g_nbr, 0)
-        #print(">>> restored line, obj = %s" % line_obj)
-        self.objects[self.lbd_id] = line_obj
-        return self.lbd_id
     
-    def new_group_nbr(self):
-        self.rdg.n_groups += 1;  g_nbr = self.rdg.n_groups
-        if self.rdg.n_groups == self.rdg.mx_groups:
-            self.display_msg("Can only have at most %d groups!" % \
-                             self.rdg.mx_groups, "error")
+    """
+    def mk_visible(self, id, visible):
+        if visible:
+            self.drawing.itemconfigure(id, state=tk.NORMAL)
         else:
-            return g_nbr
-                    
-    def restore_group(self, g_coords, g_text):
-        g_nbr = self.new_group_nbr()
-        #print("restore_group: g_coords %s, g_text %s, g_nbr %s" % (
-        #    g_coords, g_text, g_nbr))
-        g = self.group(self, self.drawing, g_nbr, g_coords)  # New group object
-        self.draw_group_edr(g)  # Add (and draw) it's edr
-        group_obj = self.object(
-            g.g_rect_id, g, "group", g_coords, g_text, g_nbr, 0)
-        #print("g_rect_id = %s" % g.g_rect_id)
-        self.objects[g.g_rect_id] = group_obj
-        return g.g_rect_id
-    
-    def s_to_stuple(self, t):
-        t1 = t.replace("'", "")
-        cs = t1.replace('"','')
-        return cs
-    
-    def s_to_ilist(self, t):
-        ol = [];  st = t.split(", ")
-        for cs in st:
-            i_d = cs.split(".")
-            ol.append(int(i_d[0]))
-        return ol
-
-    def find_group_key(self, g_nbr):
-        for item_ix in self.objects.keys():
-            val = self.objects[item_ix]
-            if val.o_type == "group" and val.object.g_nbr == g_nbr:
-                #print("@fgk, val >%s<" % val)
-                return val.key
-
-    def restore_object(self, ds):
-        #print("restore_object: ds >%s<" % ds)
-        if "member" in ds:
-            #print("=== member line >%s<" % ds)
-            #self.dump_objects(">> 'member' read <<")
-
-            fields = self.mbr_re.search(ds).groups()
-            gt = fields[0]  # 'g'
-            g_nbr = int(fields[1])  # group (or template number)
-            o_key = fields[2]  # member key in objects[]
-            m_key = self.r_obj_keys[fields[2]]  # member key in new objects[] dict
-            #print("  o_key %s, m_key %s" % (o_key, m_key))
-
-            m_type = fields[3]  # member type
-            mo = self.objects[m_key]
-            coords = self.s_to_ilist(fields[4])
-            #print("gt %s, g_nbr %d m_key %d, type %s, coords >%s<" %
-            #      (gt, g_nbr, m_key, m_type, coords))
-            g_key = self.find_group_key(g_nbr)
-            #print("=== g_key %s" % g_key)
-            go = self.objects[g_key]
-            #print("group go >%s<" % go)
-            i_coords = mo.i_coords;  i_text = mo.i_text
-            print("restore group %d member %s" % (g_nbr, mo))
-            r_coords = self.rel_coords(go.object.g_coords, i_coords)
-            m = self.g_member(self.rdg, g_nbr, m_key, m_key, go, r_coords)
-            #print("- - - m = %s" % m)
-            self.objects[g_key].object.g_members.append(m)
-            return m_key, g_key
-        else:  # Ordinary object
-            print("Ordinary object == ds %s ==" % ds)
-            fields = self.rrd_re.search(ds).groups()
-            print("@@@ fields = ", end="");  print(fields)
-            print("0: >%s< %s" % (fields[0], type(fields[0])))
-            obj_id = int(fields[0])  # Ignore line_nbr (field 0)
-            obj_type = fields[1]
-            #s_key = int(self.s_to_stuple(fields[2]))  # object's key in save file
-            s_key = fields[2]  # object's key in save file
-            coords = self.s_to_ilist(fields[3])
-            text = fields[4].replace("\\n", "\n")
-            text = text.replace('\\"', '"')
-            g_nbr = int(fields[5])  # Group nbr
-            g_type = fields[6]  # Group type
-            if obj_type == "n_rect":
-                return s_key, self.restore_rect(coords, text, 0)  # rect_id
-            elif obj_type == "text":
-                return s_key, self.restore_text(coords, text, 0)  # text_id
-            elif obj_type == "line":
-                #print("about to call restore_line()")
-                return s_key, self.restore_line(coords, text, 0)  # lbd_id
-            elif obj_type == "group":
-                #self.dump_objects(">group< read from rdd")
-                return s_key, self.restore_group(coords, text)    # g_rect_id
-
+            self.drawing.itemconfigure(id, state=tk.HIDDEN)
+    """
     def read_from_rdd(self, fn):
-        if not os.path.exists(fn):
-            self.display_msg("No file %s, will write it on closing" % fn, \
+        print("+++ read_from_rdd file >%s<" % fn)
+        last_mode = 'rect'
+        self.fn = fn
+        if not os.path.isfile(fn):  # No save_file
+            self.display_msg("New drawing, will write %s on closing" % fn, \
                 "warning")
-            self.f_width = 10.333;  self.f_height = 17
-            #  10.333 px width, 17 px height work well for TkFixedFont !
-        else:
+            self.new_drawing = True;
+            print("self.rdg.fn >%s<" % self.fn)
+        else:  # save_file exists
+            if fn == "save-file.rdd":
+                self.display_msg("File save-file.rdd exists!", "error")
+            else:
+                self.display_msg("Read rdd file %s" % fn, "normal")
+            ##  10.333 px width, 17 px height work well for TkFixedFont !
+            self.f_width = 10.333;  self.f_height = 17  # From test-font.py
             f = open(fn, "r")
+            self.new_drawing = False;    
             for line in f:
-                if line[0] == "#":  # Ignore comment lines
-                    continue
                 ds = line.rstrip('\n')
-                #print("ds >%s<" % ds)
+                #print("read_from_rdd: ds >%s<" % ds)
+                if len(ds) == 0:  # Empty line
+                    continue
+                if ds[0] == "#":  # Comment line
+                    continue
                 #print("r_obj_keys %s <<<" % self.r_obj_keys)
                 if ds.find("root_geometry") >= 0:
                     la = ds.split(" ")
@@ -676,67 +537,30 @@ class rdglob:  # Global variables for rfc-draw's objects
                     self.f_height = int(la[4])
                     #print("mono_font width %d, height %.1f pixels" % (
                     #    self.f_width, self.f_height))
+                elif ds.find("last_mode") >= 0:
+                    la = ds.split(" ")
+                    last_mode = la[1]
+                    print("last_mode found >%s<" % last_mode)
                 else:
-                    print("=+= ds = %s" % ds)
-                    #print("### r_obj_keys %s" % self.r_obj_keys)
-                    s_key, tk_id = self.restore_object(ds)
-                    self.r_obj_keys[s_key] = tk_id
-                    #self.dump_objects("READ_from_rdd")
-            self.display_msg("Read from: %s" % fn, 'normal')
-        #self.dump_objects("Read all rdd lines")
-        #print("r_obj_keys = >%s<" % self.r_obj_keys)
-
-    def obj_to_save_str(self, val):
-        ##print("@@ otods: val = %s" % val)
-        d_type = None;  g_nbr = 0;  g_type = "N"
-        if val.o_type == "n_rect":
-            #print("@@@ val.o_type n_rect")
-            d_type = "n_rect";  d_id = val.object.rect_id
-            coords = self.drawing.coords(val.object.rect_id)
-            str = self.drawing.itemcget(val.object.text_id, "text")
-        elif val.o_type == "text":
-            d_type = "text";  d_id = val.object
-            if val.in_n_rect == 0:  # User-created text
-                    # != 0 -> part of an n_rect
-                coords = self.drawing.coords(val.object)
-                str = self.drawing.itemcget(val.object, "text")
-                str = str.replace("\"", "\\\"")  # Escape " chars
-
-                #print("-->  d_type %s, d_id %d, coords %s" % (
-                #    d_type, d_id, coords))
-            else:  # Text in an n_rect
-                return None  # Don't try to save it!
-        elif val.o_type == "line":
-            d_type = "line";  d_id = val.object.lbd_id
-            coords = val.object.lbd;  str = ""
-            if val.object.arrowheads:
-                str += "a"
-            if val.object.syntax_end_mark:
-                str += "e"
-            #print("= = = to_save_str = = = str = >%s<" % str)
-            #print("   val.object = %s (%s)" % (val.object, type(val.object)))
-        elif val.o_type == "group":
-            d_type ="group";  d_id = "g%d" % val.object.g_nbr
-            x0,y0, x1,y1 = val.object.bbox()
-            coords = [x0,y0, x1,y1];  str = "G"
-            g_nbr = val.object.g_nbr;  g_type = val.o_type
-            #print("===== d_type %s, d_id %s, coords %s, str <%s>. g_nbr %s, g_type %s" % (
-            #    d_type, d_id, coords, str, g_nbr, g_type))            
-        if d_type:
-            i_coords = []
-            for c in coords:
-                i_coords.append(int(float(c)))
-            return"(%s %s) %s \"%s\" %s %s" % (
-                 d_type, d_id, i_coords, str.replace("\n", "\\n"),
-                g_nbr, g_type)
-        else:
-            print("\a>>> obj_to_save_str, unknown object type <<<")
-            exit()
-        #self.dump_objects("read_from_rdd")
-            
+                    #  rere_v* patterns expect ds to start with line nbr!
+                    #print("=+-+= ds = %s f.obj" % (ds))
+                    #print("about to call restore_object(ds)")
+                    #  Have to know what type of object it is!
+                    self.restore_saved_object(ds)
+                        # OK to here
+                        #print("=== back from restore_object")
+            self.display_msg("Drawing read from: %s" % fn, 'error')
+        self.dump_objects("Read all rdd lines")
+        #print("self.obj_keys >%s<" % self.obj_keys)
+        #for old, new in self.obj_keys.items():
+        #    print("??? old %d -> new %s" % (old, new))
+        #print("last_mode %s (%s)" % (last_mode, type(last_mode)))
+        return last_mode
+        
     def save_to_rdd(self, save_file_name):  # Write rfc-draw data (.rdd) file
         # Called from 'Save' r_button, and from rfc-draw.on_closing 
         #print("save_to %s, %d objects" % (save_file_name, len(self.objects)))
+        print("/\/\/ len(objects) = %d" % len(self.objects))
         self.drawing.update()
         dw = self.drawing.winfo_reqwidth()
         dh = self.drawing.winfo_reqheight()
@@ -744,231 +568,195 @@ class rdglob:  # Global variables for rfc-draw's objects
         root_geometry = self.root.geometry()
         s_file.write("root_geometry %s\n" % root_geometry)
         s_file.write("drawing_size %dx%d\n" % (dw,dh))
-        s_file.write("mono_font width 10.333 height 17 pixels\n")
+        s_file.write("mono_font width 8 height 17 pixels\n")
+        s_file.write("last_mode %s\n" % self.last_mode)
         #self.dump_objects("save_to_rdd()")
         #print(" $  $  $  $  $")
-        for j,key in enumerate(self.objects.keys()):
+
+        j = 0
+        for key in self.objects.keys():
+            j += 1
             val = self.objects[key]  # Write objects to .rdd first
-            ds = self.obj_to_save_str(val)
-            #print(" obj %3d: %s" % (j, ds))
-            if ds:
-                s_file.write("%s %s\n" % (j, ds))
+            state = self.rdg.drawing.itemcget(key, "state")
+            #print(":+0: j %d, key %s, save_to_rdd: val >%s< %s state %s" % (
+            #    j, key, val, val.i_coords, state))
+            if state == tk.HIDDEN:  # Don't save HIDDEN (i.e. deleted) objects
+                print("^^^ %s is HIDDEN" % val)
+            else:
+                ds = self.get_save_string(val)
+                #print("save_to_rdd @1.5 >%s<" % ds)
+                if len(ds) == 0:
+                    print("????? len(ds) == 0 ????")
+                elif val.o_type != "text" or val.parent_id == 0:  # 1706, 8 Mar
+                    s_file.write("%d %s\n" % (j, ds))
 
-        for j,key in enumerate(self.objects.keys()):
-            val = self.objects[key]  # Now write g_members to rdd
-            #print("val = %s" % val)
-            if val.o_type == "group":
-                ds = self.obj_to_save_str(val)
-                #print(" obj %3d: %s" % (j, ds))
-                #print("Writing group %d members to rdd" % val.object.g_nbr)
-                for m in val.object.g_members:
-                    #print("!!! g_m m = >%s<" % m)  ### line here
-                    mo = self.rdg.objects[m.oo_key]
-                    #print("==> mo >%s<" % mo)  ### group here !!!!!!!!
-                    if mo.o_type == "line":
-                        r_x = int(mo.object.lbd[0]-val.object.x0)
-                        r_y = int(mo.object.lbd[1]-val.object.y0)
-                    elif mo.o_type == "text":  # It's a tk text object!
-                        t_coords = self.drawing.coords(m.oo_key)
-                        r_x = int(t_coords[0]-val.object.x0)
-                        r_y = int(t_coords[1]-val.object.y0)
-                    elif mo.o_type == "n_rect":
-                        r_x = int(mo.object.x0-val.object.x0)
-                        r_y = int(mo.object.y0-val.object.y0)
-                        #print("--> r_x, r_y = %d, %d" % (r_x,r_y))
-                    s_file.write("  (g%d member %d) %s %s\n" % (
-                        m.g_nbr, m.oo_key, mo.o_type, [r_x,r_y]))
-        
-        s_file.close()
+    def new_text(self, mx, my, t_text, parent_id):
+        text_id = self.add_to_layer(3, 
+            #self.drawing.create_text, (mx,my), fill="green", text=t_text,
+            self.drawing.create_text, (mx,my), text=t_text,
+               font=self.f_font, anchor=tk.CENTER, activefill="red")
+        text_obj = self.a_obj(
+            text_id, text_id, "text", [mx,my], t_text, parent_id, 0)
+        self.objects[text_id] = text_obj
+        self.current_object = text_obj
+        return text_obj
 
-    def print_g_members(self, go):
-        print("ZZZ g_members: go %s" % go)
-        for m in go.g_members:
-            mo = self.objects[m.oo_key]
-            print("==> mo >%s<" % mo)
+    def s_to_stuple(self, t):
+        t1 = t.replace("'", "")
+        cs = t1.replace('"','')
+        return cs
+    
+    def s_to_ilist(self, t):
+        ol = [];  st = t.split(", ")
+        for cs in st:
+            i_d = cs.split(".")
+            ol.append(int(i_d[0]))
+        return ol
 
-    def new_g_member_object(self, ncgo, old_gm):
-        #print("@@@   ncgo >%s<" % ncgo)  # group object
-        #print("@+@ old_gm >%s<" % old_gm)  # old g_member object  #$ members 1
-        old_obj = self.objects[old_gm.oo_key]  # g_member's original object
-        #print("+++ old_obj >%s<" % old_obj)
-        o_text = old_obj.i_text
-        edr_coords = ncgo.i_coords
-        #print("??? edr_coords >%s<" % edr_coords)
-        if old_obj.o_type == "text" and old_obj.in_n_rect == 0:
-            #print("new_g_member_object 'text'")
-            #print("o_text >%s<, old_obj.i_coords = %s" % (
-            #    o_text, old_obj.i_coords))
-            oo_coords = (old_obj.i_coords[0], old_obj.i_coords[1])  ## 795
-            #print("  edr_coords >%s<" % ncgo.i_coords)  # group edr
-            #print("g_rel_coords >%s<" % old_gm.rel_coords)
-            #print("   oo_coords >",end="");  print(oo_coords,end=""); print("<")
-            del_x = edr_coords[0] +old_gm.rel_coords[0] -oo_coords[0]
-            del_y = edr_coords[1] +old_gm.rel_coords[1] -oo_coords[1]
-            #           edr            rel to edr       original object
-            #print("   del_x/y = %d/%d" % (del_x,del_y))
-            s_coords = self.transform_coords(del_x,del_y, oo_coords)
-            #print("    s_coords %s, text >%s<" % (
-            #    s_coords, old_obj.i_text))  # OK :-)
-            text_id = self.add_to_layer(3, self.drawing.create_text,
-                (s_coords), text=o_text, font=self.f_font, anchor=tk.CENTER)
-            self.objects[text_id] =  self.object(text_id, text_id, "text",
-                s_coords, o_text, ncgo.g_nbr, 0)
-            return text_id
-        elif old_obj.o_type == "line":
-            #print("new_g_member_object 'line'")
-            #print("    ++%s++" % old_obj)
-            #print("old_obj.lbd >%s<" % old_obj.object.lbd)
-            o_text = old_obj.i_text
-            #print("o_text >%s<, old_obj.i_coords = %s" % (
-            #    o_text, old_obj.i_coords))
-            del_x = edr_coords[0] +old_gm.rel_coords[0] -old_obj.i_coords[0]
-            del_y = edr_coords[1] +old_gm.rel_coords[1] -old_obj.i_coords[1]
-            #           edr            rel to edr       original object
-            #print("   del_x/y = %d/%d" % (del_x,del_y))
-            s_coords = self.transform_coords(del_x,del_y, old_obj.i_coords)
-            #print("    s_coords %s, text >%s<" % (
-            #    s_coords, old_obj.i_text))  # OK :-)
-            line_id = self.restore_line(s_coords, o_text, ncgo.g_nbr)
-                # Uses line o_text to set line options
-            return line_id
-        elif old_obj.o_type == "n_rect":
-            #print("new_g_member_object 'n_rect'")
-            #print("    ++%s++" % old_obj)
-            #print("   rect_id %s, text_id %s" % (  # old_obj is an n_rect object
-            #    old_obj.object.rect_id, old_obj.object.text_id))  #$ rct 1 txt 2
-            o_text = old_obj.i_text
-            #print("o_text >%s<, old_obj.i_coords = %s" % (
-            #    o_text, old_obj.i_coords))
-            del_x = edr_coords[0] +old_gm.rel_coords[0] -old_obj.i_coords[0]
-            del_y = edr_coords[1] +old_gm.rel_coords[1] -old_obj.i_coords[1]
-            #           edr            rel to edr       original object
-            #print("   del_x/y = %d/%d" % (del_x,del_y))
-            s_coords = self.transform_coords(del_x,del_y, old_obj.i_coords)
-            #print("    s_coords %s, text >%s<" % (
-            #    s_coords, old_obj.i_text))
-            rdo = self.restore_rect(s_coords, o_text, ncgo.g_nbr)  # new n_rect
-            # Adds new objects[] at rdo.rect_id and rdo.text_id
-            #print("^^^ rdo >%s<" % rdo)  #$ nrect 5, text 6
-            #self.dump_objects("After new_g_member_object.restore_rect() call")
-            return rdo
-                                       
-    def copy_g_member(self, ncgo, old_gm):
-        #print("        ncgo: >%s<" % ncgo)
-        #print("      old_gm: >%s<" % old_gm)  #$ old_gm, key 3, g_rect_id 3, members 1
-        old_gmo = self.objects[old_gm.oo_key]
-        #print("      type %s" % old_gmo.o_type)  #$ type n_rect
-        
-        #  Make new objects[] entry for this member
-        n_obj_key = self.new_g_member_object(ncgo, old_gm)
-        if isinstance(n_obj_key, self.n_rect):  #$ it is an n_rect
-            #print("      = back from new_g_member =, n_obj_key %s" % n_obj_key)
-            #print("      =    rect_id %d, text_id %d <<<<" % (
-            #    n_obj_key.rect_id, n_obj_key.text_id))  # 5, 6
-            nr_mo = n_obj_key  # It's an n_rect object
-            n_gm = self.g_member(self.rdg, ncgo.object.g_nbr,
-                nr_mo.rect_id, nr_mo.rect_id,
-                self.objects[nr_mo.rect_id], old_gm.rel_coords)
-            #self.dump_objects("After making new n_rect g_member")
+    def parse_rdd_line(self, line):
+        line = line.rstrip()
+        #print("@@@ line = %s @@@" % line)
+        if self.rdd_e_v2.match(line):  # v2 match (9 fields)
+            m = self.rdd_e_v2.split(line)
+            #print("v2 split %s len %d" % (m, len(m)))
+            return m[1:-1]
+        #else:
+        #    print("v2 match failed");  exit()
+        elif self.rdd_e_v1.match(line):  # v1 match (6 fields)
+            m = self.rdd_e_v1.split(line)
+            #print("v1 split %s len %d" % (m, len(m)))
+            return m[1:-1]
         else:
-            obj =  self.objects[n_obj_key]  # Old object
-            n_gm = self.g_member(self.rdg, ncgo.object.g_nbr,
-                n_obj_key,  # oo_key
-                n_obj_key,  # g_tk_id
-                obj,        # g_object
-                old_gm.rel_coords)  # g_rel_coords
-            #print("**copy_g_member: n_gm = %s" % n_gm)
-            edr_coords = self.screen_coords(n_gm.g_object.i_coords,
-                old_gm.rel_coords)
-            #print("  g_m edr_coords: %s" % edr_coords)
-            if obj.o_type == "text":
-                pass
-                #print("<>copy_g_member: g_tk_id = %d" % n_gm.g_tk_id)
-                #if n_gm.g_tk_id == 0:
-                    #print("Don't need to draw text here ???")
-            elif obj.o_type == "line":
-                pass
-                #print("  g_m edr_coords: %s" % edr_coords)
-                #print("copy_g_member:  line %s" % obj)            
-        #print("eee n_gm >%s< end of copy_g_member()" % n_gm)
-        return n_gm
+            print("v1 match failed")
+            print("line >%s<" % line);  exit()
+        return None
 
+    def restore_saved_object(self, ds):
+        #print("restore_saved_object: ds >%s<" % ds)
+        fields = self.parse_rdd_line(ds)
+        print("fields >>> %s <<< len %d" % (fields, len(fields)))
+        ##print("0: >%s< %s" % (fields[0], type(fields[0])))
+        obj_id = int(fields[0])  # Ignore line_nbr (field 0)
+        o_type = fields[1]  ## 'n_rect'
+        s_key = fields[2]  # object's key in save file
+        coords = self.s_to_ilist(fields[3])
+        text = fields[4].replace("\\n", "\n")
+        #text = text.replace('\\"', '"')
+        #print("fields[5] %s" % fields[5])
+        parent_id = int(fields[5])
+        if parent_id != 0:
+            parent_id = int(self.obj_keys[parent_id])
+        print("parent_id %s (%s)" % (parent_id, type(parent_id)))
+        print(">> fields[6] >%s<" % fields[6])
+        if fields[6] == "N":  # v1 rdd file
+            v1 = v2 = 0
+        else:
+            print("+++>>> fields[6] >%s<" % fields[6])
+            v1 = int(fields[6].strip('"'))  # Remove any surrounding " chars
+            #print("v1 %s (%s)" % (v1, type(v1)))
+            if len(fields) == 9:  # v2 match (Optional comment is fields[8])
+                v2 = int(fields[7])
+                #print("v1 %d, v2 %d" % (v1, v2))
+            else:
+                print("rdd pattern match failed !!!");  exit()
+            #print("v2 %s (%s)" % (v2, type(v2)))
+
+        # v1 and v2 are for header, row and field objects
+        #print("RO: %s %s %s >%s< %d %d %d" % (
+        #    o_type, s_key, coords, text, parent_id, v1,v2))
+        # dhc_tool needs o_type
+        #print("restore_saved_object: o_type >%s<" % o_type)
+        old_key = int(fields[2])
+        if o_type == "line":     # layer 1
+            t = self.dlc_tool
+            r_obj = t.restore_object(coords, text, parent_id, v1, v2)
+            new_key = r_obj.key
+        elif o_type == "text":   # layer 3
+            t = self.dtc_tool
+            r_obj = t.restore_object(coords, text, parent_id, v1, v2)
+            new_key = r_obj.key
+        elif o_type == "n_rect": # layer 2
+            t = self.drc_tool  #  Above three are classes <<<
+            r_obj = t.restore_object(coords, text, parent_id, v1, v2)
+            new_key = r_obj.key
+        elif o_type == "header":  # Nothing drawn for a header
+            t = self.dhc_tool
+            #print("::: text %s, parent_id %d" % (text, parent_id))
+            #??r_obj = t.restore_object(coords, text, parent_id, v1, v2)
+            #?? this did n't work, "missing 2 args, v1 and v2" !!!!!
+            #new_key = r_obj.key
+            h_clo = dhc.draw_headers.header(
+                self.drawing, self.root, self.rdg, v1, coords)
+            dhc.draw_headers.headers.append(h_clo)
+            h_key = h_clo.hdr_id
+            h_rdo = self.object(h_key, h_clo, "header",
+                coords, text, parent_id, v1, v2)
+            #print("- - - h_rdo >%s<" % h_rdo)
+            self.objects[h_key] = h_rdo
+            new_key = h_key
+            #print("@@ rso: h_key %d, h_rdo %s" % (h_key, h_rdo))
+            #self.rdg.dump_objects("restored header <<<")
+        elif o_type == "row":
+            new_key = self.obj_keys[parent_id]
+            h_clo = self.objects[new_key].a_obj
+            h_rdo = self.objects[h_clo.hdr_id]
+            #print("$$ $$ restoring row, v2 %s (%s)" % (v2, type(v2)))
+            r_clo = dhc.draw_headers.row(self.drawing, self.rdg, h_clo, v2)
+            if v2 < 0:
+                r_clo.vbl_len_row = True
+            new_key = r_clo.row_id
+            ###r_obj = t.restore_object(coords, text, parent_id, v1, v2)
+        elif o_type == "field":
+            #self.dump_objects("About to restore field <<<")
+            r_rdo = self.objects[parent_id] ###.a_obj  # field's row
+            #print("r_rdo >%s<" % r_rdo)
+            r_clo = r_rdo.a_obj
+            h_clo = r_clo.h
+            f_clo = dhc.draw_headers.field(self.rdg,
+                h_clo, r_clo, text, v1, v2, None)  # f_col, width
+            f_rdo = self.objects[f_clo.text_id]
+            new_key = f_clo.text_id
+            #print("@@ rso: f_rdo %s" % f_rdo)
+            ###r_obj = t.restore_object(coords, text, parent_id, v1, v2)
+        else:
+            print("Unknown object type %s, can't restore it!" % o_type)
+            exit()
+                
+        self.obj_keys[old_key] = new_key
+        #print("=+= %s -> %s" % (old_key, new_key))
+
+        #self.dump_objects("---> restore_saved_object")
+                
+        ##$$print("??? restore_saved_object, t %s" % t)
+        #ro_n_rect = t.restore_object(coords, text, parent_id, v1, v2)
+        # 4-lines.rdd works without (self,
+
+        ## ##print("? ? ? t = %s (%s)" % (t, type(t)))
+        ##r_obj = t.restore_object(coords, text, parent_id, int(v1), int(v2))
+        ## print(">>> ro_header %s (%s)" % (r_obj, type(r_obj)))
+        
     def copy_object(self, obj):
-        #print("copy_object: %s" % obj)
+        #print("copy_object: %s < < <" % obj)
         offset = 25;  o_coords = []
         if obj.o_type == "text":
              coords = self.drawing.coords(obj.key)
              for c in coords:
                 o_coords.append(c-offset)
              c_text = self.drawing.itemcget(obj.key, "text")
-             self.restore_text(o_coords, c_text, 0)
+             self.dtc_tool.restore_object(o_coords, c_text, 0, obj.v1, obj.v2)
         elif obj.o_type == "line":
-            coords = obj.object.bbox()
+            coords = obj.a_obj.bbox()
             for c in coords:
                 o_coords.append(c-offset)
-            self.restore_line(o_coords, "L", 0)  # coords, text, g_nbr
-        elif obj.o_type == "n_rect":
-            coords = obj.object.bbox()
-            for c in coords:
-                o_coords.append(c-offset)
-            self.restore_rect(o_coords, obj.object.text, 0)
-        elif obj.o_type == "group":
-            #print("-0- original object (obj) %s" % obj)
-            #self.print_g_members(obj.object)
-            coords = obj.object.bbox()
-            for c in coords:
-                o_coords.append(c-offset)
-            #print("-1- copy_ group")
-            g_rect_id = self.restore_group(o_coords, "")
-                # Makes new group object using next-avail g_nbr, no members yet
-            #print("-2- g_rect_id = %d" % g_rect_id)  # group 2's edr
-            ncgo = self.objects[g_rect_id]  # Newly Copied Group Object
-                #   (obj is the original group object)
-            #print("-2.5- ncgo = %s" % ncgo)  #$ ncgo key 4, group 2
-            #self.dump_objects("-+- after restore_group")
+            self.dlc_tool.restore_object(o_coords,
+                "", 0, obj.v1, obj.v2) 
             
-            #print("@4 g_members")
-            #print("    g_members |%s|" % obj.object.g_members)
-            for ogm in obj.object.g_members:  # Members of original object
-                #print("   -3- ogm |%s|" % ogm)  #$ ogm key 3, group 1 , g_rect_id 3
-                #  #-2-
-                o_key = ogm.oo_key
-                obj = self.objects[o_key]
-                #print("   -4- obj = %s +%s+" % (o_key, obj))  #$ ogm key 1, n_rect 1
-                if o_key in ncgo.object.g_members:
-                    print("\a   XXX obj already in g_members XXX")
-                else:
-                    #if obj.o_type == "n_rect":  #$ it's an n_rect
-                    #    print("n_rect in group, %s" % ogm)
-                    n_gm = self.copy_g_member(ncgo, ogm) #$ ncgo= new grp's obj
-                    #print("   === n_gm = %s" % n_gm)  #$ n_gm key 
-                    ncgo.object.g_members.append(n_gm)
-                    #print("   === ncgo.object = %s" % ncgo.object)
-                    gm_len = len(ncgo.object.g_members)  #$ member 1,should be 5
-                    #print(   "=== gm_len %d" % gm_len)
-                    if  gm_len > 3:
-                        #print("len(g_members) = %d" % gm_len)
-                        self.print_g_members(ncgo.object)
-            #print("abcd: ncgo = >%s<" % ncgo)
-            #print("ncgo.g_members: len %d" % gm_len)
-            self.objects[g_rect_id] = ncgo  ############### ????
-            #for ogm in ncgo.object.g_members:
-            #    print("    %s" % ogm)
-            #self.dump_objects("-+- after ncgo completed")
-
-            #self.draw_group(ncgo.object)
-            print("= = = = =")
-                
-            #--1--
-            g_key = obj.key
-            #print("-4- after restore_group, group >%s<" %
-            #      self.objects[g_key].object)
-            #print("$$ group now <%s>" % self.objects[g_key].object)
-            #self.dump_objects("After restore_group")
-            ##exit()
-        else:
-            print("\aobj >%s< ???" % obj)
-            exit()
+        elif obj.o_type == "n_rect":
+            coords = obj.a_obj.bbox()
+            for c in coords:
+                o_coords.append(c-offset)
+            self.drc_tool.restore_object(o_coords,
+                obj.a_obj.text, 0, obj.v1, obj.v2) 
 
     def str_h_w(self, str):  # Find height and width of (monospace) str
         if str[-1] == "\n":
@@ -985,7 +773,6 @@ class rdglob:  # Global variables for rfc-draw's objects
         return height, width  # 0.5 of h and w (i.e. centre to edges) !!!
  
     def edit_text_object(self, txt_obj):  # txt_obj is an objects[] entry
-        #????self.text_id = txt_obj.object  # rfc-draw text object is it's tk id
         self.text_id = txt_obj.key  # rfc-draw text object is it's tk id
         # Open new window to edit the text, then press Esc
         #   tkinter text object uses Home and End to position cursor!
@@ -1008,6 +795,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         # Open new window to edit the text
         self.text_edit = tk.Text(self.text_window,
             bg="white", fg="black", font=self.f_font)
+        #@print("@2@ edit_text_obj, self.text_edit %d" % self.text_edit)
         self.text_edit.pack(fill=tk.BOTH, expand=True)
         self.text_edit.insert('1.0', c_text)
         self.text_edit.focus_set()
@@ -1021,16 +809,16 @@ class rdglob:  # Global variables for rfc-draw's objects
             return None, None
         item_id = item[0]
         item_type = self.drawing.type(item_id)
-        print("@@@ rdg_closest, item_id %d, type %s" % (item_id, item_type))
+        #print("@@@ rdg_closest, item_id %d, type %s" % (item_id, item_type))
         #print("@ln@ closest(1): item %s (%s), mx,my %d,%d" % (
-        #    item, item_type, mx,my))
+        #        item, item_type, mx,my))
         if item_id in self.objects:
             obj = self.objects[item_id]  # item_id is a tkinter object id
-            # object (e.g. rdo) has: key, obj, obj_ type, in_n_rect
+            # object (e.g. rdo) has: key, obj, obj_ type, parent_id
             #print("-> closest %s is in objects, obj >%s<" % (item, obj))
             return item, obj
         else:  # Not in objects ??
-            print("\a@@@ item %d is not in rdg.objects <<<<" % item_id)
+            #print("\a@@@ item %d is not in rdg.objects <<<<" % item_id)
             return None, None
 
     def on_key_press_repeat(self, event):
@@ -1044,32 +832,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         #print("key_press: %s, current_obj >%s<" % (key, self.current_object))
         if key == "c":  # Copy a tk object
             self.copy_object(self.current_object)
-        """
-        else:
-            #if self.last_button != "line":
-            #    print("\a>> Must be in Line mode to flip or reverse object")
-            #    return
-            self.dlt = dlc.draw_lines(self.drawing,
-                self.current_object.object.lbd, self.rdg)
-            #abd = alc.a_line(self.drawing,  # Starts a new line, don't use it!
-            #    self.current_object.object.lbd, self.rdg)
-            abd = self.current_object.object  # Works on current line
 
-            if key == "r":
-                self.dlt.reverse_line()  # Arrows in opposite direction
-            elif key == "f":
-                self.dlt.flip_line()
-            elif key == "=":
-                self.dlt.equal_end_coords()
-            elif key == "e":  # syntax End
-                self.dlt.syntax_end(True)
-            elif key == "b":  # Bare end
-                self.dlt.syntax_end(False)
-            elif key == "a":
-                abd.set_arrows(key)
-            elif key == "n":
-                abd.set_arrows(key)
-        """
     def on_b3_click(self, event):  # b3 (Right button) to edit a text object
         mx, my = (event.x, event.y)  # Mouse position
         item, obj = self.rdg_closest(mx,my)
@@ -1080,7 +843,7 @@ class rdglob:  # Global variables for rfc-draw's objects
             if item_type != "text":        
                 print("\aYour b3 click was not on a text object!")
             else:
-                #print("b3_click: obj = %s" % obj)
+                print("b3_click: obj = %s" % obj)
                 self.edit_text_object(obj)
 
     def justify(self, str, rq_len):
@@ -1102,41 +865,41 @@ class rdglob:  # Global variables for rfc-draw's objects
         return j_text[0:-1]
 
     def edit_esc_key(self, event):  # Edit text in pop-up window
-        # self.text_edit  is a tk.Text object
-        # self.text_id is a create_text object, in objects[] key self.text_id
+        # self.text_edit is a tk.Text object (i.e. a Text window)
+        #   It uses canvas.itemcget(self.text_id)
+        # self.text_id   is a create_text object, in objects[self.text_id]
         new_text = self.text_edit.get('1.0','end-1c')
-        print("@@@ new_text >%s<" % new_text)
+        #print("@@@ new_text >%s<" % new_text)
+        #print("    self.text_id >%s<" % self.text_id)
+        #@print("@3@ edit_esc_key, txt_obj %s" % txt_obj)
         
         if self.centre_texts:
             self.h2, self.w2 = self.str_h_w(new_text)
             new_text = self.justify(new_text, self.w2)
             # justify() adds leading spaces to centre all new_text's lines
-        #print("new_text = >%s<" % new_text)
+        #print("new_text = >%s<" % new_text)  #@ correct
         self.text_edit.delete('1.0', 'end')
         self.text_edit.insert('1.0', new_text)
 
         self.drawing.itemconfigure(self.text_id, text=new_text,
             font=self.f_font)
         # Put edited text back into tk object and it's objects entry
+        self.objects[self.text_id].i_text = new_text
         t_obj = self.objects[self.text_id]
-        if t_obj.in_n_rect != 0:  # Text in n_rect
-            self.objects[t_obj.in_n_rect].i_text = new_text
+        print("b3 esc_key: t_obj >%s<" % t_obj)  #@ correct
+        if t_obj.parent_id != 0:  # Text inside another object
+            if t_obj.o_type == "field":  # Expand text to field width
+                lr_len = round((t_obj.v2-len(new_text))/2)
+                lr_fill = " "*lr_len
+                nt = (lr_fill + new_text + lr_fill + " ")[0:t_obj.v2]
+                self.objects[t_obj.parent_id].i_text = nt
+            #print("  ! ! ! self.objects[self.text_id] >%s<" % self.objects[self.text_id])
         else:
             self.objects[self.text_id].i_text = new_text
+            self.dump_objects("After edit text")
+            #print("  = = = self.a_objects[self.text_id] >%s<" % self.a_objects[self.text_id])
         self.text_window.destroy()  # Close the editing window
-
-    def delete_object(self, obj):
-        #print("  obj to delete = %s" % obj)
-        del self.objects[obj.key]  # Delete object from dictionary
-        #print("deleted_objects = >%s<" % self.deleted_objects)
-        if obj.o_type == "line":
-            obj.object.destroy_line()
-        elif obj.o_type == "n_rect":
-            obj.object.delete()
-        elif obj.o_type == "group":
-            obj.object.delete()
-        elif obj.o_type == "text":
-            self.delete_text(obj.object)  # object is just a text id
+        self.dump_objects(">> Edited text in field <<")
 
     def on_next_key(self, event):  # Pg Dn key pressed
         self.display_msg("", "normal")  # Clear message area
@@ -1146,12 +909,27 @@ class rdglob:  # Global variables for rfc-draw's objects
         #print("on_delete_key(): mx,my = %d,%d" % (mx,mx))
         item_ix, d_obj = self.rdg_closest(mx,my)
         if d_obj:
-            #print("about to delete %s" % d_obj)
-            #input()
-            print("Deleting >%s< (%s)" % (d_obj, d_obj.o_type))
+            #self.dump_objects("Handling Delete key")
+            print("Deleting >%s< (%s) key %s" % (
+                d_obj, d_obj.o_type, d_obj.key))
             self.deleted_objects.append(d_obj)
-            ##print("deleted_objects >%s<" % self.deleted_objects)
-            self.delete_object(d_obj)
+            #print("deleted_objects >%s<" % self.deleted_objects)
+            if d_obj.o_type == "n_rect":
+                self.drc_tool.undraw(d_obj)
+            elif d_obj.o_type == "line":
+                a_line = d_obj.a_obj
+                a_line.undraw(d_obj)  # a_line already has 'self', avoids
+                    # "takes 1 positional argument but 2 were given" error
+            elif d_obj.o_type == "text":
+                # text objects use Tk id for object and key!
+                self.dtc_tool.undraw(d_obj)
+            else:  # header/row/field
+                hrf = d_obj.a_obj
+                hrf.undraw(d_obj)
+            ## Undraws the object##, and deletes it from objects dictionary
+            ##del self.objects[d_obj.key]  # Delete object from dictionary
+            ##self.objects[d_obj.key].deleted = True
+            ##print("Deleted %s <<<" % self.objects[d_obj.key])
         else:
             print("\a    Not in objects ???")
 
@@ -1162,20 +940,19 @@ class rdglob:  # Global variables for rfc-draw's objects
         else:
             d_obj = self.deleted_objects.pop()
             print("inserting d_obj = >%s< (%s)" % (d_obj, d_obj.o_type))
-            obj_type = d_obj.o_type
-            text = d_obj.i_text;  g_nbr = d_obj.g_nbr
-            if obj_type == "n_rect":
-                x0,y0, x1,y1 = d_obj.object.bbox()
-                self.restore_rect([x0,y0, x1,y1], text, g_nbr)
+            o_type = d_obj.o_type
+            if d_obj.o_type == "text":
+                # text objects use Tk id for object and key!
+                self.dtc_tool.restore_object(d_obj.i_coords, d_obj.i_text,
+                    d_obj.parent_id, d_obj.v1, d_obj.v2)
+            #elif o_type == "field" or o_type == "row" or o_type == "field":
+            #   d_obj.a_obj.restore_object(d_obj)
+            #   #d_obj.a_obj.restore_object(d_obj.i_coords, d_obj.i_text,
+            #   #     d_obj.parent_id, d_obj.v1, d_obj.v2, d_obj.a_obj) 
             else:
-                coords = d_obj.i_coords
-                print("@@@ coords >%s<, text >%s<" % (coords, text))
-                if obj_type == "text":
-                    self.restore_text(coords, text, g_nbr)
-                elif obj_type == "line":
-                    self.restore_line(coords, text, g_nbr)
-                elif obj_type == "group":
-                    self.restore_group(coords, text)
+                #d_obj.a_obj.redraw_object(d_obj.i_coords, d_obj.i_text,
+                #    d_obj.parent_id, d_obj.v1, d_obj.v2)
+                d_obj.a_obj.redraw(d_obj)
 
     def dg_b3_click(self, event):
         self.drawing.after(250, self.mouse_action, event)
@@ -1188,11 +965,11 @@ class rdglob:  # Global variables for rfc-draw's objects
         if self.double_click_flag:
             #print('double mouse click event')
             self.double_click_flag = False
-            dgr.draw_groups.edr_to_group(self, event)  # rdg is self here!
+            ##dgr.draw_groups.edr_to_group(self, event)  # rdg is self here!
 
         else:  # B3 (right button) to edit a Text
             #print('single mouse click event')
-            if self.ln_mode == "group":
-                print("\aCan't edit a Text in 'group' mode!")
-            else:
-                self.on_b3_click(event)
+            #if self.last_mode == "group":
+            #    print("\aCan't edit a Text in 'group' mode!")
+           # else:
+           self.on_b3_click(event)
