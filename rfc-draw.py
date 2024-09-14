@@ -1,15 +1,24 @@
-# 1232, Wed 28 Sep 2022 (NZDT)
-# 1603, Sun  1 Oct 2023 (NZDT)
+# 1657, Tue 23 Apr 2024 (NZST)
+# 1605, Mon  1 Jan 2024 (NZDT)
 # 1613, Sat 21 Oct 2023 (NZDT)
+# 1603, Sun  1 Oct 2023 (NZDT)
+# 1232, Wed 28 Sep 2022 (NZDT)
 #
 # rfc-draw: Nevil's tkinter program to draw images for SVG-RFC-1.2 diagrams
 #
-# Copyright 2023, Nevil Brownlee, Taupo NZ
+# Copyright 2024, Nevil Brownlee, Taupo NZ
 
 import sys
+from pathlib import Path
 from tkinter import *  # Different behaviour than 'import tkinter as tk' !!!
 from tkinter.messagebox import askyesno
-
+try:
+    posix = True
+    import termios  # This is POSIX
+except:
+    posix = False
+    import msvcrt   # This is Windows
+    
 import r_buttons_class as rbc
 
 import rfc_draw_globals_class as rdgc  # rfc-draw globals and functions
@@ -17,7 +26,7 @@ import rfc_draw_globals_class as rdgc  # rfc-draw globals and functions
 import draw_n_rects_class as drc  # Handles n_rect objects
 import draw_lines_class as dlc    # Handles line objects
 import draw_texts_class as dtc    # Handles text objects
-import draw_groups_class as dgr   # Handles rfc-draw groups
+import draw_headers_class as dhc   # Handles pkt header objects
 
 root = Tk()  # Main window
 root.title("RFC-draw")
@@ -46,8 +55,8 @@ d_canvas = RFC_Canvas(root, width=800, height=600, bg="lightgrey",
 d_canvas.pack(fill=BOTH, expand=1)
 
 def r_buttons_handler(obj):
-    #print("@@@ r_buttons_handler: %s" % obj.b_current)
     global previous, save_file_name
+    #print("@@@ r_buttons_handler: b_current = %s" % obj.b_current)
     if obj.b_current == "rect":
         #print("'rect' pressed")
         rdg.set_mode('rect')
@@ -60,10 +69,10 @@ def r_buttons_handler(obj):
         #print("'text' pressed")
         rdg.set_mode('text')
         dtc_tool.set_event_handlers()
-    elif obj.b_current == "group":
-        #print("'group' pressed")
-        rdg.set_mode('group')
-        dgr_tool.set_event_handlers()
+    elif obj.b_current == "header":
+        #print("'header' pressed")
+        rdg.set_mode('header')
+        dhc_tool.set_event_handlers()
     elif obj.b_current == "save":
         #print("'save' pressed, previous = %s" % previous)
         rdg.unbind_keys()
@@ -120,35 +129,47 @@ d_canvas.m_text = Text(d_canvas.message, fg="black", bg="azure",
     font=("TkFixedFont 12"), bd=0, highlightthickness=0)  # No border
 d_canvas.m_text.place(x=7, y=7)
 
-rdg = rdgc.rdglob(d_canvas.drawing, root, d_canvas.m_text)   # rfc-draw globals
-
-if len(sys.argv) == 2:
-    save_file_name = sys.argv[1]
-    if sys.argv[1][-4:] != ".rdd":
-        print("\a\aExpected to Save to an .rdd file <<<")
-else:
-    save_file_name = None
+save_file_name = "save-file.rdd"
+if not posix:
     from tkinter.filedialog import askopenfilename
-    save_file_name = (askopenfilename(title="Select .rdd file; cancel box if none"))
-    if not save_file_name:    
-        save_file_name = "save-file.rdd"
-        rdg.display_msg("No file %s, will write it on closing" % save_file_name,
-        "warning")
+    f_name = (askopenfilename(
+        title="Select .rdd file; cancel box if none"))
+        # cancel returns an empty (0-length)  tuple
+    if len(f_name) != 0:
+        save_file_name = f_name
+else:  # POSIX
+    #print("len(sys.argv) %d, argv >%s<" % (len(sys.argv), sys.argv))
+    if len(sys.argv) == 2:  # save_file specified
+        save_file_name = sys.argv[1]
+        if sys.argv[1][-4:] != ".rdd":
+            print("\a\aExpected to Save to an .rdd file <<<")
+
+rdg = rdgc.rdglob(d_canvas.drawing, root, d_canvas.m_text)
+    # Starts running rfc-draw !!!
 
 dlc_tool = dlc.draw_lines(d_canvas.drawing, root, rdg)
-    # sets draw_lines ln_b1 handlers
-
 drc_tool = drc.draw_n_rects(d_canvas.drawing, root, rdg)
-drc_tool.set_event_handlers()  # We start up in Rectangle mode
-rdg.set_mode('rect')
-last_mode = "rect"
-
 dtc_tool = dtc.draw_texts(d_canvas.drawing, root, rdg)
-    # sets draw_texts tx_b1 handlers
+dhc_tool = dhc.draw_headers(d_canvas.drawing, root, rdg)
 
-dgr_tool = dgr.draw_groups(d_canvas.drawing, root, rdg)
+print("about to start, save_file_name %s" % save_file_name)
+sfp = Path(save_file_name)
+last_mode = "rect"
+last_mode = rdg.read_from_rdd(save_file_name)  # Reads the save_file
+"""
+if sfp.is_file():
+    last_mode = rdg.read_from_rdd(save_file_name)
+    # Reads the save_file
+    ##??dhc.draw_headers.wait_for_input(rdg, "save-file.rdd read <<<")
+else:
+    print("no file %s" % save_file_name)
+"""
+rdg.set_mode('rect')  # We start with mode = 'rect'
+drc_tool.set_event_handlers()
 
-rdg.read_from_rdd(save_file_name)
+if last_mode != 'rect':
+    #print("about to change_current")
+    d_canvas.r_buttons.change_current(last_mode)  # Change mode to last_mode
 
 def on_closing():
     response = askyesno("Save drawing as .rdd?")

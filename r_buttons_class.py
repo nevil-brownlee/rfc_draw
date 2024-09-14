@@ -35,20 +35,20 @@ class r_buttons:
         self.b_text.grid(row=0, column=2, padx=6, pady=6)
         self.b_text.configure(command=self.b_text_pressed)
 
-        self.b_group = Button(self.b_frame, text="Group", padx=6, pady=6)
-        self.b_group.grid(row=0, column=3, padx=6, pady=6)
-        self.b_group.configure(command=self.b_group_pressed)
+        self.b_header = Button(self.b_frame, text="Header", padx=6, pady=6)
+        self.b_header.grid(row=0, column=3, padx=6, pady=6)
+        self.b_header.configure(command=self.b_header_pressed)
 
         self.b_save = Button(self.b_frame, text="Save", padx=6, pady=6)
         self.b_save.grid(row=0, column=4, padx=6, pady=6)
         self.b_save.configure(command=self.b_save_pressed)
 
         self.ba = {"rect":self.b_rect, "line":self.b_line, "text":self.b_text,
-                   "group":self.b_group, "save":self.b_save}
+                   "header":self.b_header, "save":self.b_save}
 
         self.bp = {"rect":self.b_rect_pressed, "line":self.b_line_pressed,
                    "text":self.b_text_pressed,
-                   "group":self.b_group_pressed, "save":self.b_save_pressed}
+                   "header":self.b_header_pressed, "save":self.b_save_pressed}
 
     def b_rect_pressed(self):
         #print("Rectangle pressed, current %s" % self.b_current)
@@ -71,11 +71,11 @@ class r_buttons:
         self.b_current = "text"
         self.func_on_press(self)
 
-    def b_group_pressed(self):
-        #print("Group pressed, current %s" % self.b_current)
-        self.b_group.configure(relief=SUNKEN)
+    def b_header_pressed(self):
+        #print("Header pressed, current %s" % self.b_current)
+        self.b_header.configure(relief=SUNKEN)
         self.raise_button(self.b_current)
-        self.b_current = "group"
+        self.b_current = "header"
         self.func_on_press(self)
 
     def b_save_pressed(self):
@@ -95,6 +95,7 @@ class r_buttons:
         self.func_on_press(self)  # Pass 'self' as argument to the function
 
     def change_current(self, b_name):  # Switch to button b_name
+        #print("&&& change_current b_name >%s<" % b_name)
         self.bp[b_name]()
 
 if __name__ == "__main__":
@@ -112,7 +113,7 @@ if __name__ == "__main__":
 
     rbc.b_frame.place(x=200, y=300)  # Position the frame where we want it
 
-    b_names =  ["rect", "text", "line", "save"]
+    b_names =  ["rect", "text", "line", "header", "save"]
     b = 3
 
     def change_button():

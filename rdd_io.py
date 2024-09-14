@@ -4,53 +4,56 @@
 #
 # rdd_rw.py: Read/write *.rdd files
 #
-# Copyright 2023, Nevil Brownlee, Taupo NZ
+# Copyright 2024, Nevil Brownlee, Taupo NZ
 
 import re
 
 class rdd_rw:
-    def __init__(self, sys_argv, default_b_w):
-        self.rdd_fn = None
+    def __init__(self, sys_argv, bw):  # i.e. sys.arg
+        print("starting rdd_rw - - -")
         self.objects = []   # rfc-draw objects
-        self.r_obj_keys = {}  # old-key -> new-key for objects read from rdd
-
-        rdd_fn = None
-        if len(sys_argv) == 1:  # sys_argv[0] = name of program 
+        self.obj_keys = {}  # old-key -> new-key for objects read from rdd
+        self.default_bw = 5  # px
+        ##print("??? sys_argv >%s<, len %d" % (sys_argv, len(sys_argv)))
+ 
+        if len(sys_argv) == 1:
             print("No .rdd file specified ???")
             from tkinter.filedialog import askopenfilename
             self.rdd_fn = (askopenfilename(title="Select .rdd source file"))
+        else:
+            self.rdd_fn = sys_argv[1]
 
         # Patterns for reading the description string for an object
-        self.rrd_re = re.compile(
-               "(\d+)\s+\((.+)\s+(.+)\)\s+\[(.+)\]\s+\"(.*)\"\s+(\d+)\s+(.)")
-        # field   0        1       2          3          4         5      6
-        #       objid    type    skey       coords     text      g_nbr   g_type
+        # . matches any character except a newline (\n)
 
-        self.mbr_re = re.compile(
-               "\s+\((.)(.+)\ member\s(.+)\)\s+(.+)\s\[(.+)\]")
-        # field       0  1           2        3       4
-        #    blanks  id g_nbr       g_key    type    coords
-        self.border_width = default_b_w  # Default value
+        rere_0_4 = "(\d+)\s+\((.+)\s+(.+)\)\s+\[(.+)\]\s+\"(.+)\""
+            # field   0        1      2          3          4
+            #       objid    type    skey       coords     text 
+        rere_v1 = rere_0_4 + "\s+(.+)\s+(.+)\Z"  # \Z = at end-of-string
+            # rdd v1:              5      6
+            #                     g_nbr   g_type
+            #               '0', 'N' or '1'
+
+                                # \S = non-white-space character
+        rere_v2 = rere_0_4 + "\s+(\S+)\s+(\S+)\s+(\S+)(\s.+)?"
+     
+        #                          5       6       7     8
+            #              parent_id,     v1,     v2,    Optional comment
+        self.rdd_e_v1 = re.compile(rere_v1)
+        self.rdd_e_v2 = re.compile(rere_v2)
+
+        self.border_width = self.default_bw  # Default value
         
-        #print("sys_argv >%s<" % sys_argv)
+        print("sys_argv >%s<" % sys_argv)
         if not self.rdd_fn:
             self.rdd_fn = sys_argv[1]
         if len(sys_argv) >= 3:  # We have a second argument
-            arg2 = sys_argv[2]
-            if len(arg2) >= 2:
-                if arg2[0:2] == "-b":  # First two chars
-                    if arg2 == "-b":
-                        pass  #print("bw %d" % self.border_width)
-                    else:
-                        self.border_width = int(arg2[2:])
-                    print("svg border width %d px" % self.border_width)
-                else:
-                    print("Unrecognised option %s" % arg2)
-                    exit()
-
-        #print("+1+ rdd_fn %s, border_width %d" % (self.rdd_fn, self.border_width))
-        self.objects, self.di = self.read_from_rdd()
-
+            ##print("sys_argv >%s<" % sys_argv)
+            self.border_width = int(sys_argv[2])
+        print("=== rdd_fn %s, bw %s" % (self.rdd_fn, self.border_width))
+        #self.objects, self.di = self.read_from_rdd()
+        #self.dump_objects("rdd objects loaded from .rdd file")
+        
     def s_to_stuple(self, t):
         t1 = t.replace("'", "")
         cs = t1.replace('"','')
@@ -64,119 +67,115 @@ class rdd_rw:
         return ol
 
     class rdd_obj:
-        def __init__(self, id, type, coords, text, t_width, g_nbr):
+        def __init__(self, id, type, coords, text, parent_id, v1, v2):
             self.id = id
             self.type = type;  self.i_coords = coords
-            self.i_text = text;  self.txt_width = t_width
-            self.g_nbr = g_nbr; self.g_members = []
+            self.i_text = text;  self.txt_width = len(text)
+            self.vbl_len_row = v2 < 0
+            self.parent_id = parent_id;  self.v1 = int(v1);  self.v2 = int(v2)
             
         def __str__(self):
             return (
-                "id %d, type %6s, i_text %s, g_nbr %d, i_coords %s, txt_width %d" % (
-                self.id, self.type, self.i_text, self.g_nbr,
-                self.i_coords, self.txt_width))
-
-    class g_member:  # Holds group info for a group member obj
-        def __init__(self, objects, g_nbr, m_key, g_rel_coords):
-            self.objects = objects
-            self.g_nbr = g_nbr
-            self.m_key = m_key  # member's original objects[] key
-            self.g_rel_coords = g_rel_coords
-            
-        def __str__(self):
-            m_type = self.objects[self.m_key].type
-            return ("g_nbr %s, m_key %s, m_type %s, rel_coords %s" % (
-                self.g_nbr, self.m_key, m_type, self.g_rel_coords))
-
-    def find_group_key(self, g_nbr):
-        for val in self.objects:
-            if val.type == "group" and val.g_nbr == g_nbr:
-                return val.id
-
-    def rel_coords(self, edr, s_coords):  # s to r
-        n_points = int(len(s_coords)/2)
-        #print("++ rel_coords: n_points %d, edr %s, s_coords %s" % (
-        #    n_points, edr, s_coords))
-        ex = edr[0];  ey = edr[1]  # Top-left corner
-        rel_coords = []
-        for ns in range(0,n_points):
-            rel_coords.append(s_coords[ns*2]-ex)    # sx
-            rel_coords.append(s_coords[ns*2+1]-ey)  # sy
-        #print("== rel_coords >%s<" % rel_coords)
-        return rel_coords
-
-    def restore_object(self, ds):
-        #print("restore_object: ds >%s<" % ds)
-        if "member" in ds:
-            #print("=== member line >%s<" % ds)
-            self.dump_objects(">> 'member' read <<")
-
-            fields = self.mbr_re.search(ds).groups()
-            gt = fields[0]  # 'g'
-            g_nbr = int(fields[1])  # group (or template number)
-            o_key = fields[2]  # member key in objects[]
-            m_key = self.r_obj_keys[o_key]
-                # member key in new objects[] dict
-            m_type = fields[3]  # member type
-            mo = self.objects[m_key]
-            #print("+++ mo >%s<" % mo)
-            i_coords = self.s_to_ilist(fields[4])
-            #print("gt %s, g_nbr %d m_key %d, type %s, coords >%s<" %
-            #      (gt, g_nbr, m_key, m_type, i_coords))
-            g_key = self.find_group_key(g_nbr)-1  # 0-ord for objects[]
-            go = self.objects[g_key]
-            i_coords = mo.i_coords;  i_text = mo.i_text
-            r_coords = self.rel_coords(go. i_coords, i_coords)
-            m = self.g_member(self.objects, g_nbr, m_key, r_coords)
-            self.objects[g_key].g_members.append(m)
-            return m_key, g_key
-        else:  # Ordinary object
-            #print("== ds %s ==" % ds)
-            fields = self.rrd_re.search(ds).groups()
-            #print("@@@ rdd_io fields = ", end="");  print(fields)
-            obj_id = int(fields[0])  # Ignore line_nbr (field 0)
-            obj_type = fields[1]
-            s_key = fields[2]  # object's key in save file
-            coords = self.s_to_ilist(fields[3])
-            text = fields[4].replace("\\n", "\n")
-            text = text.replace('\\"', '"')
-            g_nbr = int(fields[5])  # Group nbr
-            g_type = fields[6]  # Group type
-            t_width = 0
-            if obj_type == "text":
-                t_lines = text.split("\n")
-                #print("@@@ t_lines >%s<" % t_lines)
-                for l_txt in t_lines:
-                    chrs = len(l_txt)
-                    if chrs > t_width:
-                        t_width = chrs
-            obj = self.rdd_obj(obj_id, obj_type, coords, text, t_width, g_nbr)
-            #print("=== obj = >%s<" % obj)
-            self.objects.append(obj)  # rdd_io objects are in a list 
-            new_key = len(self.objects)-1
-            self.r_obj_keys[s_key] = new_key
-            #print("r_obj_keys = %s" % self.r_obj_keys)
-            return new_key, obj
+                "id %d, type %6s, i_text %s, i_coords %s, parent_id %d, v1 %d, v2 %d, txt_width %d" % (
+                    self.id, self.type, self.i_text, self.i_coords,
+                    self.parent_id, self.v1, self.v2, self.txt_width))
+    
+    def parse_rdd_line(self, line):
+        line = line.rstrip()
+        print("rdd line = >%s<" % line)
+        if self.rdd_e_v2.match(line):  # v2 match (9 fields)
+            m = self.rdd_e_v2.split(line)
+            print("v2 split %s len %d" % (m, len(m)))
+            return m[1:-1]
+        else:
+            print("v2 match failed")#;  exit()
+            if self.rdd_e_v1.match(line):  # v1 match (6 fields)
+                m = self.rdd_e_v1.split(line)
+                print("v1 split %s len %d" % (m, len(m)))
+                return m[1:-1]
+            else:
+                print("v1 match failed");  exit()
+                return None
+    """
+    def is_number(self, s):
+        try:
+            v =float(s)
+            return True
+        except ValueError:
+            return False
+    """
+    def restore_object(self, ln, ds):
+        #print("restore_object: ln %d, ds >%s<" % (ln, ds))
+        #print("== ds %s ==" % ds)
+        fields = self.parse_rdd_line(ds)
+        print("fields >>> %s <<< len %d" % (fields, len(fields)))
+        obj_id = int(fields[0])  # Ignore line_nbr (field 0)
+        o_type = fields[1]
+        old_key = int(fields[2])  # object's key in save file
+        coords = self.s_to_ilist(fields[3])
+        text = fields[4].replace("\\n", "\n")
+        fields[4] = fields[4].replace('\\"', '"')
+        print("After \\n: fields %s" % fields)
+        if fields[5] == 'N':
+            print("v1 rdd file <<<")
+            parent_id = 0
+        else:
+            parent_id = int(fields[5])
+        #self.dump_objects("in restore_object")
+        if parent_id != 0:
+            parent_id = int(self.obj_keys[parent_id])
+        if fields[6] == "N":  # v1 rdd file
+            v1 = v2 = 0
+        else:
+            print("fields[6] >%s" % fields[6])
+            v1 = int(fields[6].strip('"'))  # Remove any surrounding " chars
+            if len(fields) == 9:  # v2 match (Optional comment is fields[8])
+                v2 = int(fields[7])
+                #print("v1 %d, v2 %d" % (v1, v2))
+            else:
+                print("rdd pattern match failed !!!");  exit()
+        
+                t_width = 0
+                    
+        obj = self.rdd_obj(obj_id, o_type, coords, text, parent_id, v1, v2)
+        print("=== obj = >%s<" % obj)
+        self.objects.append(obj)  # rdd_io objects are in a list 
+        new_key = len(self.objects)-1
+        self.obj_keys[old_key] = new_key
+        print("r_obj_keys = %s" % self.obj_keys)
+        return new_key, obj
 
     def dump_objects(self, header):
         #return
         print("dump_objects -- %s --" % header)
         for j, val in enumerate(self.objects):
             print("%4d val >%s<" % (j, val))
-            if val.type == "group":
-                for g_m in val.g_members:
-                    print("  member %s" % g_m)
         print("- - dump - -")  # Trailer line
 
+    def extrema(self, obj, x, y):
+        if x < self.min_x:
+            self.min_x = x
+            self.min_x_obj = obj
+        elif x > self.max_x:
+            self.max_x = x
+            self.max_x_obj = obj
+        if y < self.min_y:
+            self.min_y = y
+            self.min_y_obj = obj
+        elif y > self.max_y:
+            self.max_y = y
+            self.max_y_obj = obj
     
     def read_from_rdd(self):
+        print("read_from_rdd: self.rdd_fn >%s<" % self.rdd_fn)
         f = open(self.rdd_fn, "r")
         self.di = {}
-        for ln in f:
-            line = ln.strip()
-            #print(">>>%s<" % line)
-            
-            if line[0] == "#":  # Ignore comment lines
+        ln = -1
+        for rdd_ln in f:
+            ln += 1
+            line = rdd_ln.strip()
+            #print("rdd ln %d, len %d, line >%s<" % (ln, len(line),line))
+            if len(line) == 0 or line[0] == "#":  # Ignore comment lines
                 continue
             ds = line.rstrip('\n')
             #print("ds >%s<" % ds)
@@ -197,31 +196,68 @@ class rdd_rw:
                 #print("mono_font width %.2f, height %.2f pixels" % (
                 #    self.f_width, self.f_height))
                 self.di["f_width"] = float(la[2])
-                self.di["f_height"] = int(la[4])
+                self.di["f_height"] = float(la[4])
+            elif ds.find("last_mode") >= 0: 
+                pass  # Used by rfc-draw.py
             else:
-                #print("=== ds = %s" % ds)
-                o_key, obj = self.restore_object(ds)
+                print("=== ds = %s" % ds)
+                o_key, obj = self.restore_object(ln, ds)
+                ##print("o_key %s, obj %s <<<" % (o_key, obj))
 
-        min_x = min_y = 50000;  max_x = max_y = 0
+        self.min_x = self.min_y = 50000;  self.max_x = self.max_y = 0
+        self.t_min_y = self.t_max_y = self.t_min_x = self.t_max_x = "none"
+        bw = self.border_width
+        
         for obj in self.objects:
             coords = obj.i_coords
-            for n in range(0, len(coords), 2):
+            for n in range(0, len(coords), 2):  # Lines have >1 point
+                                                # Text has only 1 (cx,cy)
                 x = coords[n];  y = coords[n+1]
-                if x < min_x:
-                    min_x = x
-                elif x > max_x:
-                    max_x = x
-                if y < min_y:
-                    min_y = y
-                elif y > max_y:
-                    max_y = y
-            self.di["min_x"] = min_x;  self.di["max_x"] = max_x
-            self.di["min_y"] = min_y;  self.di["max_y"] = max_y
-                    
+                self.extrema(obj, x, y) 
+                #print("+-+-+ id %d, %s, Ex:%d-%d, Ey:%d-%d" % (
+                #    obj.id, obj.type,
+                #    self.min_x, self.max_x, self.min_y, self.max_y))
+                if obj.type == "field":  
+                    x0,y0, x1,y1 = coords # obj's containing rectangle
+                    self.extrema(obj, x0,y0)
+                    self.extrema(obj, x1,y1)
+                elif obj.type == "text":  # x,y is obj's centre position
+                    t_lines = obj.i_text.split("\n")
+                    c_width = self.di["f_width"]*0.8
+                    print("c_width = %f" % c_width)
+                    for l_txt in t_lines:
+                        n_chrs = len(l_txt)  # This line's chars
+                        #print("$ $ chrs %d, txt >%s<" % (chrs, l_txt))
+                        l_txt = l_txt.replace('\\"', '"')
+                        htw = round(n_chrs*c_width/2.0)  # half text width
+                        print("htw %s, y %s" % (htw,y))
+                        print("text line: text >%s< lt2 %d, from %d to %d" % (
+                            l_txt, htw, x-htw, x+htw))
+                        y += self.di["f_height"]  # 1 line below text
+                        self.extrema(obj, x+htw, y)  # right x,y
+                        self.extrema(obj, x-htw, y)  # left x,y
+                    print("ttt x,y %d,%d, min_y %d, max_y %d" % (
+                        x, y, self.max_x, self.max_y))
+
+        self.di["min_x"] = self.min_x;  self.di["max_x"] = self.max_x
+        self.di["min_y"] = self.min_y;  self.di["max_y"] = self.max_y
+
+        print("Extrema: min_x %d (%s)" % (self.min_x,self.min_x_obj))
+        print("         max_x %d (%s)" % (self.max_x,self.max_x_obj))
+        print("         min_y %d (%s)" % (self.min_y,self.min_y_obj))
+        print("         max_y %d (%s)" % (self.max_y,self.max_y_obj))
+        print()
+           
         fs = "Screen: xr %d, yr %d | Drawing: width %d, height %d"
         fs += " | Font: width %.2f, height %.2f"
         print(fs % (self.di["r_width"], self.di["r_height"],
             self.di["d_width"], self.di["d_height"],
             self.di["f_width"], self.di["f_height"]))
 
+        print("min_x %d, max_x %d,  min_y %d, max_y %d" % (
+            self.di["min_x"], self.di["max_x"],
+            self.di["min_y"], self.di["max_y"]))
+
+        #self.dump_objects("After loading objects")
+        
         return self.objects, self.di
