@@ -1,4 +1,4 @@
-1429, Thu 22 Aug 2024 (NZST)  
+1449, Mon 16 Sep 2024 (NZST)
   
 ## === rfc-draw Manual, version 2.0 ===  
   
@@ -6,6 +6,7 @@
 
 rfc-draw is written in python3, and uses the following modules:  
 &emsp; os. path, re, sys, time, datetime, threading, tkinter, playsound
+&emsp; termios (for POSIX) or msvcrt (for Windows) 
 You can install these using pip (latest version),  
 &emsp; e.g. pip3 install tkinter
 

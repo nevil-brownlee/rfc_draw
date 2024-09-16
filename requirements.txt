@@ -4,13 +4,22 @@ If you don't already have python installed on your computer,
    you could take a look at https://realpython.com/installing-python/
 
 To use rfc-draw you'll need to install the following python modules:  
-   tkinter, math, sys, re, os, svgwrite, traceback (for POSIX and windows)  
+   os, math, pathlib, re, sys, time, datetime, tkinter,  
+   playsound, threading,  
+   traceback (for POSIX and windows),  
    termios (for POSIX) or msvcrt (for Windows)  
 
 To install a python module, e.g. tkinter, use pip, python's package
 manager; the (POSIX) command is  
-   pip3 install tkinter  
+   pip3 install tkinter 
   
 If that doesn't work, you may need to use a more up-to-date version of pip,  
 i.e. one that matches your version of python, for example pip3.10
+
+
+Two .wav files (of bell sounds) are included in the rfc-draw distribution;
+these are from BigSoundBank, https://bigsoundbank.com/
+BigSoundBank is a "Free and Royalty Free" web site, with a large collection
+of .wav files.  These are "made available free of charge and freely for
+all your projects, whether commercial or not, and worldwide."
 
