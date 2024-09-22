@@ -12,7 +12,7 @@ class xmlfig_drawing:
                                # *b_w may be integer or None
         print("rdd_fn %s, asc %s, svg %s" % (rdd_fn, asc_b_w, svg_b_w))
 
-        rdd_to_ascii = __import__("rdd-to-ascii")
+        rdd_to_ascii = __import__("rdd_to_ascii")
         if asc_b_w:
             ascii_obj = rdd_to_ascii.asc_drawing(["dummy", rdd_fn, asc_b_w])
         else:
@@ -22,7 +22,7 @@ class xmlfig_drawing:
         print("   rdd_fn = %s, border_width %d" % (
             ascii_obj.rdd_fn, ascii_obj.border_width))
 
-        rdd_to_svg = __import__("rdd-to-svg")
+        rdd_to_svg = __import__("rdd_to_svg")
         if svg_b_w:
             svg_obj = rdd_to_svg.svg_drawing(["dummy", rdd_fn, svg_b_w])
         else:
