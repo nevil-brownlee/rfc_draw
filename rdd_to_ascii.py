@@ -10,13 +10,13 @@ import rdd_io, rdd_globals
 
 class asc_drawing:
     def __init__(self, sys_argv):
-        self.debug = False
+        self.debug = False  # True to put row numbers at left
         #print("===> asc_drawing: sys_argv %s" % sys_argv)
         self.rdd_fn = None
         if len(sys_argv) == 1:  # sys_argv[0] = name of program 
             print("No .rdd file specified ???")
             from tkinter.filedialog import askopenfilename
-            rdd_fn = (askopenfilename(title="Select .rdd source file"))
+            self.rdd_fn = (askopenfilename(title="Select .rdd source file"))
         self.rg = rdd_globals.gv
         self.x_sf = self.rg.asc_x_sf;  self.y_sf = self.rg.asc_y_sf
         self.bw = self.rg.asc_def_b_w  # Default border width
@@ -156,15 +156,21 @@ class asc_drawing:
         # Bug reported: becarpenter, 22 Oct 2023 (NZDT)
         #   "Will write .txt file to current directory"
         print("-> -> print_lbuf to %s" % txt_fn)
+        bb = " "*self.bw  # Border blank cols
         asc_file = open(txt_fn, "w")
+        for r in range(self.bw):
+            asc_file.write(" \n")
         for r,val in enumerate(self.lines):
             if r != 0:  # Don't print (empty) top line of row 1 (colnbrs)
                 txt_line = ''.join(val)
-                print("len(txt_line) = %d" % len(txt_line))
+                t_line = txt_line.rstrip()
+                print("len(txt_line) = %d" % len(t_line))
                 if self.debug:
-                    asc_file.write("%3d %s\n" % (r, txt_line))
+                    asc_file.write("%3d %s%s%s\n" % (r, bb,t_line))
                 else:
-                    asc_file.write("%s\n" % txt_line)
+                    asc_file.write("%s%s%s\n" % (bb, t_line, bb))
+        for r in range(self.bw):
+            asc_file.write(" \n")
         asc_file.close()
 
     def set_char(self, ch, xc,yr):  # Must not overwrite "+"
@@ -253,15 +259,17 @@ class asc_drawing:
         tll = txcol-round(mx_tlen/2.0)-1    # col (leftmost char)
         tlend = txcol+round(mx_tlen/2.0)-1  # col (rightmost char)
         tlr = txrow-int(len(t_lines)/2.0)  # middle row
-        print("tll-tlend %d - %d, tlr %d" % (tll,tlend, tlr))
+        print("tll %d, tlend %d, tlr %d" % (tll, tlend, tlr))
         
         for r,text in enumerate(t_lines):  # Centre the text lines
             print("?+? tlr %d, r %d" % (tlr, r))
             ln = self.lines[tlr+r]
-            tlc = round(txcol-len(text)/2.0)  # text, leftmost col
+            tlc = int(txcol-len(text)/2.0)  # text, leftmost col
             print("txt copy loop, len(text) %d, tlc %d" % (len(text), tlc))
             for j in range(len(text)):
                 ln[tlc+j] = text[j]
+                print("ln >%s<" % text[j])
+            print("ln >>%s<<" % ln)
 
     def draw_field_text(self, text, cx,cy, r_nbr, r_lines):
             # cx,cy are 0-org, r_lines = nbr of lines in field's row
@@ -303,7 +311,7 @@ class asc_drawing:
             print("txt copy loop, len(text) %d, tlc %d" % (len(text), txlc))
             for j in range(len(text)):
                 ln[txlc+j] = text[j]
-    """
+
     def find_txt_rows(self, txl, tr,br, r_nbr, r_lines):
         print("ftr: txl %d, tr,br %d,%d, r_nbr %d" % (txl, tr,br, r_nbr))
         if txl > r_lines:
@@ -326,7 +334,7 @@ class asc_drawing:
         return tr,br  
 
     def draw_text_in_row(self, text, fc, tr, br, r_nbr, r_lines):
-        # Text centred within row r_nbr
+        # For text centred within row r_nbr
         print("+-+ draw_text_in_row: tr,br %d,%d, r_nbr %d, r_lines %d" % (
             tr,br, r_nbr, r_lines))
         tx_lines = text.split("\n")
@@ -346,7 +354,14 @@ class asc_drawing:
             for c in range(len(tx_ln)):
                 ln[self.bw+fc+c] = tx_ln[c]
             j += 1
-    """        
+
+    def draw_text_row(self, text, c, r):
+        ln = self.lines[r]
+        #print("$ $ $ draw_text_row: c %d, r %d, len(text) %d" % (c, r, len(text)))
+        for j in range(len(text)):
+            #print("c %d, j = %d" % (c,j))
+            ln[j] = text[j]
+
     def draw_n_rect(self, id, coords, n_r_text):
         # coords = centre point for displayed text
         tlc, tlr = self.map(coords[0], coords[1])  # Top left col,row
@@ -355,24 +370,25 @@ class asc_drawing:
             print("rectangle at %d,%d, %d,%d too small to draw" % (
                 tlc,tlr, brc,brr))
             print("  Min rectangle size is 3x3 chars <<<")
-        #print("n_rect r,c coords: %d,%d to %d,%d" % (tlc,tlr, brc,brr))
+        print("n_rect r,c coords: %d,%d to %d,%d" % (tlc,tlr, brc,brr))
 
         self.n_n_rect += 1
         ch = self.alphabet[self.n_n_rect]
         h_row = "+" + "-"*(brc-tlc-2) + "+"
-        #print("h_row %s" % h_row)
+        print("h_row %s" % h_row)
         v_row = "|" + " "*(brc-tlc-2) + "|"
-        #print("v_row %s" % v_row)
+        print("v_row %s" % v_row)
+        ##self.print_lbuf("nr-frame.txt")
 
-        self.draw_text_rc(h_row, tlc,tlr)  ##@@
+        self.draw_text_row(h_row, tlc,tlr)
         for j in range(tlr+1, brr):
-            self.draw_text_rc(v_row, tlc, j)
-        self.draw_text_rc(h_row, brc,brr)  ##@@
+            self.draw_text_row(v_row, tlc, j)
+        self.draw_text_row(h_row, brc,brr)
 
         cx = round((coords[0]+coords[2])/2.0)
         cy = round((coords[1]+coords[3])/2.0)
-        #print("cx,cy %d,%d, text >%s<" % (cx,cy, n_r_text))
-        self.draw_text(id, [cx,cy], n_r_text)
+        print("cx,cy %d,%d, text >%s<" % (cx,cy, n_r_text))
+        self.draw_text([cx,cy], n_r_text)
 
     def draw_header(self, id, coords, text, parent_id, v1, v2):
         tlc, tlr = self.map(coords[0], coords[1])  # Top left col,row
