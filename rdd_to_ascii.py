@@ -9,9 +9,46 @@ import sys, os.path
 import rdd_io, rdd_globals
 
 class asc_drawing:
+    def draw_objects(self, which):
+        for obj in self.objects:
+            if obj.type == which:
+                if obj.type == "line":
+                    self.draw_line(obj.i_coords, obj.i_text)
+                    self.d_lines += 1
+                elif obj.type == "n_rect":
+                    #print(">> n_rect id %d, coords %s, text >%s<" % (
+                    #    obj.id, obj.i_coords, obj.i_text))
+                    self.draw_n_rect(obj.id, obj.i_coords, obj.i_text)
+                    self.d_rects += 1
+                elif obj.type == "text":
+                    #print("|%s|" % obj)
+                    self.draw_text(obj.i_coords, obj.i_text)
+                    self.d_texts += 1
+                elif obj.type == "header":
+                    #self.draw_header(obj.id, obj.i_coords, obj.i_text)
+                    # Nothing drawn for a header
+                    self.d_headers += 1
+                elif obj.type == "row":
+                    print("About to call draw_row()")
+                    print("  max_x %d, coords %s" % (self.max_x, obj.i_coords))
+                    self.draw_row(obj.id, obj.i_coords, obj.i_text,
+                        obj.parent_id, obj.v1, obj.v2)
+                    self.d_rows += 1
+                elif obj.type == "field":
+                    print(">> field: coords %s, text >%s<" % (
+                        obj.i_coords, obj.i_text))
+                    print("  max_x %d, coords %s" % (self.max_x, obj.i_coords))
+                    self.draw_field(obj.id, obj.i_coords, obj.i_text,
+                        obj.parent_id, obj.v1, obj.v2)
+                    self.d_fields += 1
+                    
+        print("=== %d lines, %d n_rects, %d texts, %d headers, %d rows, %d fields drawn" % (
+            self.d_lines, self.d_rects, self.d_texts,
+            self.d_headers, self.d_rows, self.d_fields))
+
     def __init__(self, sys_argv):
         self.debug = False  # True to put row numbers at left
-        #print("===> asc_drawing: sys_argv %s" % sys_argv)
+        print("===> asc_drawing: sys_argv %s" % sys_argv)
         self.rdd_fn = None
         if len(sys_argv) == 1:  # sys_argv[0] = name of program 
             print("No .rdd file specified ???")
@@ -76,12 +113,11 @@ class asc_drawing:
         c_max,r_max = self.map(self.max_x,self.max_y)
         self.n_chars = round((c_max-c_min+1)*self.x_sf + 2*self.bw)
         self.n_lines = round((r_max-r_min+1)*self.y_sf + 2*self.bw)
-        print("c_min %d,c_max %d, n_chars %d, r_min %d,r_max %d, n_lines %d," %
+        print("c_min %d,c_max %d, n_chars %d, r_min %d,r_max %d, n_lines %d" %
               (c_min, c_max, self.n_chars, r_min, r_max, self.n_lines))
         
         self.lines = [[" " for col in range(self.n_chars + 1)]
                                for row in range(self.n_lines + 1)]
-        ##print("lines >>%s<<" % self.lines)
         self.n_n_rect = self.n_line = 0
         self.alphabet = "abcdefghijklmnopqrstuvwxyz"
         self.digits = "0123456789ABC"
@@ -124,7 +160,7 @@ class asc_drawing:
                     max_y = y
 
         print("x %d to %d, y %d to %d" % (min_x,max_x, min_y,max_y))
-
+        #?print("@@@@@ >%s<" % self.draw_objects)
         self.draw_objects("line")    # layer 1
         self.draw_objects("n_rect")  # layer 2
         self.draw_objects("text")    # layer 3
@@ -180,7 +216,7 @@ class asc_drawing:
     
     def draw_line(self, coords, text):
         # text chars: one or more of a/n, e
-        #print("LLL coords %s" % coords)
+        print("LLL dra_line coords %s, text %s" % (coords, text))
         rc_coords = []
         for p in range(0, len(coords), 2):  # Convert to col,row coords
             col,row = self.map(coords[p], coords[p+1])
@@ -484,42 +520,5 @@ class asc_drawing:
         #self.draw_field_text(i_text, cx,cy, r_obj.v1, r_obj.v2)
 
         
-    def draw_objects(self, which):
-        for obj in self.objects:
-            if obj.type == which:
-                if obj.type == "line":
-                    self.draw_line(obj.i_coords, obj.i_text)
-                    self.d_lines += 1
-                elif obj.type == "n_rect":
-                    #print(">> n_rect id %d, coords %s, text >%s<" % (
-                    #    obj.id, obj.i_coords, obj.i_text))
-                    self.draw_n_rect(obj.id, obj.i_coords, obj.i_text)
-                    self.d_rects += 1
-                elif obj.type == "text":
-                    #print("|%s|" % obj)
-                    self.draw_text(obj.i_coords, obj.i_text)
-                    self.d_texts += 1
-                elif obj.type == "header":
-                    #self.draw_header(obj.id, obj.i_coords, obj.i_text)
-                    # Nothing drawn for a header
-                    self.d_headers += 1
-                elif obj.type == "row":
-                    print("About to call draw_row()")
-                    print("  max_x %d, coords %s" % (self.max_x, obj.i_coords))
-                    self.draw_row(obj.id, obj.i_coords, obj.i_text,
-                        obj.parent_id, obj.v1, obj.v2)
-                    self.d_rows += 1
-                elif obj.type == "field":
-                    print(">> field: coords %s, text >%s<" % (
-                        obj.i_coords, obj.i_text))
-                    print("  max_x %d, coords %s" % (self.max_x, obj.i_coords))
-                    self.draw_field(obj.id, obj.i_coords, obj.i_text,
-                        obj.parent_id, obj.v1, obj.v2)
-                    self.d_fields += 1
-                    
-        print("=== %d lines, %d n_rects, %d texts, %d headers, %d rows, %d fields drawn" % (
-            self.d_lines, self.d_rects, self.d_texts,
-            self.d_headers, self.d_rows, self.d_fields))
-
 if __name__ == "__main__":
     asc_drawing(sys.argv)
