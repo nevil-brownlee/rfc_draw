@@ -13,11 +13,12 @@ class asc_drawing:
         for obj in self.objects:
             if obj.type == which:
                 if obj.type == "line":
+                    print(">> line id %d, coords %s" % (obj.id, obj.i_coords))
                     self.draw_line(obj.i_coords, obj.i_text)
                     self.d_lines += 1
                 elif obj.type == "n_rect":
-                    #print(">> n_rect id %d, coords %s, text >%s<" % (
-                    #    obj.id, obj.i_coords, obj.i_text))
+                    print(">> n_rect id %d, coords %s, text >%s<" % (
+                        obj.id, obj.i_coords, obj.i_text))
                     self.draw_n_rect(obj.id, obj.i_coords, obj.i_text)
                     self.d_rects += 1
                 elif obj.type == "text":
@@ -111,13 +112,13 @@ class asc_drawing:
 
         c_min,r_min = self.map(self.min_x,self.min_y)
         c_max,r_max = self.map(self.max_x,self.max_y)
-        self.n_chars = round((c_max-c_min+1)*self.x_sf + 2*self.bw)
-        self.n_lines = round((r_max-r_min+1)*self.y_sf + 2*self.bw)
+        self.n_chars = int((c_max-c_min+1)*self.x_sf + 2*self.bw)
+        self.n_lines = int((r_max-r_min+1)*self.y_sf + 2*self.bw)
         print("c_min %d,c_max %d, n_chars %d, r_min %d,r_max %d, n_lines %d" %
               (c_min, c_max, self.n_chars, r_min, r_max, self.n_lines))
         
         self.lines = [[" " for col in range(self.n_chars + 1)]
-                               for row in range(self.n_lines + 1)]
+                               for row in range(self.n_lines + 1)]  # 1)]
         self.n_n_rect = self.n_line = 0
         self.alphabet = "abcdefghijklmnopqrstuvwxyz"
         self.digits = "0123456789ABC"
@@ -211,12 +212,13 @@ class asc_drawing:
 
     def set_char(self, ch, xc,yr):  # Must not overwrite "+"
         ln = self.lines[yr]
-        if ln[xc] != "+":
-            ln[xc] = ch            
+        #if ln[xc] != "+":
+        #    ln[xc] = ch
+        ln[xc] = ch
     
     def draw_line(self, coords, text):
         # text chars: one or more of a/n, e
-        print("LLL dra_line coords %s, text %s" % (coords, text))
+        print("LLL draw_line coords %s, text %s" % (coords, text))
         rc_coords = []
         for p in range(0, len(coords), 2):  # Convert to col,row coords
             col,row = self.map(coords[p], coords[p+1])
@@ -229,7 +231,7 @@ class asc_drawing:
             ch = self.digits[self.n_line]
             x0 = rc_coords[p];  y0 = rc_coords[p+1]  # segment x0,y0 to x1,y1
             x1 = rc_coords[p+2];  y1 = rc_coords[p+3]
-            print("x0,y0 = %d,%d, x1,y1 = %d,%d" % (x0,y0, x1,y1))
+            print("line rc0,rl0 = %d,%d, rc1,rl1 = %d,%d" % (x0,y0, x1,y1))
             #print(">>> p %s, x %s, y %s :: %d lines" % (p,x,y,len(self.lines)))
             if x0 == x1:     # vertical
                 if abs(y1-y0)+1 < 3:
@@ -239,9 +241,10 @@ class asc_drawing:
                 else:
                     cy = round((y0+y1)/2)
                     if y0 < y1:  # down
-                        #print("  line down, %d,%d -> %d,%d" % (x0,y0, x1,y1))
+                        print("  line down, %d,%d -> %d,%d" % (x0,y0, x1,y1))
                         self.set_char("+", x0,y0)
                         for y in range(y0+1,y1):
+                            print(".|. x0 %d, y=%d" % (x0,y))
                             self.set_char("|", x0,y)
                         self.set_char("+", x0,y1)
                         self.set_char("v", x0,cy)
@@ -278,7 +281,7 @@ class asc_drawing:
 
     def draw_text(self, coords, text):
             # drawn with anchor=tk.CENTER, coords are text's centre point <<<
-        #print("@text %d, coords %s" % (m_key, coords))
+        print("@text %s, coords %s" % (text, coords))
         txcol, txrow = self.map(coords[0], coords[1])  # text row,col
         print("text: >%s<, txcol %d, trow %d" % (text, txcol,txrow))
         #! t_row = 12 # centre line for text
@@ -393,10 +396,10 @@ class asc_drawing:
 
     def draw_text_row(self, text, c, r):
         ln = self.lines[r]
-        #print("$ $ $ draw_text_row: c %d, r %d, len(text) %d" % (c, r, len(text)))
+        print("$ $ $ draw_text_row: c %d, r %d, len(text) %d" % (c, r, len(text)))
         for j in range(len(text)):
             #print("c %d, j = %d" % (c,j))
-            ln[j] = text[j]
+            ln[c+j] = text[j]
 
     def draw_n_rect(self, id, coords, n_r_text):
         # coords = centre point for displayed text
@@ -406,20 +409,21 @@ class asc_drawing:
             print("rectangle at %d,%d, %d,%d too small to draw" % (
                 tlc,tlr, brc,brr))
             print("  Min rectangle size is 3x3 chars <<<")
-        print("n_rect r,c coords: %d,%d to %d,%d" % (tlc,tlr, brc,brr))
-
+        print("n_rect r,c coords: %d,%d to %d,%d >%s<" % (
+            tlc,tlr, brc,brr, n_r_text))
+                                    # 1,20 to 31,22
         self.n_n_rect += 1
         ch = self.alphabet[self.n_n_rect]
         h_row = "+" + "-"*(brc-tlc-2) + "+"
         print("h_row %s" % h_row)
         v_row = "|" + " "*(brc-tlc-2) + "|"
         print("v_row %s" % v_row)
-        ##self.print_lbuf("nr-frame.txt")
-
         self.draw_text_row(h_row, tlc,tlr)
         for j in range(tlr+1, brr):
             self.draw_text_row(v_row, tlc, j)
-        self.draw_text_row(h_row, brc,brr)
+        self.draw_text_row(h_row, tlc,brr)
+        self.print_lbuf("nr-frame.txt")
+        print("+++ tlc %d, tlr %d" % (tlc,tlr))
 
         cx = round((coords[0]+coords[2])/2.0)
         cy = round((coords[1]+coords[3])/2.0)
