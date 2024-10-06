@@ -147,39 +147,54 @@ class rdglob:  # Global variables for rfc-draw's objects
         print("ELAPSED %s: %s" % (ts[0:pix+4], where_from))
 
     def where(self, rdo, x, y):  # Find region of rdo where b1 is pressed
-        #print("... ... where: rdo = %s" % rdo)
         #print("where:  coords %d,%d, %d,%d" % (rdo.x0,rdo.y0, rdo.x1,rdo.y1))
         if y <= rdo.y0 - self.res_px:  # Top row
             if y < rdo.y0 - self.far_px:  # Too high
+                print("... where high: x/y %d/%d,  rdo = %s, %s" % (
+                    x,y,rdo, self.pos[self.far]))
                 return self.far
             if x <= rdo.x0 + self.res_px:
                 if x < rdo.x0 - self.far_px:
+                    print("... where left: x/y %d/%d,  rdo = %s, %s" % (
+                        x,y,rdo, self.pos[self.far]))
                     return self.far  # Too far left
                 return self.tl
             elif x >= rdo.x1 - self.res_px:
                 if x > rdo.x1 + self.far_px:  # Too far right
+                    print("... where right: x/y %d/%d,  rdo = %s, %s" % (
+                        x,y,rdo, self.pos[self.far]))
                     return self.far
                 return self.tr
             return self.top
         elif y >= rdo.y1 + self.res_px:  # Bottom row
             if y > rdo.y1 + self.far_px:  # Too low
+                print("... where lbot: x/y %d/%d,  rdo = %s, %s" % (
+                    x,y,rdo, self.pos[self.far]))
                 return self.far
             if x <= rdo.x0 + self.res_px:
                 if x < rdo.x0 - self.far_px:
+                    print("... where lleft: x/y %d/%d,  rdo = %s, %s" % (
+                        x,y,rdo, self.pos[self.far]))
                     return self.far  # Too far left
                 return self.ll
             elif x >= rdo.x1 - self.res_px:
                 if x > rdo.x1 + self.far_px:  # Too far right
+                    print("... where lright: x/y %d/%d,  rdo = %s, %s" % (
+                        x,y,rdo, self.pos[self.far]))
                     return self.far
                 return self.lr
             return self.bot
         else:  # Middle row
             if x <= rdo.x0 + self.res_px:
                 if x < rdo.x0 - self.far_px:
+                    print("... where lmid: x/y %d/%d,  rdo = %s, %s" % (
+                        x,y,rdo, self.pos[self.far]))
                     return self.far  # Too far left
                 return self.left
             elif x >= rdo.x1 - self.res_px:
                 if x > rdo.x1 + self.far_px:  # Too far right
+                    print("... where rmid: x/y %d/%d,  rdo = %s, %s" % (
+                        x,y,rdo, self.pos[self.far]))
                     return self.far
                 return self.right
             return self.middle
@@ -415,7 +430,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         return None  # Unknown type
     
     def get_save_string(self, val):  # For object val
-        print("get_save_string: val %s" % val)
+        #print("get_save_string: val %s" % val)
         if val.o_type == "text":
             # Texts use an integer instead of an object!
             ds = self.dtc_tool.mk_save_str(val)
@@ -451,7 +466,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         for key in self.objects:
             val = self.objects[key]
             j += 1
-            print("!@!@ j %d, val %s" % (j, val))
+            #print("$@$@ j %d, val %s" % (j, val))
             ds = self.get_save_string(val)
             print("%d %s" % (j, ds))
         print("- - dump - -")  # Trailer line
@@ -812,9 +827,9 @@ class rdglob:  # Global variables for rfc-draw's objects
             return None, None
         item_id = item[0]
         item_type = self.drawing.type(item_id)
-        #print("@@@ rdg_closest, item_id %d, type %s" % (item_id, item_type))
-        #print("@ln@ closest(1): item %s (%s), mx,my %d,%d" % (
-        #        item, item_type, mx,my))
+        print("@@@ rdg_closest, item_id %d, type %s" % (item_id, item_type))
+        print("@ln@ closest(1): item %s (%s), mx,my %d,%d" % (
+                item, item_type, mx,my))
         if item_id in self.objects:
             obj = self.objects[item_id]  # item_id is a tkinter object id
             # object (e.g. rdo) has: key, obj, obj_ type, parent_id

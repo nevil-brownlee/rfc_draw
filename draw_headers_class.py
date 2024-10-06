@@ -116,15 +116,15 @@ class draw_headers:  # pkt header objects for rfc-draw
             print("?? ?? hdr_id %d, objects[%d] >%s<" % (
                 h_rdo.key, h_rdo.a_obj.hdr_id, self.rdg.objects[self.hdr_id]))
 
-            if self.rdg.new_drawing:  # and len(self.rows) == 0:
+            if self.rdg.new_drawing: #! and len(self.rows) == 0:
                 # Didn't read drawing from save file, need to draw col_nbrs
                 self.rdg.time_now("hdr, top line drawn 2")
                 self.h = h_rdo.a_obj
                 print("H H H startup self.rdg %s" % self.rdg)
                 self.rdg.time_now("hdr, hdr top line drawn")
-                self.hr = draw_headers.row(  # For col_nbrs
+                self.hr = draw_headers.row(  # Row 1, for col_nbrs
                    self.drawing, self.rdg, self, 2)  # lines
-                self.draw_col_nbrs(self.h, self.hr)  # OK, under (red) top line
+                self.draw_col_nbrs(self.h, self.hr)  # under (white) top line
                 # Draw row 1 (header's top row), just tics and col nbrs
                 print("<><> header.new h %s, rdg.new_drawing %s" % (
                     self, self.rdg.new_drawing))
@@ -632,7 +632,7 @@ class draw_headers:  # pkt header objects for rfc-draw
             self.h = self.h_obj.a_obj
             r = draw_headers.row(
                 self.drawing, self.rdg, self.h, self.r_lines)
-            #print("+++ row r >%s<" % r)
+            print("+++ row r >%s<" % r)
             if self.r_lines < 0:
                 self.r_lines = -self.r_lines;  self.vbl_len_row = True
             r.h_tag = "h_"+str(self.h.h_nbr)
@@ -743,7 +743,7 @@ class draw_headers:  # pkt header objects for rfc-draw
             #print(">.4 class field, text >%s< f_cx,f_cy %d,%d" % (
             #    self.f_cx, self.f_cy, text))
             self.text_obj = self.rdg.dtc_tool.restore_object(
-                (self.f_cx, self.f_cy), text, self.r.row_id,
+                (self.f_cx, self.f_cy), text, 2, self.r.row_id,
                 self.f_col, self.width)
             # restores the field's text, __and puts it into objects{}__
             #print(">>> 64 field.text_obj %s" % self.text_obj)
@@ -1199,6 +1199,7 @@ class draw_headers:  # pkt header objects for rfc-draw
         return " "*offset + s + " "*offset
 
     def near_row(self, mx,my, hn,rn):
+        print("near_row(): hn %d, rn %d" % (hn,rn))
         h = draw_headers.headers[hn-1]  # headers[0] is header 1
         r = h.rows[rn-1]
         r_rdo = self.rdg.objects[r.row_id]
@@ -1279,9 +1280,9 @@ class draw_headers:  # pkt header objects for rfc-draw
             mx, my = (event.x, event.y)  # Mouse position
             self.rdg.last_mx = mx;  self.rdg.last_my = my  # Last mouse position
             self.x0 = mx;  self.y0 = my
-            #print("# # # dg_b1_click: mode %s, %d,%d, %d objects, %s, %s" % (
-            #    self.rdg.ln_mode, mx, my, len(self.rdg.a_objs), 
-            #       event.widget, event.type))
+            print("# # # dg_b1_click: mode %s, %d,%d, %d objects, %s, %s" % (
+                self.rdg.last_mode, mx, my, len(self.rdg.objects), 
+                   event.widget, event.type))
             print("-0-0-0-0-")
             print("@@b1 current_object >%s<" % self.rdg.current_object)#? None
 
@@ -1297,13 +1298,14 @@ class draw_headers:  # pkt header objects for rfc-draw
                 #print(" @ @  self.drawing %s, self.root %s, self.rdg %s" % (
                 #    self.drawing, self.root, self.rdg))
                 print("@ @ @ h_nbr %s, h_coords %s" % (h_nbr, h_coords))
+                print("b1: nothing drawn, add header")
                 h_clo = draw_headers.header(self.drawing, self.root, self.rdg,
                     h_nbr, h_coords)  # Sets current_object
                 print("h_clo >%s<" % h_clo)
-                self.hr = draw_headers.row(
-                    self.drawing, self.rdg, h_clo, 2)  # lines
-                    # Draw row 1 (header's top row), just tics and col nbrs
-                draw_headers.header.draw_col_nbrs(self, h_clo, self.hr)
+                ##self.hr = draw_headers.row(
+                ##    self.drawing, self.rdg, h_clo, 2)  # lines
+                ##    # Draw row 1 (header's top row), just tics and col nbrs
+                ##draw_headers.header.draw_col_nbrs(self, h_clo, self.hr)
                 print("<><> header: h %s, rdg.new_drawing %s" % (
                     h_clo, self.hr))
                 self.rdg.region = self.rdg.far

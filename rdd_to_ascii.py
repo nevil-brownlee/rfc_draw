@@ -175,7 +175,6 @@ class asc_drawing:
         for n,ri in enumerate(self.txt_row_info):
             print("n %d, ri: %d, %3d,%3d, %3d,%3d" % (n, ri[0], ri[1],ri[2], ri[3],ri[4]))
         print("- - - - - -")
-
     def r_info(self, r_nbr, y0,y1, ry0,ry1):  # Diagnostic for rows
         return [r_nbr, y0,y1, ry0,ry1]
 
