@@ -1,0 +1,5 @@
+from tkinter.filedialog import askopenfilename
+save_file_name = (askopenfilename(
+    title="Select .rdd file; cancel box if none"))
+
+print("filename >%s<" % save_file_name)

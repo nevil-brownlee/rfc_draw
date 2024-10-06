@@ -1,0 +1,21 @@
+root_geometry 800x600+461+310
+mono_font width 10.2 height 17 pixels
+0 (text 1) [475, 341] "Free text example" 0 N
+1 (text 2) [477, 368] "Another text 1" 0 N
+2 (line 3) [388, 378, 388, 308, 563, 308, 563, 398] "a" 0 N
+3 (text 7) [475, 480] "Text not in a group" 0 N
+4 (n_rect 8) [428, 389, 511, 432] "n_rect" 0 N
+6 (group g1) [384, 306, 565, 434] "G" 1 group
+7 (group g2) [185, 165, 366, 293] "G" 2 group
+8 (line 12) [189, 237, 189, 167, 364, 167, 364, 257] "a" 0 N
+9 (n_rect 16) [272, 242, 355, 285] "n_rect" 0 N
+11 (text 18) [276, 200] "Free text example" 0 N
+12 (text 19) [278, 227] "Another text 2" 0 N
+  (g1 member 3) line [4, 72]
+  (g1 member 8) n_rect [44, 83]
+  (g1 member 1) text [91, 35]
+  (g1 member 2) text [93, 62]
+  (g2 member 12) line [4, 72]
+  (g2 member 16) n_rect [87, 77]
+  (g2 member 18) text [91, 35]
+  (g2 member 19) text [93, 62]

@@ -5,7 +5,7 @@
 ### Getting started:
 
 rfc-draw is written in python3, and uses the following modules:  
-&emsp; os. path, re, sys, time, datetime, threading, tkinter, playsound
+&emsp; os. path, re, math, sys, time, datetime, threading, tkinter, playsound
 &emsp; termios (for POSIX) or msvcrt (for Windows) 
 You can install these using pip (latest version),  
 &emsp; e.g. pip3 install tkinter

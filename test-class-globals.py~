@@ -1,0 +1,10 @@
+
+class draw_headers:
+    def __init__(self):
+        self.headers = []
+
+    def class c_a(self):
+        def __init__(self):
+            draw_headers.headers.append("c_a 1")
+
+            

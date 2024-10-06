@@ -1,0 +1,24 @@
+>>> header-rdd.txt: example of an rdd file of headers <<<
+
+0 (n_rect 1) [451, 343, 646, 440] "Text in n_rect" 0 N
+4 (n_rect 5) [107, 127, 302, 224] "Text in n_rect" 0 N
+2 (group g1) [429, 321, 668, 462] "G" 1 group
+  (g1 member 1) n_rect [22, 22]
+
+0 (field 1) [x10,x11] "text1"
+0 (field 2) [x20,x21] "text2"
+0 (field 3) [x10,x11] "text3"
+0 (field 4) [x20,x21] "text4"
+
+0 (frame 1) [x0,y0, x1,y1]
+0 (f1 member 1)
+0 (f1 member 2)
+
+0 (frame 2) [x0,y0, x1,y1]
+0 (f1 member 3)
+0 (f1 member 4)
+
+0 (header 7) [x0,y0, x1,y1]
+0 (h7 member 1)  # frame 1
+0 (h7 member 2)  # frame 2
+

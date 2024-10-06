@@ -10,7 +10,7 @@ import re
 
 class rdd_rw:
     def __init__(self, sys_argv, bw):  # i.e. sys.arg
-        print("starting rdd_rw - - -")
+        print("starting rdd_io.py - - -")
         self.objects = []   # rfc-draw objects
         self.obj_keys = {}  # old-key -> new-key for objects read from rdd
         self.default_bw = 5  # px
@@ -207,6 +207,8 @@ class rdd_rw:
         self.min_x = self.min_y = 50000;  self.max_x = self.max_y = 0
         self.t_min_y = self.t_max_y = self.t_min_x = self.t_max_x = "none"
         bw = self.border_width
+
+        self.dump_objects(">> .rdd file read <<")
         
         for obj in self.objects:
             coords = obj.i_coords

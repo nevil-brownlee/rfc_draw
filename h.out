@@ -1,0 +1,1000 @@
+ 1109  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1110  grep class_2 *.py
+ 1111  cd ~/rfc-draw
+ 1112  grep class_2 *.py
+ 1113  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1114  grep 'new field' *.py
+ 1115  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1116  ls
+ 1117  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1118  lrt
+ 1119  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1120  ls *.wav
+ 1121  ls ~/rfc-draw-bad/*.wav
+ 1122  lrt
+ 1123  cp test.rdd ~/rfc-draw-bad
+ 1124  cd ~/rfc-draw-bad
+ 1125  ls
+ 1126  ls *.py
+ 1127  ls ~/rfc-draw
+ 1128  cd ..
+ 1129  mv rfc-draw-bad rfc-draw-new
+ 1130  cd rfc-draw-new
+ 1131  ls
+ 1132  ls *_2*.py
+ 1133  mv arrow_lines_class_26.py arrow_lines_class.py
+ 1134  mv draw_headers_class_26.py draw_headers_class.py
+ 1135  ls *2_*.py
+ 1136  ls *_*.py
+ 1137  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1138  ls *.py
+ 1139  ls -lrt *.py
+ 1140  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1141  cd
+ 1142  ls -lrt
+ 1143  ls rfc-draw
+ 1144  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1145  cd rfc-draw
+ 1146  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1147  ls -lrt
+ 1148  ls -lrt 
+ 1149  cd rfc-draw-new
+ 1150  cd ../rfc-draw-new
+ 1151  ls
+ 1152  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1153  ls ~/rfc-draw
+ 1154  ls -lrt *.py
+ 1155  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1156  ls ~/rfc-draw/*.py
+ 1157  cp ~/rfc-draw/draw_headers_class.py .
+ 1158  cp ~/rfc-dtraw/arrow_lines_class.py .
+ 1159  ls *.py
+ 1160  cp ~/rfc-draw/arrow_lines_class.py .
+ 1161  cp ~/rfc-draw/draw_headers_class.py .
+ 1162  cp ~/rfc-draw/draw_lines_class.py .
+ 1163  cp ~/rfc-draw/draw_n_rects_class.py .
+ 1164  cp ~/rfc-draw/draw_texts_class.py .
+ 1165  cp ~/rfc-draw/r_buttons_class.py .
+ 1166  cp ~/rfc-draw/rfc_draw_globals_class.py .
+ 1167  cp ~/rfc-draw/rfc_draw.py .
+ 1168  cp ~/rfc-draw/rfc-draw.py .
+ 1169  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1170  cd 
+ 1171  lrt
+ 1172  cd rfc-draw
+ 1173  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1174  python3 rfc-draw.py 4-lines.rdd | tee xxx.out
+ 1175  ls *.rdd
+ 1176  cd rfc-draw-new
+ 1177  cd ~/rfc-draw-new
+ 1178  ls
+ 1179  python3 rfc-draw.py 4-lines.rdd | tee xxx.out
+ 1180  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1181  mv ~/rfc-draw ~/rfc-draw-test
+ 1182  ls -lrt ~/rfc-draw-test
+ 1183  python3 rfc-draw.py 4-lines.rdd | tee xxx.out
+ 1184  cd
+ 1185  mv rfc-draw-new rfc-draw
+ 1186  cd rfc-draw
+ 1187  python3 rfc-draw.py 4-lines.rdd | tee xxx.out
+ 1188  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1189  mv rfc-draw-new rfc-draw
+ 1190  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1191  cd rfc-draw
+ 1192  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1193  grep play *.py
+ 1194  grep import *.py
+ 1195  cd ..
+ 1196  lrt
+ 1197  ls rfc0draw-test
+ 1198  ls rfc-draw-test
+ 1199  cd rfc-draw-test
+ 1200  grep import *.py
+ 1201  ls -lrt *.wav
+ 1202  ls BSB*
+ 1203  cd
+ 1204  ls -lrt rfc-draw*/BSB*
+ 1205  cd rfc-draw
+ 1206  ls BSB*
+ 1207  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1208  grep new_drawing *.py
+ 1209  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1210  ls save-file*
+ 1211  cp test.rdd save-file.rdd
+ 1212  python3 rfc-draw.py  | tee xxx.out
+ 1213  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1214  python3 rfc-draw.py test22.rdd | tee xxx.out
+ 1215  lrt
+ 1216  python3 rfc-draw.py | tee xxx.out
+ 1217  ls BSB*
+ 1218  python3 rfc-draw.py | tee xxx.out
+ 1219  ls BSB*
+ 1220  mv BSB-counter_bell.wav BSB-counter-bell.wav 
+ 1221  python3 rfc-draw.py | tee xxx.out
+ 1222  ls BSB*
+ 1223  python3 rfc-draw.py | tee xxx.out
+ 1224  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1225  python3 rfc-draw.py 
+ 1226  python3 test.rdd rfc-draw.py 
+ 1227  less test.rdd
+ 1228  python3 rfc-drwa.py test.rdd rfc-draw.py 
+ 1229  python3 rfc-draw.py test.rdd rfc-draw.py 
+ 1230  python3 rfc-draw.py test.rdd 
+ 1231  python3 rfc-draw.py
+ 1232  ls BSB*
+ 1233  python3 try-sound
+ 1234  python3 try-sound.py
+ 1235  pip3 install pydub
+ 1236  python3 try-sound.py
+ 1237  rm try-sound.py
+ 1238  python3 rfc-draw.py
+ 1239  pip3 install play_sounds
+ 1240  lrt
+ 1241  python3 play-ball.py 
+ 1242  python3 rfc-draw.py
+ 1243  python3 rfc-draw.py test.rdd
+ 1244  lrt
+ 1245  cd rfc-draw
+ 1246  lrt
+ 1247  gedit xxx.out
+ 1248  python3
+ 1249  lrt
+ 1250  rm xxx.out
+ 1251  ls Audio
+ 1252  ls Audio/*
+ 1253  lrt
+ 1254  cd Audio
+ 1255  ls
+ 1256  cd rfc-draw
+ 1257  cd ~/rfc-draw
+ 1258  ls BSB*
+ 1259  python3 try-sound.py 
+ 1260  pip3 install play_sounds
+ 1261  python3 try-sound.py 
+ 1262  sudo pip3 install play_sounds
+ 1263  python3 try-sound.py 
+ 1264  grep tk. *&.py
+ 1265  python3 try-sound.py 
+ 1266  grep tk *.py
+ 1267  python3 try-sound.py 
+ 1268  pip3 install tkSnack
+ 1269  python3 try-sound.py 
+ 1270  sudo pip3 install winsound
+ 1271  python3 try-sound.py 
+ 1272  grep playsound *.py
+ 1273  python3 try-sound.py 
+ 1274  python3 rfc-draw.py
+ 1275  sudo pip3 install tkSnack
+ 1276  python3 rfc-draw.py
+ 1277  python3 n_bells
+ 1278  python3 try-sound.py 
+ 1279  python3 rfc-draw.py
+ 1280  python3 test.rdd
+ 1281  python3 rfc-draw.py test.rdd
+ 1282  python3 rfc-draw.py
+ 1283  ls -lrt *.rdd
+ 1284  python3 rfc-draw.py test.rdd
+ 1285  python3 rfc-draw.py
+ 1286  cd ..
+ 1287  grep '_2' */*.py 
+ 1288  grep '_26' */*.py 
+ 1289  grep '_28' */*.py 
+ 1290  cd rfc-draw
+ 1291  diff draw_headers_class.py draw_headers_class_26.py
+ 1292  ls -lrt draw_headers_class*.py
+ 1293  diff draw_headers_class.py draw_headers_class_28.py
+ 1294  mv draw_headers_class.py draw_headers_class_qqq.py
+ 1295  cp draw_headers_class_28.py draw_headers_class.py
+ 1296  python3 rfc-draw.py
+ 1297  lrt
+ 1298  mv draw_headers_class.py draw_headers_class_28.py
+ 1299  mv draw_headers_class_qqq.py draw_headers_class.py
+ 1300  python3 rfc-draw.py
+ 1301  python3 rfc-draw.py test.rdd
+ 1302  python3 rfc-draw.py
+ 1303  cd rfc-draw
+ 1304  python3 rfc-draw.py
+ 1305  cd rfc-draw
+ 1306  python3 rfc-draw.py
+ 1307  python3 rfc-draw.py | tee xxx.out
+ 1308  less draw_headers_class.py
+ 1309  python3 rfc-draw.py | tee xxx.out
+ 1310  ls -lrt draw_header_class*
+ 1311  ls -lrt draw_headers_class*
+ 1312  less draw_headers_class_28.py
+ 1313  cd rfc-draw
+ 1314  python3 rfc-draw.py | tee xxx.out
+ 1315  python3 rfc-draw.py test-fri6.rdd | tee xxx.out
+ 1316  python3 rfc-draw.py test.rdd | tee xxx.out
+ 1317  python3 rfc-draw.py
+ 1318  cat test-1626.rdd 
+ 1319  python3 rfc-draw.py 
+ 1320  lrt
+ 1321  cat test-1631.rdd 
+ 1322  python3 rfc-draw.py 
+ 1323  lrt
+ 1324  python3 rfc-draw.py test-1638.rdd 
+ 1325  python3 rfc-draw.py test-1644.rdd
+ 1326  cd rfc-draw
+ 1327  python3 rfc-draw.py 
+ 1328  python3 rfc-draw.py test-1658.rdd 
+ 1329  python3 rfc-draw.py
+ 1330  python3 rfc-draw.py test-1707.rdd 
+ 1331  python3 rfc-draw.py 
+ 1332  lrt
+ 1333  cat save-file.rdd 
+ 1334  python3 rfc-draw.py 
+ 1335  lrt
+ 1336  cat test-1713.rdd 
+ 1337  python3 rfc-draw.py test-1713.rdd 
+ 1338  python3 rfc-draw.py 
+ 1339  python3 rfc-draw.py test-1718.rdd 
+ 1340  cat test-1718.rdd 
+ 1341  python3 rfc-draw.py test-1718.rdd 
+ 1342  python3 rfc-draw.py
+ 1343  python3 rfc-draw.py test-1722.rdd 
+ 1344  cat test-1722.rdd 
+ 1345  python3 rfc-draw.py test-1722.rdd 
+ 1346  c test-1722.rdd 
+ 1347  cat test-1722.rdd 
+ 1348  python3 rfc-draw.py 
+ 1349  python3 rfc-draw.py fri6-test.rdd
+ 1350  lrt
+ 1351  cat fri6-test.rdd 
+ 1352  rm fri6-test.rdd 
+ 1353  python3 rfc-draw.py fri6-test.rdd
+ 1354  lrt
+ 1355  python3 rfc-draw.py fri6-test.rdd
+ 1356  cd rfc-draw
+ 1357  grep 'bdrb1' *.py
+ 1358  grep 'b1 single clock event *.py
+ 1359  grep 'b1 single clock event' *.py
+ 1360  grep 'b1 single click event' *.py
+ 1361  lrt
+ 1362  gedit xxx.out
+ 1363  gedit test-fri6.rdd 
+ 1364  gedit xxx.out
+ 1365  cd rfc-draw
+ 1366  python3 rfc-draw.py
+ 1367  python3 rfc-draw.py | tee xxx.out
+ 1368  lrt
+ 1369  cat test-sat7.rdd 
+ 1370  python3 rfc-draw.py test-sat7.rdd 
+ 1371  cat test-sat7.rdd 
+ 1372  python3 rfc-draw.py 
+ 1373  lrt
+ 1374  cat test-sat1643.rdd 
+ 1375  lrt
+ 1376  python3 rfc-draw.py test-sat1643.rdd 
+ 1377  python3 rfc-draw.py test-xxx.rdd
+ 1378  ls test*.rdd
+ 1379  rm test-xxx.rdd 
+ 1380  python3 rfc-draw.py test-xxx.rdd
+ 1381  python3 rfc-draw.py 
+ 1382  python3 rfc-draw.py test-sat1659.rdd
+ 1383  grep 'about to start' *.py
+ 1384  python3 rfc-draw.py test-sat1702.rdd
+ 1385  python3 rfc-draw.py test-sat1705.rdd
+ 1386  python3 rfc-draw.py test-sat1707.rdd
+ 1387  lrt
+ 1388  python3 rfc-draw.py test-sat1708.rdd
+ 1389  lrt
+ 1390  cat test-sat1708.rdd
+ 1391  python3 rfc-draw.py test-sat1708.rdd
+ 1392  cat test-sat1708.rdd
+ 1393  ls test*.rdd
+ 1394  cat 4-lines.rdd 
+ 1395  cat test-n_rect.rdd
+ 1396  cat test-sat1708.rdd
+ 1397  cat test-fri6.rdd
+ 1398  python3 rfc-draw.py test-sat1718.rdd
+ 1399  lrt
+ 1400  python3 rfc-draw.py test-sat1708.rdd
+ 1401  python3 rfc-draw.py test-cn.rdd
+ 1402  cat test-cn.rdd
+ 1403  python3 rfc-draw.py test-cn.rdd
+ 1404  ls *.rdd
+ 1405  cat save-1h2r.rdd
+ 1406  python3 rfc-draw.py save-1h2r.rdd
+ 1407  lrt
+ 1408  cat save-1h2r.rdd
+ 1409  python3 rfc-draw.py save-1h2r.rdd
+ 1410  python3 rfc-draw.py save-abc.rdd
+ 1411  lrt
+ 1412  python3 rfc-draw.py save-abc.rdd
+ 1413  ls -lrt *.rdd
+ 1414  rm test-1*.rdd
+ 1415  rm test-s*.rdd
+ 1416  ls -lrt *.rdd
+ 1417  rm test-fri6.rdd
+ 1418  rm test-cn.rd save-abc.rdd
+ 1419  ls -lrt *.rdd
+ 1420  rm test-cn.rdd
+ 1421  ls -lrt *.rdd
+ 1422  rm save-test.rdd 
+ 1423  rm test.rdd
+ 1424  ls -lrt *.rdd
+ 1425  rm r2abc.rdd 
+ 1426  ls -lrt *.rdd
+ 1427  python3 rfc-draw.py save-abc.rdd
+ 1428  lrt
+ 1429  cat save-abc.rdd
+ 1430  python3 rfc-draw.py save-abc.rdd
+ 1431  cat save-abc.rdd
+ 1432  cat save-h1r2.rdd
+ 1433  python3 rfc-draw.py save-h1r2.rdd
+ 1434  cat save-h1r2.rdd
+ 1435  python3 rfc-draw.py save-h1r2.rdd
+ 1436  mv save-file.rdd save-file-old.rdd
+ 1437  python3 rfc-draw.py
+ 1438  cat save-file-new.rdd 
+ 1439  python3 rfc-draw.py save-file-new.rdd 
+ 1440  python3 rfc-draw.py save-h1r2.rdd
+ 1441  cd rfc-draw
+ 1442  gedit xxx.out
+ 1443  cd rfc-draw
+ 1444  python3 rfc-draw.py save-h1r2.rdd
+ 1445  rm save-file.rdd
+ 1446  ls s*.rdd
+ 1447  python3 rfc-draw.py
+ 1448  lrt
+ 1449  python3 rfc-draw.py test-sun1507.rdd
+ 1450  lrt
+ 1451  python3 rfc-draw.py
+ 1452  python3 rfc-draw.py | tee xxx.out
+ 1453  python3 rfc-draw.py | tee xxx.out\
+ 1454  python3 rfc-draw.py | tee xxx.out
+ 1455  grep col_nbrs_drawn *.py
+ 1456  python3 rfc-draw.py | tee xxx.out
+ 1457  python3 rfc-draw.py test-sun1714 
+ 1458  python3 rfc-draw.py
+ 1459  lrt
+ 1460  rm save-file.rdd
+ 1461  python3 rfc-draw.py
+ 1462  python3 rfc-draw.py save-file.rdd
+ 1463  cat save-file.rdd
+ 1464  python3 rfc-draw.py save-file.rdd
+ 1465  rm save-file.rdd 
+ 1466  python3 rfc-draw.py 
+ 1467  cat save-file.rdd
+ 1468  cd rfc-dtraw
+ 1469  gedit xxx.out
+ 1470  cd rfc-draw
+ 1471  lrt
+ 1472  cat save-file.rdd
+ 1473  python3 rfc-draw.py
+ 1474  python3 rfc-draw.py | tee xxx.out
+ 1475  cd rfc-draw
+ 1476  grep 'save-file.rdd read' *.py
+ 1477  python3 rfc-draw.py | tee xxx.out
+ 1478  lrt
+ 1479  cat test-mon1425 
+ 1480  python3 rfc-draw.py test-mon1425  | tee xxx.out
+ 1481  rm save-file.rdd
+ 1482  python3 rfc-draw.py test-mon1425  | tee xxx.out
+ 1483  python3 rfc-draw.py  | tee xxx.out
+ 1484  lrt
+ 1485  python3 rfc-draw.py test-mon1432.rdd | tee xxx.out
+ 1486  lrt
+ 1487  cat test-mon1437.rdd 
+ 1488  python3 rfc-draw.py test-mon1437.rdd | tee xxx.out
+ 1489  python3 rfc-draw.py RFC9293-TCP.rdd
+ 1490  python3 rfc-draw.py
+ 1491  python3 rfc-draw.py RFC9293-TCP.rdd
+ 1492  cat save-file.rdd~ 
+ 1493  cat save-file.rdd
+ 1494  python3 rfc-draw.py
+ 1495  lrt
+ 1496  ls -lrt save-file*
+ 1497  rm save-file-abc.rdd 
+ 1498  rm save-file-xxx.rdd 
+ 1499  rm save-file-old.rdd 
+ 1500  rm save-file-new.rdd 
+ 1501  rm save-file.rdd 
+ 1502  rm save-file.rdd~
+ 1503  python3 rfc-draw.py
+ 1504  lrt
+ 1505  ls save-file*.rdd
+ 1506  python3 rfc-draw.py
+ 1507  python3 rfc-draw.py test-1457.rdd 
+ 1508  python3 rfc-draw.py
+ 1509  grep '"error"' *.py
+ 1510  python3 rfc-draw.py
+ 1511  python3 rfc-draw.py | tee xxx.out
+ 1512  lrt
+ 1513  python3 rfc-draw.py | tee xxx.out
+ 1514  rm save-file.rdd
+ 1515  python3 rfc-draw.py | tee xxx.out
+ 1516  lrt
+ 1517  python3 rfc-draw.py | tee xxx.out
+ 1518  ls BSB*
+ 1519  python3 rfc-draw.py | tee xxx.out
+ 1520  pip3 install threading
+ 1521  python3
+ 1522  lrt
+ 1523  pythpon3 test-threading.py 
+ 1524  python3 test-threading.py 
+ 1525  pythpon3 test-threading.py
+ 1526  python3 test-threading.py
+ 1527  python3 threading2
+ 1528  python3 threading2.py 
+ 1529  lrt
+ 1530  python3 threading2.py 
+ 1531  lrt
+ 1532  cat test-threading.py
+ 1533  python3 threading2.py
+ 1534  python3
+ 1535  python3 rfc-draw.py | tee xxx.out
+ 1536  python3 rfc-draw.py test-new-drawing.rdd | tee xxx.out
+ 1537  python3 rfc-draw.py new-drawing.rdd | tee xxx.out
+ 1538  cd rfc-draw
+ 1539  python3 rfc-draw.py new-drawing.rdd | tee xxx.out
+ 1540  lrt
+ 1541  rm new-drawing.rdd 
+ 1542  python3 rfc-draw.py test-new.rdd | tee xxx.out
+ 1543  cd rfc-draw
+ 1544  python3 rfc-draw.py test-new.rdd | tee xxx.out
+ 1545  lrt
+ 1546  rm test-new
+ 1547  rm test-new.rdd 
+ 1548  python3 rfc-draw.py test-new.rdd | tee xxx.out
+ 1549  cd rfc-draw
+ 1550  python3 rfc-draw.py test-new.rdd | tee xxx.out
+ 1551  lrt
+ 1552  python3 rfc-draw.py  | tee xxx.out
+ 1553  ls
+ 1554  lrt
+ 1555  python3 rfc-draw.py  | tee xxx.out
+ 1556  lrt
+ 1557  python3 rfc-draw.py  | tee xxx.out
+ 1558  cd rfc-draw
+ 1559  lrt
+ 1560  gedit xxx.out
+ 1561  cd rfc-draw
+ 1562  python3 sound_thread.py 
+ 1563  ls -lrt
+ 1564  cat sound_tread.py~
+ 1565  cat sound_thread.py~
+ 1566  python3 sound_thread.py 
+ 1567  python3 threading2.py 
+ 1568  cd rfc-draw
+ 1569  lrt
+ 1570  mv threading-exa,[ple.py threading-example.py
+ 1571  pyyhon3 threading-example.py 
+ 1572  python3 threading-example.py 
+ 1573  pythno3 threading-example.py
+ 1574  python3 threading-example.py
+ 1575  python3 rfc-draw.py  | tee xxx.out
+ 1576  ls BSB*
+ 1577  python3 rfc-draw.py  test-10sep.rdd| tee xxx.out
+ 1578  grep warning *.py
+ 1579  grep 'will write' *.py
+ 1580  python3 rfc-draw.py  test-10sep.rdd| tee xxx.out
+ 1581  lrt
+ 1582  python3 rfc-draw.py  test-10sep.rdd | tee xxx.out
+ 1583  python3 rfc-draw.py  test-10sep.rdd 
+ 1584  cd rfc-draw
+ 1585  python3 rfc-draw.py  test-10sep.rdd 
+ 1586  grep 'about to start' *.py
+ 1587  grep 'no file' *.py
+ 1588  python3 rfc-draw.py  test-10sep.rdd 
+ 1589  python3 rfc-draw.py
+ 1590  lrt
+ 1591  python3 rfc-draw.py test-tue10sep.rdd
+ 1592  cd rfc-draw
+ 1593  lrt
+ 1594  geedit xxx.out
+ 1595  gedit xxx.out
+ 1596  cd rfc-draw
+ 1597  ls draw*.py
+ 1598  python3 rfc-draw.py test-tue10sep.rdd
+ 1599  ls draw*.py
+ 1600  ls *.md
+ 1601  pi3 install playsound
+ 1602  pip3 install playsound
+ 1603  python3 rfc-draw.py 
+ 1604  mdview rfc-draw-manual.md
+ 1605  cd rfc-draw
+ 1606  mdview rfc-draw-manual.md
+ 1607  cd rfc-draw
+ 1608  git ls-files
+ 1609  git rm rdd-to-ascii.py
+ 1610  git rm rdd-to-svg.py
+ 1611  git add rdd_to_ascii.py
+ 1612  git add rdd_to_svg.py
+ 1613  ls diagrams
+ 1614  git push origin master
+ 1615  git config --global user.email "nevil.brownlee@gmail.com"
+ 1616  git config --global user.name "Nevil Brownlee"
+ 1617  git push -u origin master
+ 1618  git add rdd_to_ascii.py
+ 1619  git add rdd_to_svg.py
+ 1620  git push origin master
+ 1621  git ls
+ 1622  git status
+ 1623  git commit -m "Version 2.0"
+ 1624  git rm draw_groups_class.py 
+ 1625  git add draw_headers_class.py
+ 1626  git push origin main
+ 1627  hgit add rfc-draw.py
+ 1628  git add rfc-draw.py
+ 1629  git add draw_headers_class.py
+ 1630  git add r_buttons_class.py 
+ 1631  ls *.PY
+ 1632  ls *.py
+ 1633  git add rdd_globals.py
+ 1634  git add rdd_io.py
+ 1635  git add rfc-draw.py
+ 1636  git add BSB-small-bell.wav 
+ 1637  git add BSB-counter-bell.wav 
+ 1638  git push origin main
+ 1639  git commit -m "Version 2.0"
+ 1640  git add rfc_draw_globals.py
+ 1641  git add rfc_draw_globals_class.py
+ 1642  git add draw_headers_class.py
+ 1643  git commit -m "Version 2.0"
+ 1644  git push origin main
+ 1645  git add draw_lines_class.py 
+ 1646  git add draw_n_rects_class.py 
+ 1647  git add arrow_lines_class.py 
+ 1648  git add draw_texts_class.py
+ 1649  git add rfc-draw-manual.md
+ 1650  ls -lrt
+ 1651  git add rfc_draw_globals_class.py 
+ 1652  git push origin main
+ 1653  git ls
+ 1654  git push -u origin main
+ 1655  git ls
+ 1656  git --help
+ 1657  git status
+ 1658  git add  arrow_lines_class.py 
+ 1659  git restore --staged arrow_lines_class.py
+ 1660  grep svgwrite *.py
+ 1661  grep ' os' *.py
+ 1662  grep ' path' *.py
+ 1663  cd rfc-draw
+ 1664  lrt
+ 1665  tar -ztvf Python-3.4.10.tgz 
+ 1666  cd rfc-draw
+ 1667  ls -lrt
+ 1668  ls -lrt *.py
+ 1669  git add arrow_lines_class.py 
+ 1670  git add draw_lines_class.py 
+ 1671  git add draw_n_rects_class.py 
+ 1672  git add draw_texts_class.py 
+ 1673  ls -lrt example-diagrams/
+ 1674  ls -lrt *.rdd
+ 1675  cp RFC9491-NSH+SFC.rdd example-diagrams/
+ 1676  cp RFC9293-TCP.rdd    example-diagrams/
+ 1677  add example-digrams/RFC9293-TCP.rdd
+ 1678  git add example-digrams/RFC9293-TCP.rdd
+ 1679  ls RFC9491*.rdd
+ 1680  cp RFC9491-NSH+SFC.rdd example-diagrams/
+ 1681  cp RFC9293-TCP.rdd example-diagrams/
+ 1682  git add example-diagrams/RFC9293-TCP.rdd 
+ 1683  git add example-diagrams/RFC9491-NSH+SFC.rdd 
+ 1684  git commit -m "Version 2.0"
+ 1685  git push origin main
+ 1686  ls *.md
+ 1687  grep traceback *.py
+ 1688  grep mscvrt *.py
+ 1689  grep msvcrt *.py
+ 1690  grep math *.py
+ 1691  grep pathlib *.py
+ 1692  grep traceback *.py
+ 1693  grep pathlib *.py
+ 1694  grep path *.py
+ 1695  grep pathlib *.py
+ 1696  grep Path *.py
+ 1697  grep path *.py
+ 1698  grep is_file *.py
+ 1699  mdview README.md
+ 1700  ls -lrt
+ 1701  git add rfc-draw-manual.md
+ 1702  git add requirements.txt 
+ 1703  git add README.md
+ 1704  git add rfc-draw-manual.md
+ 1705  git commit -m "Version 2.0"
+ 1706  git push origin main
+ 1707  git push origin mai
+ 1708  git push origin main
+ 1709  ls example*
+ 1710  ls *.xml
+ 1711  ls rdd2*
+ 1712  ls -lrt
+ 1713  ls *.rdd
+ 1714  python3 rfc-draw.py test-figure.rdd
+ 1715  lrt
+ 1716  cd rfc-draw
+ 1717  python3 rfc-draw.py
+ 1718  killall snap-store 
+ 1719  sudo killall snap-store 
+ 1720  cd rfc-draw
+ 1721  python3 rfc-draw.py test-figure.rdd
+ 1722  pip3 install playsound
+ 1723  pip install playsound
+ 1724  python -m pip install playsound
+ 1725  python3 -m pip install playsound
+ 1726  apt install python3-playsound
+ 1727  pip3
+ 1728  pip list
+ 1729  pip install time
+ 1730  sudo apt install playsound
+ 1731  python -m pip install playsound --break-system-packages
+ 1732  python3 -m pip install playsound --break-system-packages
+ 1733  python3 rfc-draw.py
+ 1734  python3 rfc-draw.py test-figure.rdd 
+ 1735  ls -lrt
+ 1736  cd rfc-draw
+ 1737  grep os. *.py
+ 1738  ls -lrt *.py
+ 1739  ls BSB*
+ 1740  tar -cvf rfc-draw.tgz  rfc-draw.py, r_buttons_class.p.py, rfc_draw_globals_class.py  draw_lines_class.py, draw_n_rects_class.py, arrow_lines_class.py, draw_texts_class.py, draw_headers_class.py, BSB-counter-bell.wav  BSB-small-bell.wav
+ 1741  ls rfc-draw.py
+ 1742  tar -cvf rfc-draw.tgz  rfc-draw.py, r_buttons_class.p.py, rfc_draw_globals_class.py  draw_lines_class.py, draw_n_rects_class.py, arrow_lines_class.py, draw_texts_class.py, draw_headers_class.py, BSB-counter-bell.wav  BSB-small-bell.wav
+ 1743  tar -cvzf rfc-draw.tgz  rfc-draw.py, r_buttons_class.p.py, rfc_draw_globals_class.py  draw_lines_class.py, draw_n_rects_class.py, arrow_lines_class.py, draw_texts_class.py, draw_headers_class.py, BSB-counter-bell.wav  BSB-small-bell.wav
+ 1744  ls rfc-draw.py
+ 1745  tar -cvzf rfc-draw.tgz  rfc-draw.py r_buttons_class.p.py rfc_draw_globals_class.py  draw_lines_class.py draw_n_rects_class.py arrow_lines_class.py draw_texts_class.py draw_headers_class.py BSB-counter-bell.wav  BSB-small-bell.wav
+ 1746  tar -cvzf rfc-draw.tgz  rfc-draw.py r_buttons_class.py rfc_draw_globals_class.py  draw_lines_class.py draw_n_rects_class.py arrow_lines_class.py draw_texts_class.py draw_headers_class.py BSB-counter-bell.wav  BSB-small-bell.wav
+ 1747  lrt
+ 1748  cd rfc-draw
+ 1749  ls -lrt *.py
+ 1750  python3 sound_thread.py 
+ 1751  python3 time-test.py 
+ 1752  cd rfc-draw
+ 1753  python3 rfc-draw.py
+ 1754  ls save*.rdd
+ 1755  rm save-file.rdd
+ 1756  python3 rfc-draw.py
+ 1757  lrt
+ 1758  python3 rfc-draw.py test-n_rect.rdd
+ 1759  cat test-n_rect.rdd
+ 1760  python3 rfc-draw.py test-n_rect.rdd
+ 1761  ls *.rdd
+ 1762  cat n_rect.rdd
+ 1763  python3 rfc-draw.py n_rect.rdd
+ 1764  grep n_rect *.rdd
+ 1765  python3 rfc-draw.py test-n_rect.rdd
+ 1766  python3 rfc-draw.py 
+ 1767  lrt
+ 1768  cat save-file.rdd 
+ 1769  python3 rfc-draw.py 
+ 1770  cat save-file.rdd
+ 1771  python3 rfc-draw.py 
+ 1772  cat save-file.rdd 
+ 1773  python3 rfc-draw.py 
+ 1774  lrt
+ 1775  cat save-file.rdd
+ 1776  grep '???? val:' *.py
+ 1777  python3 rfc-draw.py 
+ 1778  python3 rfc-draw.py | tee xxx.out
+ 1779  cat save-file.rdd
+ 1780  ls *rect*.rdd
+ 1781  cat 2-n_rects.rdd 
+ 1782  python3 rfc-draw.py 2-n_rects.rdd 
+ 1783  cat 2-n_rects.rdd 
+ 1784  ls *rect*.rdd
+ 1785  cat save-n_rect-txt.rdd 
+ 1786  cat 2-n_rects.rdd 
+ 1787  cat t-5-v2n_rect.rdd 
+ 1788  cat test-n_rect.rdd
+ 1789  cat n_rect.rdd
+ 1790  python3 rfc-draw.py n_rect.rdd
+ 1791  lrt
+ 1792  cat n_rect.rdd
+ 1793  python3 rfc-draw.py | xxx.out n_rect.rdd
+ 1794  lrt
+ 1795  cat save-file.rdd
+ 1796  python3 rfc-draw.py n_rect.rdd | xxx.out
+ 1797  cat n_rect.rdd
+ 1798  python3 rfc-draw.py n_rect.rdd | xxx.out
+ 1799  lrt
+ 1800  cat n_rect.rdd
+ 1801  python3 rfc-draw.py n_rect.rdd
+ 1802  lrt
+ 1803  cat n_rect.rdd
+ 1804  cd rfc-draw
+ 1805  gedit xxx.out
+ 1806  g_edit
+ 1807  gedit
+ 1808  sudo apt  install gedit
+ 1809  gedit
+ 1810  sudo apt update
+ 1811  sudo apt-get -y install gnome-calculator
+ 1812  sudo apt autoremove
+ 1813  ls -lrt *.rdd
+ 1814  cd rfc-draw
+ 1815  ls -lrt *.rdd
+ 1816  cat n_rect.rdd
+ 1817  cat test-n_rect.rdd
+ 1818  python3 rfc-draw.py
+ 1819  cat save-file.rdd 
+ 1820  python3 rfc-draw.py
+ 1821  cat save-file.rdd 
+ 1822  rm test-n_rect.rdd
+ 1823  python3 rfc-draw.py test-n_rect.rdd
+ 1824  cat test-n_rect.rdd
+ 1825  cat RFC9293-TCP.txt
+ 1826  cat RFC9293-TCP.rdd
+ 1827  python3 rfc-draw.py test-n_rect.rdd | tee xxx.out
+ 1828  cat test-n_rect.rdd
+ 1829  lrt
+ 1830  cat test-n_rect.rdd
+ 1831  cat example-diagrams/RFC9293-TCP.rdd 
+ 1832  grep n_rect example-diagrams/*.rdd
+ 1833  python3 rfc-draw.py test-n_rect.rdd | tee xxx.out
+ 1834  cat test-n_rect.rdd
+ 1835  cat example-diagrams/RFC9293-TCP.rdd 
+ 1836  grep n_rect example-diagrams/*.rdd
+ 1837  cd rfc-draw
+ 1838  gedit xxx.out
+ 1839  cd rfc-draw
+ 1840  python3 rfc-draw.py
+ 1841  cat save-file.rdd
+ 1842  python3 rfc-draw.py
+ 1843  cat save-file.rdd
+ 1844  python3 rfc-draw.py | tee xxx.out
+ 1845  cat save-file.rdd
+ 1846  python3 rfc-draw.py | tee xxx.out
+ 1847  cat save-file.rdd
+ 1848  python3 rfc-draw.py | tee xxx.out
+ 1849  cat save-file.rdd
+ 1850  python3 rfc-draw.py | tee xxx.out
+ 1851  cat save-file.rdd
+ 1852  python3 rfc-draw.py | tee xxx.out
+ 1853  cat save-file.rdd
+ 1854  python3 rfc-draw.py | tee xxx.out
+ 1855  lrt
+ 1856  rm xxx.out
+ 1857  rm n_rect.rdd
+ 1858  python3 rfc-draw.py
+ 1859  lrt
+ 1860  mv save-file.rdd n_rect_text.rdd
+ 1861  python3 rfc-draw.py n_rect_text.rdd 
+ 1862  grep 
+ 1863  grep 'drawing nread from' *.py
+ 1864  grep 'drawing read from' *.py
+ 1865  grep 'Drawing read from' *.py
+ 1866  python3 rfc-draw.py n_rect_text.rdd 
+ 1867  ls -lrt *.py
+ 1868  git add rfc_draw_globals_class.py
+ 1869  git commit -m "4.1 text edit bug fixed"
+ 1870  python3 rfc-draw.py
+ 1871  git push origin main
+ 1872  cd rfc-edit
+ 1873  cd rfc-draw
+ 1874  gedit xxx.out
+ 1875  cd rfc-draw
+ 1876  ls -lrt *.rdd
+ 1877  rm ' test-n_rect.rdd'
+ 1878  pyhon3 rfc-draw.py 4-lines.rdd 
+ 1879  python3 rfc-draw.py 4-lines.rdd 
+ 1880  ls -lrt *.rdd
+ 1881  python3 rfc-draw.py save-h1r2.rdd
+ 1882  lrt
+ 1883  cat save-h1r2.rdd
+ 1884  python3 rfc-draw.py save-h1r2.rdd
+ 1885  ls -lrt *.rdd
+ 1886  cd example-diagrams/
+ 1887  ls
+ 1888  python3 rfc-draw.py draft-ietf-core-href-12.rdd
+ 1889  python3 rfc-draw.py example-diagrams/draft-ietf-core-href-12.rdd
+ 1890  cd ..
+ 1891  python3 rfc-draw.py example-diagrams/draft-ietf-core-href-12.rdd
+ 1892  ls example-diagrams/
+ 1893  python3 rfc-draw.py example-diagrams/5755-AC-Exchanges.rdd
+ 1894  ls -lrt\ example-diagrams/5755-AC-Exchanges.rdd
+ 1895  ls -lrt example-diagrams/5755-AC-Exchanges.rdd
+ 1896  python3 rfc-draw.py example-diagrams/5755-AC-Exchanges.rdd
+ 1897  cat example-diagrams/5755-AC-Exchanges.rdd
+ 1898  cat example-diagrams/RFC5755-AC-Exchanges.rdd
+ 1899  python3 rfc-draw.py example-diagrams/RFC5755-AC-Exchanges.rdd
+ 1900  ls -lrt *.rdd
+ 1901  python3 rfc-draw.py 2-n_rects.rdd 
+ 1902  cat 2-n_rects.rdd 
+ 1903  mv 2-n_rects.rdd bad-2n_rects.rdd
+ 1904  python3 rfc-draw.py bad-2-n_rects.rdd 
+ 1905  python3 rfc-draw.py bad-2n_rects.rdd 
+ 1906  python3 rfc-draw.py save-h1r2.rdd
+ 1907  mv save-h1r2.rdd h1r2.rdd
+ 1908  python3 rfc-draw.py h1r2.rdd
+ 1909  ls *.rdd
+ 1910  python3 rfc-draw.py monospace-text+line.rdd
+ 1911  cd rfc-draw
+ 1912  cd rfc-draw
+ 1913  python3 rfc-draw.py monospace-text+line.rdd
+ 1914  ls *.rdd
+ 1915  python3 rfc-draw.py n_rect+line+text+hdr.rdd  
+ 1916  ls *.rdd
+ 1917  python3 rfc-draw.py RFC4302-AH.rdd
+ 1918  mv RFC4302-AH.rdd example-diagrams/
+ 1919  python3 rfc-draw.py
+ 1920  python3 rfc-draw.py | tee xxx.out
+ 1921  grep '-=-=-=' *.py
+ 1922  grep "-=-=-=" *.py
+ 1923  python3 rfc-draw.py | tee xxx.out
+ 1924  gedit xxx.out 
+ 1925  cd rfc-draw
+ 1926  ls -lrt
+ 1927  ls -lrt rdd*.py
+ 1928  mv rdd-to-xmlfig.py rdd_to_xmlfig.py
+ 1929  git rm rdd-to-xmlfig.py 
+ 1930  git add  rdd_to_xmlfig.py 
+ 1931  ls -lrt
+ 1932  python3 rfc-draw.py test-n_rect.rdd
+ 1933  python3 rdd_to_ascii.py test-n_rect.rdd
+ 1934  lrt
+ 1935  cat test-n_rect.txt
+ 1936  python3 rfc-draw.py test-n_rect.rdd
+ 1937  python3 rdd_to_svg.py test-n_rect.rdd
+ 1938  pip3 install svgwrite
+ 1939  pip3 --break-system-packages install svgwrite
+ 1940  apt install python3-svgwrite
+ 1941  sudo apt install python3-svgwrite
+ 1942  python3 rdd_to_svg.py test-n_rect.rdd
+ 1943  lrt
+ 1944  python3 rdd_to_ascii.py test-n_rect.rdd
+ 1945  cat test-n_rect.txt
+ 1946  python3 rdd_to_ascii.py test-n_rect.rdd
+ 1947  cat test-n_rect.txt
+ 1948  python3 rdd_to_ascii.py test-n_rect.rdd
+ 1949  rt
+ 1950  lrt
+ 1951  python3 rdd_to_ascii.py test-n_rect.rdd
+ 1952  lrt
+ 1953  cat test-n_rect.txt
+ 1954  python3 rdd_to_ascii.py test-n_rect.rdd
+ 1955  cat test-n_rect.txt
+ 1956  python3 rdd_to_ascii.py test-n_rect.rdd
+ 1957  lrt
+ 1958  rm xxx.out
+ 1959  python3 rdd_to_ascii.py test-n_rect.rdd
+ 1960  python3 rdd_to_ascii.py test-n_rect.rdd | tee xxx.out
+ 1961  python3 rdd_to_ascii.py test-h1r2.rdd | tee xxx.out
+ 1962  ls *.rdd
+ 1963  python3 rfc-draw.py save-h1r1.rdd
+ 1964  python3 rfc-draw.py save-h1r2.rdd
+ 1965  ls *.rdd
+ 1966  python3 rfc-draw.py save-h1r2.rdd
+ 1967  cat save-h1r2.rdd
+ 1968  grep *h1*.rdd
+ 1969  ls *h1r1.rdd
+ 1970  ls *h1*.rdd
+ 1971  python3 rfc-draw.py h1r2.rdd 
+ 1972  python3 rdd_to_ascii.py h1r2.rdd | tee xxx.out
+ 1973  ls *n_rect*.rdd
+ 1974  python3 rfc-draw.py test-n_rect.rdd
+ 1975  python3 rdd_to_ascii.py test-n_rect.rdd
+ 1976  python3 rdd_to_ascii.py test_n_rect.rdd
+ 1977  ls *n_rect*.rdd
+ 1978  python3 rdd_to_ascii.py test-n_rect.rdd
+ 1979  lrt
+ 1980  python3 rdd_to_ascii.py monospace-text+line.rdd
+ 1981  python3 rfc-draw.py monospace-text+line.rdd
+ 1982  cd rfc-draw
+ 1983  git add rfc_draw_globals_class.py 
+ 1984  git push -m "Version 2.1"
+ 1985  git commit -m "Version 2.1"
+ 1986  git push origin main
+ 1987  python3 rdd_to_ascii.py test-n_rect.rdd
+ 1988  lrt
+ 1989  cat test-n_rect.txt
+ 1990  cd rfc-draw
+ 1991  grep 'Text in' *.rdd
+ 1992  grep 'Text in Rect' *.rdd
+ 1993  mv n_rect_text.rdd Rectangle-text.edd
+ 1994  python3 rfc-draw.py Rectangle-text.edd 
+ 1995  python3 rdd_to_ascii.py Rectangle-text.edd 
+ 1996  lrt
+ 1997  cat Rectangle-text.txt
+ 1998  python3 rdd_to_ascii.py Rectangle-text.edd | tee xxx.out
+ 1999  cat Rectangle-text.txt
+ 2000  python3 rdd_to_ascii.py Rectangle-text.edd | tee xxx.out
+ 2001  cat Rectangle-text.txt
+ 2002  python3 rdd_to_ascii.py Rectangle-text.edd | tee xxx.out
+ 2003  cat Rectangle-text.txt
+ 2004  lrt
+ 2005  ls *edd*
+ 2006  rm Rectabgle-text.edd
+ 2007  rm Rectangle-text.edd
+ 2008  python3 rdd_to_ascii.py Rectangle-text.rdd | tee xxx.out
+ 2009  ls REct*.rdd
+ 2010  ls Rect*.rdd
+ 2011  ls -lrt *.rdd
+ 2012  ls n_rect*.rdd
+ 2013  python3 rfc-draw.py
+ 2014  lrt
+ 2015  mv ' Text-in-Rectangle,rdd' Text-in-Rectangle.rdd
+ 2016  lrt
+ 2017  ls *-in-*
+ 2018  mv ' Text-in-Rectangle,rdd'$'\n''rdd' Text-in-Rectangle.rdd
+ 2019  lrt
+ 2020  python3 rfc-draw.py Text-in-Rectangle.rdd 
+ 2021  lrt
+ 2022  python3 rdd_to_ascii Text-in-Rectangle.rdd
+ 2023  python3 rdd_to_ascii.py Text-in-Rectangle.rdd
+ 2024  lrt
+ 2025  cat nr-frame.txt 
+ 2026  lrt
+ 2027  grep 'starting rdd_rw' *.py
+ 2028  cat Rectangle-text.txt 
+ 2029  cat Rectangle-text.rdd
+ 2030  lrt
+ 2031  cat Text-in-Rectangle.rdd 
+ 2032  grep 'starting rdd_rw' *.py
+ 2033  python3 rdd_to_ascii.py Text-in-Rectangle.rdd
+ 2034  python3 rdd_to_ascii.py Text-in-Rectangle.rdd | xxx.out
+ 2035  python3 rdd_to_ascii.py Text-in-Rectangle.rdd | tee xxx.out
+ 2036  python3 rfc-draw.py Text-in-Rectangle.rdd | tee xxx.out
+ 2037  python3 rdd_to_ascii.py Text-in-Rectangle.rdd | tee xxx.out
+ 2038  lrt
+ 2039  cat nr-frame.txt 
+ 2040  lrt
+ 2041  ls -lrt
+ 2042  cat rdd-to-ascii.py 
+ 2043  python3 rdd-to-ascii.py Text-in-Rectangle.rdd | tee xxx.out
+ 2044  ls rdd*.py
+ 2045  python3 rdd-to-ascii.py Text-in-Rectangle.rdd | tee xxx.out
+ 2046  lrt
+ 2047  cat Text-in-Rectangle.txt
+ 2048  python3 rdd-to-ascii.py Text-in-Rectangle.rdd | tee xxx.out
+ 2049  lrt
+ 2050  cat Text-in-Rectangle.txt 
+ 2051  python3 rdd_to_ascii.py Text-in-Rectangle.rdd | tee xxx.out
+ 2052  diff rdd_to_ascii.py rdd-to-ascii.py
+ 2053  python3 rdd_to_ascii.py Text-in-Rectangle.rdd | tee xxx.out
+ 2054  lrt
+ 2055  python3 rdd_to_ascii.py Text-in-Rectangle.rdd | tee xxx.out
+ 2056  lrt
+ 2057  python3 rdd_to_ascii.py Text-in-Rectangle.rdd | tee xxx.out
+ 2058* 
+ 2059  python3 rdd_to_ascii.py Text-in-Rectangle.rdd | tee xxx.out
+ 2060  git add rdd_to_ascii.py
+ 2061  git rm rdd-to-ascii.py
+ 2062  python3 rfc-draw test_n_rect.rdd | tee xxx.out
+ 2063* 
+ 2064  python3 rfc-draw.py monospace-text+line.rdd
+ 2065  python3 rdd_to_svg.py monospace-text+line.rdd
+ 2066  python3 rdd_to_ascii.py monospace-text+line.rdd
+ 2067* 
+ 2068  python3 rdd_to_ascii.py n_rect+line+text+hdr.rdd 
+ 2069  python3 rfc-draw.py n_rect+line+text+hdr.rdd 
+ 2070  python3 rdd_to_ascii.py monospace-text+line.rdd
+ 2071  python3 rfc-draw.py monospace-text+line.rdd
+ 2072  python3 rdd_to_ascii.py RFC2722-TM-Architecture.rdd
+ 2073  ls RFC*.rdd
+ 2074  python3 rdd_to_ascii.py RFC2722-TM-Architecture.rdd 
+ 2075  lrt
+ 2076  ls -lrt RFC2722*
+ 2077  python3 rdd_to_ascii.py RFC2722-TM-Architecture.rdd 
+ 2078  lrt
+ 2079  python3 rdd_to_ascii.py example-diagrams/RFC2722-TM-Architecture.rdd 
+ 2080  ls -lrt example-diagrams
+ 2081* 
+ 2082  python3 rdd_to_ascii.py RFC2722-TM-Architecture.rdd 
+ 2083  lrt
+ 2084  python3 rdd_to_ascii.py RFC2722-TM-Architecture.rdd 
+ 2085  lrt
+ 2086  python3 rdd_to_ascii.py RFC2722-TM-Architecture.rdd | tee xxx.out
+ 2087  lrt
+ 2088  python3 rdd_to_ascii.py RFC2722-TM-Architecture-v2.rdd | tee xxx.out
+ 2089  python3 rdd_to_ascii.py RFC2722-TM-Architecture-v1.rdd | tee xxx.out
+ 2090  lrt
+ 2091  ls -lrt RFC2722-TM-Architecture*
+ 2092  rm RFC2722-TM-Architecture.save
+ 2093  cat RFC2722-TM-Architecture.rdd
+ 2094  python3 rdd_to_ascii.py RFC2722-TM-Architecture.rdd | tee xxx.out
+ 2095  lrt
+ 2096  python3 rdd_to_ascii.py RFC2722-TM-Architecture.rdd | tee xxx.out
+ 2097  python3 rdd-to-ascii.py RFC2722-TM-Architecture.rdd | tee xxx.out
+ 2098  python3 rdd_to_ascii.py RFC2722-TM-Architecture.rdd | tee xxx.out
+ 2099  cat RFC2722-TM-Architecture.txt 
+ 2100  python3 rdd-to-ascii.py RFC2722-TM-Architecture.rdd | tee xxx.out
+ 2101  cat RFC2722-TM-Architecture.txt 
+ 2102  lrt
+ 2103  python3 rdd-to-ascii.py RFC2722-TM-Architecture.rdd | tee xxx.out
+ 2104  python3 rdd_to_ascii.py Text-in-Rectangle.rdd
+ 2105  cat Text-in-Rectangle.txt
+ 2106  python3 rdd-to-ascii.py RFC2722-TM-Architecture.rdd | tee xxx.out
+ 2107  history
+ 2108  history > h.out

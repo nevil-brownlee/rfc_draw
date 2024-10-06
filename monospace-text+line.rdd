@@ -1,0 +1,7 @@
+root_geometry 800x600+5+5
+drawing_size 784x533
+mono_font width 8 height 17 pixels
+last_mode rect
+1 (text 1) [617, 197] "+---------------+\n@   T   T   T   @\n+---------------+" 0 0 0
+2 (text 2) [336, 321] " This is some text\n  is it monospace?\n...---... yes, it is" 0 0 0
+3 (text 3) [436, 74] "012345678901234567890123456789012345678901234567890\n0         1         2         3         4         5" 0 0 0

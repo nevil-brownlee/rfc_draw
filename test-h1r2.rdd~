@@ -1,0 +1,9 @@
+root_geometry 800x600+5+5
+drawing_size 784x533
+mono_font width 8 height 17 pixels
+last_mode header
+1 (header 0) [173, 134, 697, 215] "H" 0 1 0
+2 (row 1) [173, 134, 697, 179] "R" 0 1 2
+3 (field 2) [182, 135, 691, 174] "0                   1                   2                   3  \n0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1" 1 0 32
+4 (row 3) [173, 179, 697, 215] "R" 0 2 1
+5 (field 35) [182, 180, 691, 210] "Row 2, with a long text string" 3 0 32

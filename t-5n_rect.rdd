@@ -1,0 +1,9 @@
+root_geometry 800x673+54+19
+drawing_size 784x606
+mono_font width 10.55 height 17 pixels
+0 (n_rect 1) [164, 242, 367, 281] "'Search' index" 0 N
+2 (n_rect 3) [157, 321, 367, 360] "Flow Table" 0 N
+4 (n_rect 5) [155, 400, 365, 443] "'Collect' index" 0 N
+6 (n_rect 7) [383, 37, 598, 70] "Current Rule Set" 0 N
+8 (n_rect 9) [99, 121, 241, 166] " Packet\nProcessor" 0 N
+10 (n_rect 11) [418, 121, 559, 176] " Packet\nMatching\n Engine" 0 N

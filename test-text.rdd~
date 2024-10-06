@@ -1,0 +1,4 @@
+root_geometry 800x600+5+5
+mono_font width 7 height 17 pixels
+0 (text 1) [617.0, 197.0] "+---------------+\n@   T   T   T   @\n+---------------+" 0 0 0
+1 (line 2) [585, 100, 585, 487] "a" 0 0 0

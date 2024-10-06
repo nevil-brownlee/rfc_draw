@@ -1,0 +1,12 @@
+root_geometry 800x600+5+5
+drawing_size 784x533
+mono_font width 8 height 17 pixels
+last_mode text
+1 (header 1) [147, 66, 671, 147] "H" 0 1 0
+2 (row 2) [147, 66, 671, 111] "R" 1 1 2
+3 (field 3) [156, 67, 665, 106] "0                   1                   2                   3\n0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1" 2 0 32
+4 (n_rect 4) [184, 214, 531, 376] "Text in Rectangle" 0 0 0
+6 (text 6) [321, 178] "Free text string" 0 0 0
+7 (line 9) [606, 287, 606, 444, 316, 444] "ab" 0 0 0
+10 (row 12) [147, 111, 671, 147] "R" 1 2 1
+11 (field 44) [156, 112, 665, 142] "-|-" 12 0 32

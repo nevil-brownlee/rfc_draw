@@ -1,0 +1,6 @@
+root_geometry 800x600+5+5
+drawing_size 784x533
+mono_font width 10.333 height 17 pixels
+last_mode text
+1 (text 1) [174, 133] "monospace medium font" 0 0 0
+2 (text 2) [167, 190] "Difference between rrr and iii" 0 0 0

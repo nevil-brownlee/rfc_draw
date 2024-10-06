@@ -1,0 +1,8 @@
+root_geometry 800x600+5+5
+drawing_size 784x533
+mono_font width 8 height 17 pixels
+last_mode text
+1 (text 1) [354, 157] "This is a line of text" 0 0 0
+2 (line 2) [195, 161, 508, 161] "nb" 0 0 0
+3 (line 3) [264, 77, 264, 189] "nb" 0 0 0
+4 (line 4) [440, 29, 440, 231] "nb" 0 0 0

@@ -1,0 +1,16 @@
+    class object:  # n_rect/text/line/grp* Objects for rfc-draw
+        def __init__(self, key, obj, obj_type, coords, text, parent_id, v1, v2):
+            obj_debug = True
+            if obj_debug:
+                s = "OBJECT: key %s, obj %s, obj_type %s, coords %s, " 
+                s +="text %s, parent %s, v1 %s, v2 %s"
+                print(s % (key, obj, obj_type, coords, text, parent_id, v1, v2))
+            self.key = key             # 0 key to self.objects
+            self.object = obj          # 1  Actual object
+            self.o_type = obj_type     # 2 Object type
+            self.i_coords = coords     # 3 Initial x,y coords (from rdd)
+            self.i_text = text         # 4 Initial text (from rdd)
+            self.parent_id = parent_id # 5 == 0 -> it's just a tk object
+            self.v1 = v1               # 6
+            self.v2 = v2               # 7
+	    self.deleted = False       # 8

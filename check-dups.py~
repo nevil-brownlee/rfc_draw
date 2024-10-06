@@ -1,0 +1,34 @@
+# 1045, Tue  2 Jan 2024 (NZDT)
+#
+# check-dups.py
+
+import sys
+
+l_dict = {}
+f_name = sys.argv[1]
+#print("f_name %s" % f_name)
+
+f = open(f_name, "r")
+for ln,line in enumerate(f):
+    ls = line.strip()
+    #print("line %d: >%s< (%d)" % (ln, ls, len(ls)))
+    if len(ls) != 0:
+        #print("+++ line >%s<" % ls)
+        if ls in l_dict:
+            #if ls != "#" and ls != '"""':
+            if not(ls in ["#", '"""', "else:"]): #and \
+                    #("if obj_type ==" not in ls) and \
+                    #("if obj.o_type ==" not in ls):
+                flag = ""
+                if "def " in line:
+                    flag = "<<<"
+                print("line %d is also at %d %s" % (ln+1, l_dict[ls], flag))
+                    #  ln+1 to match emacs line numbering
+                #exit()
+        else:
+            l_dict[ls] = ln+1
+
+
+
+
+

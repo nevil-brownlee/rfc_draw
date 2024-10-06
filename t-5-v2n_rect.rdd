@@ -1,0 +1,9 @@
+root_geometry 800x673+395+19
+drawing_size 784x606
+mono_font width 10.333 height 17 pixels
+1 (n_rect 11) [418, 121, 559, 176] " Packet\nMatching\n Engine" 12 N "+"
+3 (n_rect 11) [418, 121, 559, 176] " Packet\nMatching\n Engine" 12 N "+"
+5 (n_rect 11) [418, 121, 559, 176] " Packet\nMatching\n Engine" 12 N "+"
+7 (n_rect 11) [418, 121, 559, 176] " Packet\nMatching\n Engine" 12 N "+"
+9 (n_rect 11) [418, 121, 559, 176] " Packet\nMatching\n Engine" 12 N "+"
+11 (n_rect 11) [418, 121, 559, 176] " Packet\nMatching\n Engine" 12 N "+"

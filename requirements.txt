@@ -17,9 +17,4 @@ If that doesn't work, you may need to use a more up-to-date version of pip,
 i.e. one that matches your version of python, for example pip3.10
 
 
-Two .wav files (of bell sounds) are included in the rfc-draw distribution;
-these are from BigSoundBank, https://bigsoundbank.com/
-BigSoundBank is a "Free and Royalty Free" web site, with a large collection
-of .wav files.  These are "made available free of charge and freely for
-all your projects, whether commercial or not, and worldwide."
 

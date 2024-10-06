@@ -1,0 +1,5 @@
+| type   | key, coords,  text  |  parent_id  |   v1    |     v2    |
+|--------|---------------------|-------------|---------|-----------| 
+| header |    ,       ,   "H"  | top line id | hdr nbr |     0     |
+| row    |    ,       ,   "R"  | hdr id      | row nbr |  n_lines  |
+| field  |    ,       , f text | row id      | f_col   |   width   |

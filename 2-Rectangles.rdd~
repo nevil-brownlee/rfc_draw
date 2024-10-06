@@ -1,0 +1,8 @@
+root_geometry 800x600+5+5
+drawing_size 784x533
+mono_font width 8 height 17 pixels
+last_mode rect
+1 (n_rect 1) [35, 18, 539, 283] "Top left Rectangle" 0 0 0
+3 (n_rect 3) [317, 339, 677, 490] "Bottom Right Rectangle" 0 0 0
+5 (n_rect 5) [292, 314, 652, 465] "-+-" 0 0 0
+7 (n_rect 7) [267, 289, 627, 440] "-+-" 0 0 0

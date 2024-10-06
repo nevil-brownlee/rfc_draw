@@ -6,9 +6,9 @@ RFC-draw is a python tkinter-based drawing system, with three components:
 * _rfc-draw.py_ - interactive drawing program to create on-screen diagrams,   
    &emsp; and save them to rfc-draw-data (.rdd) files  
 
-* _rdd-to-svg.py_ - creates a drawing's SVG file that conforms to the RFC7996 SVG schema  
+* _rdd_to_svg.py_ - creates a drawing's SVG file that conforms to the RFC7996 SVG schema  
 
-* _rdd-to-ascii.py_ - creates a drawing's ASCII-art (.txt) file  
+* _rdd_to_ascii.py_ - creates a drawing's ASCII-art (.txt) file  
 
 rfc-draw.py let's you draw (with your mouse) four kinds of objects, 
 in three layers,

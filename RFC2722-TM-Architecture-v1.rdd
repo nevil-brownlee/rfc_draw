@@ -1,0 +1,22 @@
+root_geometry 800x673+54+19
+drawing_size 784x606
+mono_font width 10.55 height 17 pixels
+0 (n_rect 1) [164, 242, 367, 281] "'Search' index" 0 N
+2 (n_rect 3) [157, 321, 367, 360] "Flow Table" 0 N
+4 (n_rect 5) [155, 400, 365, 443] "'Collect' index" 0 N
+6 (n_rect 7) [383, 37, 598, 70] "Current Rule Set" 0 N
+8 (n_rect 9) [99, 121, 241, 166] " Packet\nProcessor" 0 N
+10 (n_rect 11) [418, 121, 559, 176] " Packet\nMatching\n Engine" 0 N
+12 (line 13) [477, 61, 477, 128] "a" 0 N
+13 (text 15) [330, 116] "'match key'" 0 N
+14 (text 16) [324, 167] "'flow key'" 0 N
+15 (text 17) [128, 223] "Ignore" 0 N
+16 (line 18) [214, 132, 426, 132] "a" 0 N
+17 (line 20) [424, 153, 210, 153] "a" 0 N
+18 (line 22) [165, 70, 165, 121] "a" 0 N
+19 (line 24) [194, 157, 194, 250] "a" 0 N
+20 (line 26) [261, 274, 261, 328] "a" 0 N
+21 (line 28) [260, 351, 260, 409] "a" 0 N
+22 (line 30) [258, 437, 258, 502] "a" 0 N
+23 (line 32) [128, 167, 128, 213] "a" 0 N
+24 (text 34) [178, 64] "packet\nheader" 0 N

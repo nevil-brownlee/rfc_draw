@@ -1,0 +1,15 @@
+<figure anchor="TBD">
+  <name>TBD</name>
+  <artset>
+    <artwork align="left" type="ascii-art">
+      <![CDATA[
+      <!-- ASCII text goes here -->
+      ]]>
+    </artwork>
+    <artwork align="center" type="svg">
+      asdfghjkl
+      <svg>
+      </svg>
+    </artwork>
+  </artset>
+</figure>

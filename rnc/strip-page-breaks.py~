@@ -1,0 +1,55 @@
+# 1617, Sun 10 Sep 2023 (NZST)
+#
+# strip-page-breaks.py:
+#   Given file SVG-1.2-RFC.rnc, taken from RFC 7996,
+#     strip out the 8 lines (3 blank, trailer, ^L, 2 blank) between pages
+#
+# Copyright 2023, Nevil Brownlee, Taupo NZ
+
+def page_break(ln, lbuf):
+    empty_lines = 0
+    has_rfc = has_ff = has_page = False
+    for j in range(0,8):
+        ls = lbuf[j]
+        if len(ls) == 0:
+            empty_lines += 1
+        if ls.find("Page") >= 0:
+            has_page = True
+        if ls == "\x0c":
+            has_ff = True
+        if  ls.startswith("RFC 7996"):
+            has_rfc = True
+        
+    #print("%4i  empty %d,  has RFC 7996 %s, has_ff %s, has_page %s" % (
+    #    ln, empty_lines, has_rfc, has_ff, has_page))
+
+    return has_rfc and has_ff and has_page and empty_lines == 5
+        # print("@@@@@@@@@@@@@@@@@ page break in lbuf")
+
+lbuf = [" "]*8;  lines_in_lbuf = 0
+
+f = open("SVG-1.2-RFC.rnc", "r")
+tf = open("tweaked.rnc", "w")
+ln = li = 0
+for line in f:
+    ln += 1
+    #print("%6i %6i >%s< len %d" % (li, ln, lbuf[li], lines_in_lbuf))
+    if lines_in_lbuf < 8:  # Filling lbuf
+        print("--- filling")
+        lbuf[li] = line.rstrip('\n')
+        li = (li+1)%8
+        lines_in_lbuf += 1
+    elif lines_in_lbuf == 8:  # Passing lines through lbuf
+        tf.write(lbuf[(li-7) % 8]+"\n")
+        lbuf[li] = line.rstrip('\n')
+        li = (li+1)%8
+        if page_break(ln, lbuf):
+            print("========= page break =========")
+            #lbuf = [" "]*8
+            li = lines_in_buf = 0  # Discard page-break lines
+
+while(lines_in_lbuf != 0):
+    tf.write(lbuf[(li-7) % 8]+"\n")  # Empty lbuf
+    li += 1
+    lines_in_lbuf -= 1
+tf.close()
