@@ -70,6 +70,8 @@ class rdglob:  # Global variables for rfc-draw's objects
     
         self.deleted_objects = []  # Objects deleted (using Delete key)
 
+        self.rects_drawn = 0
+
         # Patterns for reading the description string for an object
         #   . matches any character, except a newline (\n)
 
@@ -361,7 +363,7 @@ class rdglob:  # Global variables for rfc-draw's objects
                 print("a_obj = None");  x = 11/0
             #elif not str(obj):  # gives TypeError: __str__ returned non-string (type NoneType)
             #    print("a_obj: str() failed") 
-            #print("&&&  a_obj %s (%s)" % (obj, type(obj)))
+            print("&&&  a_obj %s" % (self.a_obj))
             self.o_type = obj_type     # 2 Object type
             self.i_coords = coords     # 3 Initial x,y coords (from rdd)
             self.i_text = text         # 4 Initial text (from rdd)
@@ -376,7 +378,7 @@ class rdglob:  # Global variables for rfc-draw's objects
             s = "<Key %s, Object %s, Type %s, I_coords %s, "
             s += "i_text %s, parent_id %s v1 %s, v2 %s>"
             ##print("@@ object, s >%s<" % s)
-            """
+
             print("self.key %s" % self.key)
             print("self.a_obj ", end="");  print(self.a_obj)
             print("self.o_type %s" % self.o_type)
@@ -385,7 +387,7 @@ class rdglob:  # Global variables for rfc-draw's objects
             print("self.parent_id %s" % self.parent_id)
             print("self.v1 %s" % self.v1)
             print("self.v2 %s" % self.v2)
-            """
+
             ##?rs = s % (self.key, self.a_obj, self.o_type, self.i_coords,
             #print("->> object str() s = %s" % s)
             rs = s % (self.key, self.a_obj, self.o_type, self.i_coords,
@@ -488,16 +490,16 @@ class rdglob:  # Global variables for rfc-draw's objects
     # Function to implement stacking order for widgets
     #     https://stackoverflow.com/questions/9576063
     def add_to_layer(self, layer, command, coords, **kwargs):
-        #print(">> add_to_layer(%d, %s, %s  | %s <<" % (
-        #    layer, command, coords, kwargs))
+        print(">> add_to_layer(%d, %s, %s  | %s <<" % (
+            layer, command, coords, kwargs))
         layer_tag = "layer %s" % layer
         if layer_tag not in self._layers: self._layers.append(layer_tag)
         tags = kwargs.setdefault("tags", [])
-        #print("ADD_TO_LAYER: tags %s (%s)" % (tags, type(tags)))
+        print("ADD_TO_LAYER: tags %s (%s)" % (tags, type(tags)))
         tags.append(layer_tag)
         item_id = command(coords, **kwargs)
         tags = self.drawing.gettags(item_id)
-        #print("add_to_layer %d: tags "% layer, end="");  print(tags)
+        print("add_to_layer %d: tags "% layer, end="");  print(tags)
         self._adjust_layers()
         return item_id
 
@@ -578,6 +580,7 @@ class rdglob:  # Global variables for rfc-draw's objects
     def save_to_rdd(self, save_file_name):  # Write rfc-draw data (.rdd) file
         # Called from 'Save' r_button, and from rfc-draw.on_closing 
         #print("save_to %s, %d objects" % (save_file_name, len(self.objects)))
+        self.dump_objects("About to save!")
         print(r"/\/\/ len(objects) = %d" % len(self.objects))
         self.drawing.update()
         dw = self.drawing.winfo_reqwidth()
@@ -695,8 +698,10 @@ class rdglob:  # Global variables for rfc-draw's objects
             new_key = r_obj.key
         elif o_type == "n_rect": # layer 2
             t = self.drc_tool  #  Above three are classes <<<
-            r_obj = t.restore_object(coords, text, parent_id, v1, v2)
-            new_key = r_obj.key
+            nro_obj = t.restore_object(coords, text, parent_id, v1, v2)
+            #nro_obj = self.rdg.object(nro.rect_id, nro, "n_rect",
+            #    r_coords, r_text, parent_id, v1, v2)
+            new_key = nro_obj.key
         elif o_type == "header":  # Nothing drawn for a header
             t = self.dhc_tool
             #print("::: text %s, parent_id %d" % (text, parent_id))
