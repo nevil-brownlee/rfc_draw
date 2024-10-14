@@ -45,18 +45,17 @@ class draw_texts:  # text objects for rfc-draw
         self.drawing.bind_class('Canvas','<ButtonRelease-1>',self.tx_b1_release)
         
     def restore_object(self, t_coords, t_text, l_nbr, parent_id, v1, v2):
-        print("DTC.restore_object: l_coords %s, l_text >%s<, l_nbr %d, parent_id %s, v1 %s, v2 %s" % (
+        print("DTC.restore_object: l_coords %s, t_text >%s<, l_nbr %d, parent_id %s, v1 %s, v2 %s" % (
             t_coords, t_text, l_nbr, parent_id, v1, v2))
         self.text_id = self.rdg.add_to_layer(l_nbr, 
-            self.drawing.create_text, t_coords, text=t_text,
-            anchor=tk.CENTER, activefill="red",
-            font=self.f_font)
-        #print("self.text_id  now %d" % self.text_id)
+            self.drawing.create_text, t_coords,
+            text=t_text, anchor=tk.CENTER, activefill="red", font=self.f_font)
+        print("self.text_id  now %d" % self.text_id)
         text_obj = self.rdg.object(self.text_id, self.text_id,
             "text", t_coords, t_text, parent_id, v1, v2)
         self.rdg.objects[self.text_id] = text_obj
         self.rdg.current_object = text_obj
-        #print("new_text: objects %s" % self.rdg.objects)
+        print("new_text: objects %s" % self.rdg.objects)
         return text_obj
 
     def undraw(self, val):  # For rdgc.on_delete_key()
