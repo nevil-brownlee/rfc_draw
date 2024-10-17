@@ -44,18 +44,22 @@ class draw_texts:  # text objects for rfc-draw
         self.drawing.bind_class('Canvas','<Button1-Motion>',self.tx_b1_motion)
         self.drawing.bind_class('Canvas','<ButtonRelease-1>',self.tx_b1_release)
         
-    def restore_object(self, t_coords, t_text, l_nbr, parent_id, v1, v2):
-        print("DTC.restore_object: l_coords %s, t_text >%s<, l_nbr %d, parent_id %s, v1 %s, v2 %s" % (
-            t_coords, t_text, l_nbr, parent_id, v1, v2))
-        self.text_id = self.rdg.add_to_layer(l_nbr, 
-            self.drawing.create_text, t_coords,
-            text=t_text, anchor=tk.CENTER, activefill="red", font=self.f_font)
+    def restore_object(self, t_coords, t_text, parent_id, v1, v2):
+        #print("t_coords %s, t_text %s, parent_id %d, v1 %d, v2 %d" % (
+        #    self.t_coords, self.t_text, self.parent_id, self.v1, self.v2))
+
+        print("DTC.restore_object: t_coords %s, t_text >%s<, parent_id %s, v1 %s, v2 %s, self.text_id %s" % (
+            t_coords, t_text, parent_id, v1, v2, self.text_id))
+        self.text_id = self.rdg.add_to_layer(3, 
+            self.drawing.create_text, t_coords, text=t_text,
+            anchor=tk.CENTER, activefill="red",
+            font=self.f_font)
         print("self.text_id  now %d" % self.text_id)
         text_obj = self.rdg.object(self.text_id, self.text_id,
             "text", t_coords, t_text, parent_id, v1, v2)
         self.rdg.objects[self.text_id] = text_obj
         self.rdg.current_object = text_obj
-        print("new_text: objects %s" % self.rdg.objects)
+        #print("new_text: objects %s" % self.rdg.objects)
         return text_obj
 
     def undraw(self, val):  # For rdgc.on_delete_key()
@@ -128,7 +132,7 @@ class draw_texts:  # text objects for rfc-draw
         if item == None:
             print("no tk objects in drawing yet!")
             tx_str = "--" + str(len(self.rdg.objects)+1) + "--"
-            self.restore_object([mx, my], tx_str, 3, 0, 0, 0)
+            self.restore_object([mx, my], tx_str, 0, 0, 0)
         else:
             #print("item = %s, obj = |%s|" % (item, obj))
             item_ix = item[0]
