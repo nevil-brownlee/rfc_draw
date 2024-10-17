@@ -1,0 +1,31 @@
+root_geometry 981x700+106+167
+drawing_size 965x633
+mono_font width 10.55 height 17 pixels
+0 (n_rect 1) [262, 201, 460, 265] " Mediation\nDevice (MD)" 0 N
+2 (n_rect 3) [54, 201, 174, 261] "IAR IAP" 0 N
+4 (n_rect 5) [264, 374, 443, 444] "Content\n  IAP" 0 N
+6 (text 7) [220, 254] "IRI(e)" 0 N
+7 (line 8) [273, 424, 373, 424] "a" 0 N
+8 (line 10) [440, 411, 540, 411] "a" 0 N
+9 (text 12) [216, 402] "User" 0 N
+10 (text 13) [496, 400] "User" 0 N
+11 (text 14) [213, 434] "content" 0 N
+12 (line 15) [166, 412, 266, 412] "a" 0 N
+13 (text 17) [494, 434] "content" 0 N
+14 (line 18) [323, 135, 323, 200] "a" 0 N
+15 (line 20) [299, 260, 299, 375] "a" 0 N
+16 (line 22) [409, 373, 409, 263] "a" 0 N
+17 (text 24) [420, 167] "MD Provisioning\nInterface (b)" 0 N
+18 (text 25) [234, 323] " Intercept\nRequest (d)" 0 N
+19 (text 26) [479, 327] "Intercepted\nContent (f)" 0 N
+20 (n_rect 27) [589, 69, 657, 262] "LEA" 0 N
+22 (line 29) [448, 248, 591, 248] "a" 0 N
+23 (n_rect 31) [234, 67, 465, 135] "LI Administration \n       Function" 0 N
+25 (line 33) [589, 105, 450, 105] "a" 0 N
+26 (line 35) [450, 223, 596, 223] "a" 0 N
+27 (text 37) [523, 89] "HI1 (a)" 0 N
+28 (text 38) [524, 214] "HI2 (g)" 0 N
+29 (text 39) [524, 267] "HI2 (h)" 0 N
+30 (line 40) [169, 233, 264, 233] "a" 0 N
+31 (line 42) [264, 213, 169, 213] "a" 0 N
+32 (text 44) [216, 198] "(c)" 0 N

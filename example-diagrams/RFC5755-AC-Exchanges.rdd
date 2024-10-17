@@ -1,0 +1,22 @@
+root_geometry 800x600+888+19
+drawing_size 784x533
+mono_font width 10.333 height 17 pixels
+0 (n_rect 1) [66, 192, 187, 238] "Client" 0 N
+2 (n_rect 3) [384, 192, 510, 238] "Server" 0 N
+4 (n_rect 5) [204, 330, 346, 386] "Repository" 0 N
+6 (line 9) [333, 351, 420, 351, 420, 239] "a" 0 N
+7 (line 11) [100, 108, 100, 196] "a" 0 N
+8 (line 13) [87, 195, 87, 107] "a" 0 N
+9 (line 16) [98, 234, 98, 349, 216, 349] "a" 0 N
+10 (line 19) [229, 365, 84, 365, 84, 222] "a" 0 N
+11 (line 22) [434, 233, 434, 366, 327, 366] "a" 0 N
+12 (text 23) [170, 155] "Client     \nAcquisition" 0 N
+13 (text 24) [146, 292] "Client\nLookup" 0 N
+14 (text 25) [491, 297] "Server\nLookup" 0 N
+15 (line 28) [422, 206, 422, 94, 184, 94] "a" 0 N
+16 (line 31) [186, 80, 436, 80, 436, 225] "a" 0 N
+17 (n_rect 32) [64, 70, 189, 109] "AC issuer" 0 N
+19 (text 34) [320, 56] "Server Acquisition" 0 N
+20 (text 35) [289, 198] "AC \"push\"" 0 N
+21 (text 36) [289, 252] "(part of app.\n protocol" 0 N
+22 (line 38) [409, 212, 168, 212] "a" 0 N
