@@ -1,17 +1,16 @@
 
-rfc-draw is a python application.  
+rfc-draw is a python3 application.  
 If you don't already have python installed on your computer,  
-   you could take a look at https://realpython.com/installing-python/  
+&emsp;you could take a look at https://realpython.com/installing-python/  
 
 To use rfc-draw you'll need to install the following python modules:  
-   os, math, pathlib, re, sys, time, datetime, threading,  
-   playsound, tkinter, traceback (for POSIX and windows),  
-   termios (for POSIX) or msvcrt (for Windows)    
+&emsp;os, math, pathlib, re, sys, time, datetime, threading,  
+&emsp;playsound, tkinter, traceback (for POSIX and windows),  
+&emsp;termios (for POSIX) or msvcrt (for Windows)    
 
-To install a python module, e.g. tkinter, use pip, python's package  
+To install a python3 module, e.g. tkinter, use pip3, python's package  
 manager; the (POSIX) command is  
-   pip3 install tkinter  
-  
+&emsp;pip3 install tkinter  
+
 If that doesn't work, you may need to use a more up-to-date version of pip,  
 i.e. one that matches your version of python, for example pip3.10  
-
