@@ -1,0 +1,4 @@
+root_geometry 800x600+5+5
+drawing_size 784x533
+mono_font width 10.333 height 17 pixels
+0 (n_rect 1) [128, 96, 291, 177] "Example figure" 0 N

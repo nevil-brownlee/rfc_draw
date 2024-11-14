@@ -1,0 +1,10 @@
+import time, datetime
+
+t = datetime.datetime.now()
+print("start t %s" % t)
+
+t2 = time.perf_counter()
+print("start t2 %s" % t2)
+
+print("/n/n   %s" % t2-t)
+

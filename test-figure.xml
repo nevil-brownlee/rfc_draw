@@ -1,0 +1,21 @@
+<figure anchor="TBD">
+  <name>TBD</name>
+  <artset>
+    <artwork align="left" type="ascii-art">
+      <![CDATA[
+      <!-- ASCII text goes here -->
+                           
+ +----------------------+  
+ |                      |  
+ |    Example figure    |  
+ |                      |  
+ +----------------------+  
+                           
+      ]]>
+    </artwork>
+    <artwork align="center" type="svg">
+<?xml version="1.0" encoding="utf-8" ?>
+<svg baseProfile="tiny" height="88" version="1.2" viewBox="0 0 170 88" width="170" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink"><defs /><rect fill="white" height="81" stroke="black" stroke-width="1" width="163" x="3" y="3" /><text font-family="monospace" font-size="17" font-weight="bold" x="12.5" y="50">Example</text><text font-family="monospace" font-size="17" font-weight="bold" x="95.164" y="50">figure</text></svg>
+    </artwork>
+  </artset>
+</figure>

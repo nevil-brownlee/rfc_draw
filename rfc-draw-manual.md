@@ -55,7 +55,11 @@ rfc-draw (and SVG) draw their objects in successive *layers.*
 Layer 1 (the lowest) contains all your lines, and is drawn first.  
 Layer 2 is then drawn over layer 1, it contains your rectangles.  
 &emsp;This means that ends of your lines don't need to meet exactly
+<<<<<<< HEAD
 at rectangle edges,
+=======
+at rectangle edges,  
+>>>>>>> bb2fc05e01308a55b20ef7aa6af2272ed298e213
 &emsp;it's easier to draw them with ends a little inside rectangles!  
 Layer 3 (the highest) contains your texts and headers.  
 

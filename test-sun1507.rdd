@@ -1,0 +1,6 @@
+root_geometry 800x600+5+5
+drawing_size 784x533
+mono_font width 8 height 17 pixels
+last_mode header
+1 (header 1) [125, 129, 649, 174] "H" 0 1 0
+2 (row 2) [125, 129, 649, 174] "R" 1 1 2

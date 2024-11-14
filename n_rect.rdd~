@@ -1,0 +1,4 @@
+root_geometry 800x600+5+5
+drawing_size 784x533
+mono_font width 10.333 height 17 pixels
+1 (n_rect 3) [192.0, 158.0, 475.0, 309.0] "text in n_rect" 0 0 0
