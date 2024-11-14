@@ -4,12 +4,7 @@
 # 1603, Sun  1 Oct 2023 (NZDT)
 # 1232, Wed 28 Sep 2022 (NZDT)
 #
-<<<<<<< HEAD
-# rfc-draw: Nevil's tkinter program to draw images
-# for SVG-RFC-1.2 (RFC 7996) diagrams
-=======
 # rfc-draw: Nevil's tkinter program to draw images for SVG-RFC-1.2 diagrams
->>>>>>> bb2fc05e01308a55b20ef7aa6af2272ed298e213
 #
 # Copyright 2024, Nevil Brownlee, Taupo NZ
 
@@ -31,11 +26,7 @@ import rfc_draw_globals_class as rdgc  # rfc-draw globals and functions
 import draw_n_rects_class as drc  # Handles n_rect objects
 import draw_lines_class as dlc    # Handles line objects
 import draw_texts_class as dtc    # Handles text objects
-<<<<<<< HEAD
 import draw_headers_class as dhc   # Handles pkt header objects
-=======
-import draw_headers_class as dhc  # Handles pkt header objects
->>>>>>> bb2fc05e01308a55b20ef7aa6af2272ed298e213
 
 root = Tk()  # Main window
 root.title("RFC-draw")
