@@ -1,7 +1,0 @@
-
-s = "<Key %s, Object %s, Type %s, I_coords %s, "
-s += "i_text %s, parent_id %s v1 %s, v2 %s>"
-print("->> object str() s = %s" % s)
-rs = s % (self.key, self.object, self.o_type, self.i_coords,
-          self.i_text, self.parent_id, self.v1, self.v2)
-print("->> object str() s = %s" % s)

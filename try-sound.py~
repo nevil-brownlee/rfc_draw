@@ -1,6 +1,0 @@
-from pydub import AudioSegment
-from pydub.playback import play
-
-#song = AudioSegment.from_wav("BSB-counter-bell.wav")
-song = AudioSegment.from_wav("small-bell.wav")
-play(song)

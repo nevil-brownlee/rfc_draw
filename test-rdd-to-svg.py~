@@ -1,3 +1,0 @@
-import rdd_to_svg, sys
-
-rdd_to_svg.svg_drawing(sys.argv)

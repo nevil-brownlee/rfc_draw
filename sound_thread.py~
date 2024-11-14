@@ -1,8 +1,0 @@
-
-import threading
-from playsound import playsound
-
-sound_thread = threading.Thread(target=lambda:ring_bell(
-    playsound("BSB-counter-bell.wav") )
-
-sound_thread.start()

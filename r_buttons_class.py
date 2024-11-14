@@ -126,7 +126,3 @@ if __name__ == "__main__":
  
     Tk().after(0, change_button)
     root.mainloop()
-<<<<<<< HEAD
-
-=======
->>>>>>> bb2fc05e01308a55b20ef7aa6af2272ed298e213
