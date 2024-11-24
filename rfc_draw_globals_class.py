@@ -10,6 +10,7 @@
 # Copyright 2024, Nevil Brownlee, Taupo NZ
 
 import os.path, re, sys, time, datetime, threading
+import faulthandler
 from playsound import playsound
 global posix
 try:
@@ -37,7 +38,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         self.drawing = parent;  self.root = root;  self.m_text = m_text
         self.rdg = self
         print(">>> m-text = >%s<" % self.m_text)
-
+        
         #self.f_font = tk.font.Font(  # Initialise class variables
         #    family= TkFixedFont)  # This doesn't work, below version does <<<
         self.f_font = "TkFixedFont"  # Looks fine, but a bit too light
@@ -69,33 +70,23 @@ class rdglob:  # Global variables for rfc-draw's objects
     
         self.deleted_objects = []  # Objects deleted (using Delete key)
 
+        self.rects_drawn = 0
+
         # Patterns for reading the description string for an object
         #   . matches any character, except a newline (\n)
 
-<<<<<<< HEAD
-        rere_0_4 = "(\d+)\s+\((.+)\s+(.+)\)\s+\[(.+)\]\s+\"(.+)\""
-            # field   0        1      2          3          4
-            #       objid    type    skey       coords     text 
-
-        rere_v1 = rere_0_4 + "\s+(\S)\s+([\s\S]+)\Z"
-=======
         rere_0_4 = r"(\d+)\s+\((.+)\s+(.+)\)\s+\[(.+)\]\s+\"(.+)\"" # Raw string
             # field   0        1      2          3          4
             #       objid    type    skey       coords     text 
 
         rere_v1 = rere_0_4 + r"\s+(\S)\s+([\s\S]+)\Z" # Raw string
->>>>>>> 3e80bef30c0e91ca652da39bddf9abf4bdb7aeac
         print("*** rere_v1 %s" % rere_v1)
         ###rere_v1 = rere_0_4 + "\s+(.+)\s+(.+)\Z"
             # rdd v1:              5      6
             #                     g_nbr  g_type
             #                   '0  N' or '1 group'
 
-<<<<<<< HEAD
-        rere_v2 = rere_0_4 + "\s+(\S+)\s+(\S+)\s+(\S+)(\s.+)?"
-=======
         rere_v2 = rere_0_4 + r"\s+(\S+)\s+(\S+)\s+(\S+)(\s.+)?" # Raw string
->>>>>>> 3e80bef30c0e91ca652da39bddf9abf4bdb7aeac
             #                      5       6       7      8
             #              parent_id,     v1,     v2    Optional comment
         self.rdd_e_v1 = re.compile(rere_v1)
@@ -352,10 +343,9 @@ class rdglob:  # Global variables for rfc-draw's objects
             #    s +="text %s, parent %s, v1 %s, v2 %s"
             #    print(s % (key, obj, obj_type, coords, text, parent_id, v1, v2))
             self.key = key             # 0 key to self.objects
-            self.a_obj = obj           # 1  Actual object
             if not obj:
                 print("a_obj = None");  x = 11/0
-            #elif not str(obj):  # gives TypeError: __str__ returned non-string (type NoneType)
+            self.a_obj = obj           # 1  Actual object
             #    print("a_obj: str() failed") 
             #print("&&&  a_obj %s (%s)" % (obj, type(obj)))
             self.o_type = obj_type     # 2 Object type
@@ -368,7 +358,6 @@ class rdglob:  # Global variables for rfc-draw's objects
             self.v2 = v2               # 7
 
         def __str__(self):
-            ##??s = "<Key %s, Object %s, Type %s, I_coords %s, "
             s = "<Key %s, Object %s, Type %s, I_coords %s, "
             s += "i_text %s, parent_id %s v1 %s, v2 %s>"
             ##print("@@ object, s >%s<" % s)
@@ -381,9 +370,7 @@ class rdglob:  # Global variables for rfc-draw's objects
             print("self.parent_id %s" % self.parent_id)
             print("self.v1 %s" % self.v1)
             print("self.v2 %s" % self.v2)
-            """
-            ##?rs = s % (self.key, self.a_obj, self.o_type, self.i_coords,
-            #print("->> object str() s = %s" % s)
+            #"""
             rs = s % (self.key, self.a_obj, self.o_type, self.i_coords,
                 self.i_text, self.parent_id, self.v1, self.v2)
             ##print("->> object str() rs = %s" % rs)
@@ -426,23 +413,27 @@ class rdglob:  # Global variables for rfc-draw's objects
         return None  # Unknown type
     
     def get_save_string(self, val):  # For object val
-<<<<<<< HEAD
-        ##print("get_save_string: val %s" % val)
-=======
         print("get_save_string: val %s" % val)
->>>>>>> 3e80bef30c0e91ca652da39bddf9abf4bdb7aeac
         if val.o_type == "text":
             # Texts use an integer instead of an object!
             ds = self.dtc_tool.mk_save_str(val)
             ##$return ds  #$$s_proc("%d %s" % (j, ds))
         elif val.o_type == "header":
+            print("?.?.? val >%s<" % val)
+            if val.o_type != "header":
+                print("$$$ val >%s<" % val)
             ds = self.dhc_tool.header.mk_save_str(self, val)
+            print("***header save_string >%s" % ds)
         elif val.o_type == "row":
             #print("ROW mk_save_string, dhc_tool.row >%s" % self.dhc_tool.row)
             ds = self.dhc_tool.row.mk_save_str(self, val)
-            #print(">?>? ds >%s<" % ds)
+            print(">?>? ds >%s<" % ds)
         elif val.o_type == "field":
+            print("&&&& get_save_string, o_type field, val >%s<" % val)
             ds = self.dhc_tool.field.mk_save_str(self, val)
+            print("&*&* ds >%s<" % ds)
+            if ds == "no_col_nbrs":
+                print("field ds: no_col_nbrs")
         elif val.o_type == "bar":
             ds = self.dhc_tool.bar.mk_save_str(self, val)
         else:
@@ -450,8 +441,6 @@ class rdglob:  # Global variables for rfc-draw's objects
             ds = val.a_obj.mk_save_str(val)
             print("   ds: >%s<" % ds)
         print("get_save_string >%s<" % ds)
-        if not ds:
-            x = 0;  j = 99/x
         return ds
     
     def dump_objects(self, heading):
@@ -464,7 +453,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         for key in self.objects:
             val = self.objects[key]
             j += 1
-            ##print("!@!@ j %d, val %s" % (j, val))
+            print("!@!@ j %d, val %s" % (j, val))
             ds = self.get_save_string(val)
             print("%d %s" % (j, ds))
         print("- - dump - -")  # Trailer line
@@ -519,12 +508,12 @@ class rdglob:  # Global variables for rfc-draw's objects
         self.fn = fn
         if not os.path.isfile(fn):  # No save_file
             self.display_msg("New drawing, will write %s on closing" % fn, \
-                "warning")
+                "normal")
             self.new_drawing = True;
             print("self.rdg.fn >%s<" % self.fn)
         else:  # save_file exists
             if fn == "save-file.rdd":
-                self.display_msg("File save-file.rdd exists!", "error")
+                self.display_msg("File save-file.rdd exists!", "warning")
             else:
                 self.display_msg("Read rdd file %s" % fn, "normal")
             ##  10.333 px width, 17 px height work well for TkFixedFont !
@@ -566,6 +555,7 @@ class rdglob:  # Global variables for rfc-draw's objects
                         # OK to here
                         #print("=== back from restore_object")
             self.display_msg("Drawing read from: %s" % fn, 'error')
+            # Use tag 'error' to make small bell sound here
         self.dump_objects("Read all rdd lines")
         #print("self.obj_keys >%s<" % self.obj_keys)
         #for old, new in self.obj_keys.items():
@@ -575,8 +565,9 @@ class rdglob:  # Global variables for rfc-draw's objects
         
     def save_to_rdd(self, save_file_name):  # Write rfc-draw data (.rdd) file
         # Called from 'Save' r_button, and from rfc-draw.on_closing 
-        #print("save_to %s, %d objects" % (save_file_name, len(self.objects)))
-        print("/\/\/ len(objects) = %d" % len(self.objects))
+        print("save_to %s, %d objects" % (save_file_name, len(self.objects)))
+        print(r"/\/\/ len(objects) = %d" % len(self.objects))
+        self.dump_objects("about to save rdd file")
         self.drawing.update()
         dw = self.drawing.winfo_reqwidth()
         dh = self.drawing.winfo_reqheight()
@@ -586,24 +577,22 @@ class rdglob:  # Global variables for rfc-draw's objects
         s_file.write("drawing_size %dx%d\n" % (dw,dh))
         s_file.write("mono_font width 8 height 17 pixels\n")
         s_file.write("last_mode %s\n" % self.last_mode)
-        #self.dump_objects("save_to_rdd()")
-        #print(" $  $  $  $  $")
+        self.dump_objects("save_to_rdd()")
+        print(" $..$..$")
 
         j = 0
         for key in self.objects.keys():
             j += 1
             val = self.objects[key]  # Write objects to .rdd first
-            state = self.rdg.drawing.itemcget(key, "state")
-            #print(":+0: j %d, key %s, save_to_rdd: val >%s< %s state %s" % (
-            #    j, key, val, val.i_coords, state))
-            if state == tk.HIDDEN:  # Don't save HIDDEN (i.e. deleted) objects
-                print("^^^ %s is HIDDEN" % val)
-            else:
+            # Don't write text with n_rect parent to rdd!
+            if val.o_type != "text" or val.parent_id == 0:
+                state = self.rdg.drawing.itemcget(key, "state")
+                # returns "hidden", rather than tk.HIDDEN !!!
+                print(":+0: j %d, key %s, save_to_rdd: val >%s< %s state %s" % (
+                    j, key, val, val.i_coords, state))
                 ds = self.get_save_string(val)
-                #print("save_to_rdd @1.5 >%s<" % ds)
-                if len(ds) == 0:
-                    print("????? len(ds) == 0 ????")
-                elif val.o_type != "text" or val.parent_id == 0:  # 1706, 8 Mar
+                if not ds is None:
+                    print("$@j %d, ds >%s<" % (j, ds))
                     s_file.write("%d %s\n" % (j, ds))
 
     def new_text(self, mx, my, t_text, parent_id):
@@ -660,9 +649,9 @@ class rdglob:  # Global variables for rfc-draw's objects
         #text = text.replace('\\"', '"')
         #print("fields[5] %s" % fields[5])
         parent_id = int(fields[5])
+        print("parent_id %s (%s)" % (parent_id, type(parent_id)))
         if parent_id != 0:
             parent_id = int(self.obj_keys[parent_id])
-        print("parent_id %s (%s)" % (parent_id, type(parent_id)))
         print(">> fields[6] >%s<" % fields[6])
         if fields[6] == "N":  # v1 rdd file
             v1 = v2 = 0
@@ -698,16 +687,16 @@ class rdglob:  # Global variables for rfc-draw's objects
         elif o_type == "header":  # Nothing drawn for a header
             t = self.dhc_tool
             #print("::: text %s, parent_id %d" % (text, parent_id))
-            #??r_obj = t.restore_object(coords, text, parent_id, v1, v2)
-            #?? this did n't work, "missing 2 args, v1 and v2" !!!!!
-            #new_key = r_obj.key
             h_clo = dhc.draw_headers.header(
-                self.drawing, self.root, self.rdg, v1, coords)
+                self.drawing, self.root, self.rdg, v1, coords, v2)
+            if v2 == 1:  # no_col_nbrs
+                self.rdg.drawing.itemconfigure(
+                    h_clo.hdr_id, state=tk.HIDDEN)  # hdr top (white) line
             dhc.draw_headers.headers.append(h_clo)
             h_key = h_clo.hdr_id
             h_rdo = self.object(h_key, h_clo, "header",
                 coords, text, parent_id, v1, v2)
-            #print("- - - h_rdo >%s<" % h_rdo)
+            print("- - - h_rdo >%s<" % h_rdo)
             self.objects[h_key] = h_rdo
             new_key = h_key
             #print("@@ rso: h_key %d, h_rdo %s" % (h_key, h_rdo))
@@ -908,19 +897,15 @@ class rdglob:  # Global variables for rfc-draw's objects
                 lr_len = round((t_obj.v2-len(new_text))/2)
                 lr_fill = " "*lr_len
                 nt = (lr_fill + new_text + lr_fill + " ")[0:t_obj.v2]
-<<<<<<< HEAD
-                self.objects[t_obj.parent_id].i_text = nt
-            #print("  ! ! ! self.objects[self.text_id] >%s<" % self.objects[self.text_id])
-=======
                 self.objects[t_obj.parent_id].i_text = new_text
             elif self.objects[t_obj.parent_id].o_type == "n_rect":
                 self.objects[t_obj.parent_id].a_obj.text = new_text
                 print("parent [%s]" % self.objects[t_obj.parent_id])
+                del self.objects[t_obj.key]
                 ###t_obj.a_obj.text = integer, i.e, tk item id
                 #print("n_rect edited: %s" % t_obj)
                 #self.dump_objects("text edited %s" %
                 #    self.objects[self.text_id])
->>>>>>> 3e80bef30c0e91ca652da39bddf9abf4bdb7aeac
         else:
             self.objects[self.text_id].i_text = new_text
             self.dump_objects("After edit text")
