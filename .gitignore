@@ -1,1 +1,6 @@
 __pycache__
+rfc-draw-notes.txt
+test-rdds/
+__pycache/
+.gitignore
+*.rdd
