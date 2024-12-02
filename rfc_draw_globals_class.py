@@ -413,34 +413,34 @@ class rdglob:  # Global variables for rfc-draw's objects
         return None  # Unknown type
     
     def get_save_string(self, val):  # For object val
-        print("get_save_string: val %s" % val)
+        #$print("get_save_string: val %s" % val)
         if val.o_type == "text":
             # Texts use an integer instead of an object!
             ds = self.dtc_tool.mk_save_str(val)
             ##$return ds  #$$s_proc("%d %s" % (j, ds))
         elif val.o_type == "header":
-            print("?.?.? val >%s<" % val)
-            if val.o_type != "header":
-                print("$$$ val >%s<" % val)
+            #$print("?.?.? val >%s<" % val)
+            #$if val.o_type != "header":
+            #$    print("$$$ val >%s<" % val)
             ds = self.dhc_tool.header.mk_save_str(self, val)
-            print("***header save_string >%s" % ds)
+            #$print("***header save_string >%s" % ds)
         elif val.o_type == "row":
             #print("ROW mk_save_string, dhc_tool.row >%s" % self.dhc_tool.row)
             ds = self.dhc_tool.row.mk_save_str(self, val)
-            print(">?>? ds >%s<" % ds)
+            #$print(">?>? ds >%s<" % ds)
         elif val.o_type == "field":
-            print("&&&& get_save_string, o_type field, val >%s<" % val)
+            #$print("&&&& get_save_string, o_type field, val >%s<" % val)
             ds = self.dhc_tool.field.mk_save_str(self, val)
-            print("&*&* ds >%s<" % ds)
-            if ds == "no_col_nbrs":
-                print("field ds: no_col_nbrs")
+            #$print("&*&* ds >%s<" % ds)
+            #4if ds == "no_col_nbrs":
+            #4    print("field ds: no_col_nbrs")
         elif val.o_type == "bar":
             ds = self.dhc_tool.bar.mk_save_str(self, val)
         else:
             print("???? val: %s" % val)
             ds = val.a_obj.mk_save_str(val)
             print("   ds: >%s<" % ds)
-        print("get_save_string >%s<" % ds)
+        #$print("get_save_string >%s<" % ds)
         return ds
     
     def dump_objects(self, heading):
@@ -453,9 +453,9 @@ class rdglob:  # Global variables for rfc-draw's objects
         for key in self.objects:
             val = self.objects[key]
             j += 1
-            print("!@!@ j %d, val %s" % (j, val))
+            #$print("!@!@ j %d, val %s" % (j, val))
             ds = self.get_save_string(val)
-            print("%d %s" % (j, ds))
+            #$print("%d %s" % (j, ds))
         print("- - dump - -")  # Trailer line
         
     def get_object(self, item_ix):
@@ -652,7 +652,8 @@ class rdglob:  # Global variables for rfc-draw's objects
         print("parent_id %s (%s)" % (parent_id, type(parent_id)))
         if parent_id != 0:
             parent_id = int(self.obj_keys[parent_id])
-        print(">> fields[6] >%s<" % fields[6])
+            print("@@ new parent_id %s" % parent_id)
+        print(">> fields[6] >%s<" % fields[6])  # v1
         if fields[6] == "N":  # v1 rdd file
             v1 = v2 = 0
         else:
@@ -661,14 +662,14 @@ class rdglob:  # Global variables for rfc-draw's objects
             #print("v1 %s (%s)" % (v1, type(v1)))
             if len(fields) == 9:  # v2 match (Optional comment is fields[8])
                 v2 = int(fields[7])
-                #print("v1 %d, v2 %d" % (v1, v2))
+                print("o_type %s, v1 %d, v2 %d" % (fields[1], v1, v2))
             else:
                 print("rdd pattern match failed !!!");  exit()
             #print("v2 %s (%s)" % (v2, type(v2)))
 
         # v1 and v2 are for header, row and field objects
-        #print("RO: %s %s %s >%s< %d %d %d" % (
-        #    o_type, s_key, coords, text, parent_id, v1,v2))
+        print("RSO: %s %s %s >%s< %d %d %d" % (
+            o_type, s_key, coords, text, parent_id, v1,v2))
         # dhc_tool needs o_type
         #print("restore_saved_object: o_type >%s<" % o_type)
         old_key = int(fields[2])
@@ -699,13 +700,15 @@ class rdglob:  # Global variables for rfc-draw's objects
             print("- - - h_rdo >%s<" % h_rdo)
             self.objects[h_key] = h_rdo
             new_key = h_key
-            #print("@@ rso: h_key %d, h_rdo %s" % (h_key, h_rdo))
-            #self.rdg.dump_objects("restored header <<<")
+            print("@@ rso: h_key %d, h_rdo %s" % (h_key, h_rdo))
+            self.rdg.dump_objects("restored header <<<")
         elif o_type == "row":
-            new_key = self.obj_keys[parent_id]
-            h_clo = self.objects[new_key].a_obj
-            h_rdo = self.objects[h_clo.hdr_id]
-            #print("$$ $$ restoring row, v2 %s (%s)" % (v2, type(v2)))
+            h_rdo = self.objects[parent_id]
+            print("row's h_rdo %s" % h_rdo)
+            h_clo = h_rdo.a_obj
+            ##print("+=+= r_clo >%s<" % r_clo)
+            h_rdo = self.objects[h_clo.hdr_id] # was .hdr_id
+            print("$$ $$ restoring row, v2 %s (%s)" % (v2, type(v2)))
             r_clo = dhc.draw_headers.row(self.drawing, self.rdg, h_clo, v2)
             if v2 < 0:
                 r_clo.vbl_len_row = True
@@ -954,7 +957,6 @@ class rdglob:  # Global variables for rfc-draw's objects
             print("inserting d_obj = >%s< (%s)" % (d_obj, d_obj.o_type))
             o_type = d_obj.o_type
             if d_obj.o_type == "text":
-                # text objects use Tk id for object and key!
                 self.dtc_tool.restore_object(d_obj.i_coords, d_obj.i_text,
                     d_obj.parent_id, d_obj.v1, d_obj.v2)
             #elif o_type == "field" or o_type == "row" or o_type == "field":
