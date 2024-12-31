@@ -45,16 +45,11 @@ class draw_texts:  # text objects for rfc-draw
         self.drawing.bind_class('Canvas','<ButtonRelease-1>',self.tx_b1_release)
         
     def restore_object(self, t_coords, t_text, parent_id, v1, v2):
-<<<<<<< HEAD
-        #print("DTC.restore_object: l_coords %s, l_text >%s<, parent_id %s, v1 %s, v2 %s, self.text_id %s" % (
-        #    t_coords, t_text, parent_id, v1, v2, self.text_id))
-=======
         #print("t_coords %s, t_text %s, parent_id %d, v1 %d, v2 %d" % (
         #    self.t_coords, self.t_text, self.parent_id, self.v1, self.v2))
 
         print("DTC.restore_object: t_coords %s, t_text >%s<, parent_id %s, v1 %s, v2 %s, self.text_id %s" % (
             t_coords, t_text, parent_id, v1, v2, self.text_id))
->>>>>>> 3e80bef30c0e91ca652da39bddf9abf4bdb7aeac
         self.text_id = self.rdg.add_to_layer(3, 
             self.drawing.create_text, t_coords, text=t_text,
             anchor=tk.CENTER, activefill="red",
