@@ -58,9 +58,9 @@ if __name__ == "__main__":
     rdd_name = rdd_fn.split(".")[0]
     xmlfig_name = rdd_name + ".xml"
     xf = open(xmlfig_name, "w")
-    xf.write("<figure anchor=\"TBD\">\n")
-    xf.write("  <name>TBD</name>\n")
-    xf.write("  <artset>\n")
+    #xf.write("<figure anchor=\"TBD\">\n")
+    ##xf.write("  <name>TBD</name>\n")
+    ##xf.write("  <artset>\n")
     xf.write("    <artwork align=\"left\" type=\"ascii-art\">\n")
     xf.write("      <![CDATA[\n")
     xf.write("      <!-- ASCII text goes here -->\n")
@@ -69,14 +69,14 @@ if __name__ == "__main__":
         xf.write(line)
     af.close()
     xf.write("      ]]>\n")
-    xf.write("    </artwork>\n")
-    xf.write("    <artwork align=\"center\" type=\"svg\">\n")
-    sf = open(rdd_name+".svg", "r")  # Copy ascii version
-    for line in sf:
-        xf.write(line)
-    sf.close()
-    xf.write("      </svg>\n")
+    #xf.write("    </artwork>\n")
+    #xf.write("    <artwork align=\"center\" type=\"svg\">\n")
+    #sf = open(rdd_name+".svg", "r")  # Copy ascii version
+    #for line in sf:
+    #    xf.write(line)
+    #sf.close()
+    ##xf.write("      </svg>\n")
     xf.write("    </artwork>\n")
     xf.write("  </artset>\n")
-    xf.write("</figure>\n")
+    #xf.write("</figure>\n")
     xf.close()

@@ -16,17 +16,18 @@ class svg_drawing:
         if len(sys_argv) == 1:  # sys_argv[0] = name of program 
             print("No .rdd file specified ???")
             from tkinter.filedialog import askopenfilename
-            rdd_fn = (askopenfilename(title="Select .rdd source file"))
+            self.rdd_fn = (askopenfilename(title="Select .rdd source file"))
         elif len(sys_argv) >= 2:
-            rdd_fn = sys_argv[1]
+            self.rdd_fn = sys_argv[1]
         elif len(sys_argv) >= 3:
             self.bw = int(sys_argv[2])
-        print("rdd_fn %s,  border_width %s" % (rdd_fn, self.bw))
+        print("self.rdd_fn %s,  border_width %s" % (self.rdd_fn, self.bw))
         self.rdd_i = rdd_io.rdd_rw(sys_argv, self.bw) 
         print("rddi >%s< (%s)" % (self.rdd_i, type(self.rdd_i)))
-        self.rdd_fn = self.rdd_i.rdd_fn  #;  self.border_width = self.rddi.border_width
+        self.rdd_fn = self.rdd_i.rdd_fn
+        #;  self.border_width = self.rddi.border_width
         self.objects, self.di = self.rdd_i.read_from_rdd()
-        self.rdd_i.dump_objects("read in by rdd_io")
+        #self.rdd_i.dump_objects("read in by rdd_io")
         self.debug = False   # svg colour always black
                              # True uses hd_colours to show row is which!
         
@@ -75,10 +76,10 @@ class svg_drawing:
             font_family="monospace",font_size=int(self.f_height),
             font_weight="normal",
             ##width=x_size, height=y_size,
-            profile='tiny', version='1.2',
+            profile='basic', version='1.2',  # tiny -> basic,  1 Jan 2025
             size=(x_size,y_size))
+
         self.dr_calls = 0
-                                
         self.draw_objects("line")    # layer 1
         self.draw_objects("n_rect")  # layer 2
         self.draw_objects("text")    # layer 3
@@ -87,10 +88,7 @@ class svg_drawing:
         self.draw_objects("field")
 
         self.draw_frame(0,0, x_size,y_size)  # 1:1 scaling
-
-    def map(self, x,y):
-        mx = x-self.min_x+self.bw;  my = y-self.min_y+self.bw
-        return mx,my
+        self.strip_qxml(self.filename)
 
     def r_colour(self, r_nbr):
         if self.debug:
@@ -414,6 +412,21 @@ class svg_drawing:
             self.d_lines, self.d_n_rects, self.d_texts,
             self.d_headers, self.d_rows, self.d_fields))
 
-
+        o_fn = "stripped.svg"
+        
+    def strip_qxml(self, fn):  # "quoted" xml
+        full_fn = "full_"+fn
+        os.rename(fn, full_fn)
+        f = open(full_fn, "r")     
+        of = open(fn, "w")
+        for line in f:
+            ds = line.rstrip('\n')
+            if ds == '<?xml version="1.0" encoding="utf-8" ?>':
+                print("xml header removed")
+            else:
+                of.write(ds+'\n')
+        of.close()
+        f.close()
+        
 if __name__ == "__main__":
     svg_drawing(sys.argv)

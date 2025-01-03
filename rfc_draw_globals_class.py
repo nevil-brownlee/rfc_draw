@@ -149,7 +149,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         print("ELAPSED %s: %s" % (ts[0:pix+4], where_from))
 
     def where(self, rdo, x, y):  # Find region of rdo where b1 is pressed
-        #print("... ... where: rdo = %s" % rdo)
+        print("... ... where: rdo = %s, type %s" % (rdo, type(rdo)))
         #print("where:  coords %d,%d, %d,%d" % (rdo.x0,rdo.y0, rdo.x1,rdo.y1))
         if y <= rdo.y0 - self.res_px:  # Top row
             if y < rdo.y0 - self.far_px:  # Too high
@@ -590,10 +590,11 @@ class rdglob:  # Global variables for rfc-draw's objects
                 # returns "hidden", rather than tk.HIDDEN !!!
                 print(":+0: j %d, key %s, save_to_rdd: val >%s< %s state %s" % (
                     j, key, val, val.i_coords, state))
-                ds = self.get_save_string(val)
-                if not ds is None:
-                    print("$@j %d, ds >%s<" % (j, ds))
-                    s_file.write("%d %s\n" % (j, ds))
+                if state != "hidden":
+                    ds = self.get_save_string(val)
+                    if not ds is None:
+                        print("$@j %d, ds >%s<" % (j, ds))
+                        s_file.write("%d %s\n" % (j, ds))
 
     def new_text(self, mx, my, t_text, parent_id):
         text_id = self.add_to_layer(3, 

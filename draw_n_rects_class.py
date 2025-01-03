@@ -228,7 +228,10 @@ class draw_n_rects:  #  Rectangle with white fill and centred text
 
         if item_ix in self.rdg.objects.keys():  # It's a known object
             obj = self.rdg.objects[item_ix]
-            print("   item_ix %d in objects, obj >%s<" % (item_ix, obj))
+            #print("   item_ix %d in objects, obj >%s<" % (item_ix, obj))
+            #if obj.o_type == "text":
+            #    print(">>>>>>>>> it's a text object")
+            #    exit()
         else:
             self.rdg.display_msg(
                 "(Unknown object, item_ix %d, tk type %s << %s" % (

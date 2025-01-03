@@ -63,17 +63,17 @@ class draw_headers:  # pkt header objects for rfc-draw
         #     Their header number is saved
         #     They have their own objects, keeping track of object positions
         #     Their move function must move all their contained objects
-            print("!!! class header: rdg %s (%s)" % (rdg, type(rdg)))
+            #print("!!! class header: rdg %s (%s)" % (rdg, type(rdg)))
             self.drawing = drawing;  self.rdg = rdg;  self.root = root
             self.h_nbr = h_nbr
-            print("header __init__: h_nbr >%s<, new_drawing %s, f_font %s" % (
-                h_nbr, self.rdg.new_drawing, draw_headers.f_font))
+            #print("header __init__: h_nbr >%s<, new_drawing %s, f_font %s" % (
+            #    h_nbr, self.rdg.new_drawing, draw_headers.f_font))
             self.rows = []  # Header's n row objects (rows 0 to n-1)
-            print(" | | | self.rows %s" % self.rows)
-            print(" ^ ^ ^ header: h_nbr %s (%s)" % (h_nbr, type(h_nbr)))
+            #print(" | | | self.rows %s" % self.rows)
+            #print(" ^ ^ ^ header: h_nbr %s (%s)" % (h_nbr, type(h_nbr)))
             self.row_ids = []  # rows 0 to n-1, i.e. n rows
-            print("class header: f_font >%s<, h_coords %s, h_nbr %s" % (
-                draw_headers.f_font, h_coords, self.h_nbr))
+            #print("class header: f_font >%s<, h_coords %s, h_nbr %s" % (
+            #    draw_headers.f_font, h_coords, self.h_nbr))
             self.type = "header"
 
             self.ch_width = 8  # char width (pixels, from header experiments)
@@ -91,13 +91,13 @@ class draw_headers:  # pkt header objects for rfc-draw
             #print("$$$ tl_coords %s" % self.tl_ccoords)
             self.hdr_id = 0  #  top line not drawn
             self.hdr_id = self.rdg.add_to_layer(2, # Draw header top line
-                self.drawing.create_line,self.tl_coords,fill="red") # white
+                self.drawing.create_line,self.tl_coords,fill="white") # <<<<<
             # We need a hdr_id (tk object) for each header in our drawing,
             #   and the top line is the only such object!
-            print("=========== header %d, top line drawn ==========" %
-                self.h_nbr)
-            print("header %d,%d, %d, %d" % (
-                self.x0, self.y0, self.x1, self.y1))
+            #print("=========== header %d, top line drawn ==========" %
+            #    self.h_nbr)
+            #print("header %d,%d, %d, %d" % (
+            #    self.x0, self.y0, self.x1, self.y1))
             self.rdg.time_now("hdr %d,top line drawn" % self.hdr_id)
             self.h_tag = "h_%d" % self.h_nbr
             self.drawing.itemconfig(self.hdr_id, tag=self.h_tag)
@@ -106,33 +106,33 @@ class draw_headers:  # pkt header objects for rfc-draw
             h_rdo = self.rdg.object(  # hdr obj just has it's top line
                 self.hdr_id, self, "header", self.tl_coords, "H",
                 0, self.h_nbr, v2)  # Parent for rows
-            print("-->> hdr_obj key %d" % self.hdr_id)  # OK, key 1
+            #print("-->> hdr_obj key %d" % self.hdr_id)  # OK, key 1
             ##if self.hdr_id in self.rdg.objects:
             ##    print("*** header object hdr_id %s already in objects[]" %
             ##        self.hdr_id)
             ##    exit()
             self.rdg.objects[self.hdr_id] = h_rdo
             self.rdg.current_object = h_rdo
-            print(">< header >< self.rdg.new_drawing %s, %d rows" % (  #? OK
-                self.rdg.new_drawing, len(self.rows)))
-            print("?? ?? hdr_id %d, objects[%d] >%s<" % (
-                h_rdo.key, h_rdo.a_obj.hdr_id, self.rdg.objects[self.hdr_id]))
+            #print(">< header >< self.rdg.new_drawing %s, %d rows" % (  #? OK
+            #    self.rdg.new_drawing, len(self.rows)))
+            #print("?? ?? hdr_id %d, objects[%d] >%s<" % (
+            #    h_rdo.key, h_rdo.a_obj.hdr_id, self.rdg.objects[self.hdr_id]))
 
             if self.rdg.new_drawing: #! and len(self.rows) == 0:
                 # Didn't read drawing from save file, need to draw col_nbrs
                 self.rdg.time_now("hdr, top line drawn 2")
                 self.h = h_rdo.a_obj
-                print("H H H startup self.rdg %s" % self.rdg)
+                #print("H H H startup self.rdg %s" % self.rdg)
                 self.rdg.time_now("hdr, hdr top line drawn")
                 self.hr = draw_headers.row(  # Row 1, for col_nbrs
                    self.drawing, self.rdg, self, 2)  # lines
                 self.draw_col_nbrs(self.h, self.hr)  # under (white) top line
                 # Draw row 1 (header's top row), just tics and col nbrs
-                print("<><> header.new h %s, rdg.new_drawing %s" % (
-                    self, self.rdg.new_drawing))
-                print("header row: hr %s" % self.hr)
+                #print("<><> header.new h %s, rdg.new_drawing %s" % (
+                #    self, self.rdg.new_drawing))
+                #print("header row: hr %s" % self.hr)
                 draw_headers.headers.append(self)
-                self.show_draw_headers("new header():")
+                #self.show_draw_headers("new header():")
                 self.rdg.dump_objects("col_nbrs drawn, %d rows" % len(
                     self.rows))
             #print("new header, h_nbr %d, %s" % (self.h_nbr, rself))
@@ -161,15 +161,15 @@ class draw_headers:  # pkt header objects for rfc-draw
         
         def draw_col_nbrs(self, h, hr):
             #print("= = = starting draw_col_nbrs, h_tag >%s< = = =", h.h_tag)
-            print(">< draw_col_nbrs >< self.rdg.new_drawing %s, %d rows" % (
-                self.rdg.new_drawing, len(h.rows)))
-            print(". . . h  %s" % h)
-            print(". . . hr %s" % hr)
+            #print(">< draw_col_nbrs >< self.rdg.new_drawing %s, %d rows" % (
+            #    self.rdg.new_drawing, len(h.rows)))
+            #print(". . . h  %s" % h)
+            #print(". . . hr %s" % hr)
             col_nbrs = "0                   1                   2                   3  \n0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1"
-            print("col_nbrs 1: h %s, hr %s" % (h, hr))
+            #print("col_nbrs 1: h %s, hr %s" % (h, hr))
             cn_field = draw_headers.field(
                 self.rdg, h, hr, col_nbrs, 0, 32, None)
-            print("?+?+? n_field %s (%s)" % (cn_field, type(cn_field)))
+            #print("?+?+? n_field %s (%s)" % (cn_field, type(cn_field)))
             
         def bbox(self):  # Gets the current coords
             return self.x0, self.y0, self.x1, self.y1
