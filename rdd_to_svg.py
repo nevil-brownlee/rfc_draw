@@ -88,6 +88,7 @@ class svg_drawing:
         self.draw_objects("field")
 
         self.draw_frame(0,0, x_size,y_size)  # 1:1 scaling
+        self.dwg.save()
         self.strip_qxml(self.filename)
 
     def r_colour(self, r_nbr):
@@ -354,7 +355,11 @@ class svg_drawing:
         
     def draw_frame(self, min_x,min_y, height,width):
         #print("draw_frame: %d,%d h %d, w %d" % (min_x,min_y, height,width))
-        self.dwg.viewbox(min_x,min_y, height,width)
+        smin_x = str(min_x)+" "
+        smin_y = str(min_y)+" "
+        sheight = str(height)+" "
+        self.dwg.viewbox(smin_x,smin_y, sheight,width)
+        #self.dwg.viewbox(min_x,min_y, height,width)
         self.dwg.save()
 
     def adj_coords(self, coords):
