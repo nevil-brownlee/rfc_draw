@@ -1,6 +1,7 @@
 # 1451, Fri  5 Jan 2024 (NZDT)
 # 1539, Sat 21 Jan 2023 (NZDT)
 # 1648, Tue  6 Dec 2022 (NZDT)
+# 1501, Sun 19 Jan 2025 (NZDT)
 #
 # draw_texts_class: functions to draw/move/edit tkinter text objects
 #
