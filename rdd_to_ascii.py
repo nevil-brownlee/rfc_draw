@@ -8,6 +8,9 @@
 import sys, os.path
 import rdd_io, rdd_globals
 
+import debug_print_class as dbpc
+dbp = dbpc.dp_env(False)  # debug printing off
+
 class asc_drawing:
     def draw_objects(self, which):
         for obj in self.objects:
@@ -306,8 +309,8 @@ class asc_drawing:
             print("txt copy loop, len(text) %d, tlc %d" % (len(text), tlc))
             for j in range(len(text)):
                 ln[tlc+j] = text[j]
-                print("ln >%s<" % text[j])
-            print("ln >>%s<<" % ln)
+                dbp.db_print("ln >%s<" % text[j])
+            dbp.db_print("ln >>%s<<" % ln)
 
     def draw_field_text(self, text, cx,cy, r_nbr, r_lines):
             # cx,cy are 0-org, r_lines = nbr of lines in field's row
@@ -388,14 +391,15 @@ class asc_drawing:
             ln = self.lines[ry]
             print("--- ry %d, j %d,len(ln) %d ln >%s<" % (ry, j, len(ln), ln))
             tx_ln = tx_lines[j]
-            print("len(tx_ln) %d, tx_ln >%s<" % (len(tx_ln), tx_ln))
+            dbp.db_print("len(tx_ln) %d, tx_ln >%s<" % (len(tx_ln), tx_ln))
             for c in range(len(tx_ln)):
                 ln[self.bw+fc+c] = tx_ln[c]
             j += 1
 
     def draw_text_row(self, text, c, r):
         ln = self.lines[r]
-        print("$ $ $ draw_text_row: c %d, r %d, len(text) %d" % (c, r, len(text)))
+        dbp.db_print(
+            "$ $ $ draw_text_row: c %d, r %d, len(text) %d" % (c, r, len(text)))
         for j in range(len(text)):
             #print("c %d, j = %d" % (c,j))
             ln[c+j] = text[j]

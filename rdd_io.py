@@ -4,18 +4,21 @@
 #
 # rdd_rw.py: Read/write *.rdd files
 #
-# Copyright 2024, Nevil Brownlee, Taupo NZ
+# Copyright 2025, Nevil Brownlee, Taupo NZT
 
 import re
 
+import debug_print_class as dbpc
+dbp = dbpc.dp_env(False)  # debug printing on
+
 class rdd_rw:
-    def __init__(self, sys_argv, bw):  # i.e. sys.arg
-        print("starting rdd_io.py - - -")
+    def __init__(self, sys_argv, bw):  # i.e. sys.arg)
+        dbp.db_print("starting rdd_io.py - - -")
         self.objects = []   # rfc-draw objects
         self.obj_keys = {}  # old-key -> new-key for objects read from rdd
         self.default_bw = 5  # px
-        ##print("??? sys_argv >%s<, len %d" % (sys_argv, len(sys_argv)))
- 
+        dbp.db_print("??? sys_argv >%s<, len %d" % (sys_argv, len(sys_argv)))
+        
         if len(sys_argv) == 1:
             print("No .rdd file specified ???")
             from tkinter.filedialog import askopenfilename
@@ -44,13 +47,14 @@ class rdd_rw:
 
         self.border_width = self.default_bw  # Default value
         
-        print("sys_argv >%s<" % sys_argv)
+        #dbp.db_
+        print("rdd_io: sys_argv >%s<" % sys_argv)
         if not self.rdd_fn:
             self.rdd_fn = sys_argv[1]
         if len(sys_argv) >= 3:  # We have a second argument
             ##print("sys_argv >%s<" % sys_argv)
             self.border_width = int(sys_argv[2])
-        print("=== rdd_fn %s, bw %s" % (self.rdd_fn, self.border_width))
+        dbp.db_print("=== rdd_fn %s, bw %s" % (self.rdd_fn, self.border_width))
         #self.objects, self.di = self.read_from_rdd()
         #self.dump_objects("rdd objects loaded from .rdd file")
         
@@ -82,19 +86,19 @@ class rdd_rw:
     
     def parse_rdd_line(self, line):
         line = line.rstrip()
-        print("rdd line = >%s<" % line)
+        dbp.db_print("rdd line = >%s<" % line)
         if self.rdd_e_v2.match(line):  # v2 match (9 fields)
             m = self.rdd_e_v2.split(line)
-            print("v2 split %s len %d" % (m, len(m)))
+            dbp.db_print("v2 split %s len %d" % (m, len(m)))
             return m[1:-1]
         else:
-            print("v2 match failed")#;  exit()
+            dbp.db_print("v2 match failed")#;  exit()
             if self.rdd_e_v1.match(line):  # v1 match (6 fields)
                 m = self.rdd_e_v1.split(line)
-                print("v1 split %s len %d" % (m, len(m)))
+                dbp.db_print("v1 split %s len %d" % (m, len(m)))
                 return m[1:-1]
             else:
-                print("v1 match failed");  exit()
+                dbp.db_print("v1 match failed");  exit()
                 return None
     """
     def is_number(self, s):
@@ -105,19 +109,19 @@ class rdd_rw:
             return False
     """
     def restore_object(self, ln, ds):
-        #print("restore_object: ln %d, ds >%s<" % (ln, ds))
-        #print("== ds %s ==" % ds)
+        #dbp.db_print("restore_object: ln %d, ds >%s<" % (ln, ds))
+        #dbp.db_print("== ds %s ==" % ds)
         fields = self.parse_rdd_line(ds)
-        print("fields >>> %s <<< len %d" % (fields, len(fields)))
+        dbp.db_print("fields >>> %s <<< len %d" % (fields, len(fields)))
         obj_id = int(fields[0])  # Ignore line_nbr (field 0)
         o_type = fields[1]
         old_key = int(fields[2])  # object's key in save file
         coords = self.s_to_ilist(fields[3])
         text = fields[4].replace("\\n", "\n")
         fields[4] = fields[4].replace('\\"', '"')
-        print("After \\n: fields %s" % fields)
+        dbp.db_print("After \\n: fields %s" % fields)
         if fields[5] == 'N':
-            print("v1 rdd file <<<")
+            dbp.db_print("v1 rdd file <<<")
             parent_id = 0
         else:
             parent_id = int(fields[5])
@@ -127,30 +131,30 @@ class rdd_rw:
         if fields[6] == "N":  # v1 rdd file
             v1 = v2 = 0
         else:
-            print("fields[6] >%s" % fields[6])
+            dbp.db_print("fields[6] >%s" % fields[6])
             v1 = int(fields[6].strip('"'))  # Remove any surrounding " chars
             if len(fields) == 9:  # v2 match (Optional comment is fields[8])
                 v2 = int(fields[7])
-                #print("v1 %d, v2 %d" % (v1, v2))
+                #dbp.db_print("v1 %d, v2 %d" % (v1, v2))
             else:
-                print("rdd pattern match failed !!!");  exit()
+                dbp.db_print("rdd pattern match failed !!!");  exit()
         
                 t_width = 0
                     
         obj = self.rdd_obj(obj_id, o_type, coords, text, parent_id, v1, v2)
-        print("=== obj = >%s<" % obj)
+        dbp.db_print("=== obj = >%s<" % obj)
         self.objects.append(obj)  # rdd_io objects are in a list 
         new_key = len(self.objects)-1
         self.obj_keys[old_key] = new_key
-        print("r_obj_keys = %s" % self.obj_keys)
+        dbp.db_print("r_obj_keys = %s" % self.obj_keys)
         return new_key, obj
 
     def dump_objects(self, header):
         #return
-        print("dump_objects -- %s --" % header)
+        dbp.db_print("dump_objects -- %s --" % header)
         for j, val in enumerate(self.objects):
-            print("%4d val >%s<" % (j, val))
-        print("- - dump - -")  # Trailer line
+            dbp.db_print("%4d val >%s<" % (j, val))
+        dbp.db_print("- - dump - -")  # Trailer line
 
     def extrema(self, obj, x, y):
         if x < self.min_x:
@@ -167,6 +171,7 @@ class rdd_rw:
             self.max_y_obj = obj
     
     def read_from_rdd(self):
+        #dbp.db_
         print("read_from_rdd: self.rdd_fn >%s<" % self.rdd_fn)
         f = open(self.rdd_fn, "r")
         self.di = {}
@@ -174,35 +179,35 @@ class rdd_rw:
         for rdd_ln in f:
             ln += 1
             line = rdd_ln.strip()
-            #print("rdd ln %d, len %d, line >%s<" % (ln, len(line),line))
+            #dbp.db_print("rdd ln %d, len %d, line >%s<" % (ln, len(line),line))
             if len(line) == 0 or line[0] == "#":  # Ignore comment lines
                 continue
             ds = line.rstrip('\n')
-            #print("ds >%s<" % ds)
+            #dbp.db_print("ds >%s<" % ds)
             if ds.find("root_geometry") >= 0:
                 la = ds.split(" ");  dims = la[1].split("+")
                 xy = dims[0].split("x")
                 self.di["r_width"] = int(xy[0])
                 self.di["r_height"] = int(xy[1])
-                #print("root geometry: x %d, y %d" % (self.xr, self.yr))
+                #dbp.db_print("root geometry: x %d, y %d" % (self.xr, self.yr))
             elif ds.find("drawing_size") >= 0:
                 la = ds.split(" ")
                 la_ds = la[1].split("x")
                 self.di["d_width"]  = int(la_ds[0])  # drawing width
                 self.di["d_height"] = int(la_ds[1])  # drawing height
-                #print("drawing_size %dx%d" % (self.dw,self.dh))
+                #dbp.db_print("drawing_size %dx%d" % (self.dw,self.dh))
             elif ds.find("mono_font") >= 0:
                 la = ds.split(" ")
-                #print("mono_font width %.2f, height %.2f pixels" % (
+                #dbp.db_print("mono_font width %.2f, height %.2f pixels" % (
                 #    self.f_width, self.f_height))
                 self.di["f_width"] = float(la[2])
                 self.di["f_height"] = float(la[4])
             elif ds.find("last_mode") >= 0: 
                 pass  # Used by rfc-draw.py
             else:
-                print("=== ds = %s" % ds)
+                dbp.db_print("=== ds = %s" % ds)
                 o_key, obj = self.restore_object(ln, ds)
-                ##print("o_key %s, obj %s <<<" % (o_key, obj))
+                ##dbp.db_print("o_key %s, obj %s <<<" % (o_key, obj))
 
         self.min_x = self.min_y = 50000;  self.max_x = self.max_y = 0
         self.t_min_y = self.t_max_y = self.t_min_x = self.t_max_x = "none"
@@ -216,7 +221,7 @@ class rdd_rw:
                                                 # Text has only 1 (cx,cy)
                 x = coords[n];  y = coords[n+1]
                 self.extrema(obj, x, y) 
-                #print("+-+-+ id %d, %s, Ex:%d-%d, Ey:%d-%d" % (
+                #dbp.db_print("+-+-+ id %d, %s, Ex:%d-%d, Ey:%d-%d" % (
                 #    obj.id, obj.type,
                 #    self.min_x, self.max_x, self.min_y, self.max_y))
                 if obj.type == "field":  
@@ -226,37 +231,37 @@ class rdd_rw:
                 elif obj.type == "text":  # x,y is obj's centre position
                     t_lines = obj.i_text.split("\n")
                     c_width = self.di["f_width"]*0.8
-                    print("c_width = %f" % c_width)
+                    dbp.db_print("c_width = %f" % c_width)
                     for l_txt in t_lines:
                         n_chrs = len(l_txt)  # This line's chars
-                        #print("$ $ chrs %d, txt >%s<" % (chrs, l_txt))
+                        #dbp.db_print("$ $ chrs %d, txt >%s<" % (chrs, l_txt))
                         l_txt = l_txt.replace('\\"', '"')
                         htw = round(n_chrs*c_width/2.0)  # half text width
-                        print("htw %s, y %s" % (htw,y))
-                        print("text line: text >%s< lt2 %d, from %d to %d" % (
+                        dbp.db_print("htw %s, y %s" % (htw,y))
+                        dbp.db_print("text line: text >%s< lt2 %d, from %d to %d" % (
                             l_txt, htw, x-htw, x+htw))
                         y += self.di["f_height"]  # 1 line below text
                         self.extrema(obj, x+htw, y)  # right x,y
                         self.extrema(obj, x-htw, y)  # left x,y
-                    print("ttt x,y %d,%d, min_y %d, max_y %d" % (
+                    dbp.db_print("ttt x,y %d,%d, min_y %d, max_y %d" % (
                         x, y, self.max_x, self.max_y))
 
         self.di["min_x"] = self.min_x;  self.di["max_x"] = self.max_x
         self.di["min_y"] = self.min_y;  self.di["max_y"] = self.max_y
 
-        print("Extrema: min_x %d (%s)" % (self.min_x,self.min_x_obj))
-        print("         max_x %d (%s)" % (self.max_x,self.max_x_obj))
-        print("         min_y %d (%s)" % (self.min_y,self.min_y_obj))
-        print("         max_y %d (%s)" % (self.max_y,self.max_y_obj))
-        print()
+        dbp.db_print("Extrema: min_x %d (%s)" % (self.min_x,self.min_x_obj))
+        dbp.db_print("         max_x %d (%s)" % (self.max_x,self.max_x_obj))
+        dbp.db_print("         min_y %d (%s)" % (self.min_y,self.min_y_obj))
+        dbp.db_print("         max_y %d (%s)" % (self.max_y,self.max_y_obj))
+        dbp.db_print("")
            
         fs = "Screen: xr %d, yr %d | Drawing: width %d, height %d"
         fs += " | Font: width %.2f, height %.2f"
-        print(fs % (self.di["r_width"], self.di["r_height"],
+        dbp.db_print(fs % (self.di["r_width"], self.di["r_height"],
             self.di["d_width"], self.di["d_height"],
             self.di["f_width"], self.di["f_height"]))
 
-        print("min_x %d, max_x %d,  min_y %d, max_y %d" % (
+        dbp.db_print("min_x %d, max_x %d,  min_y %d, max_y %d" % (
             self.di["min_x"], self.di["max_x"],
             self.di["min_y"], self.di["max_y"]))
 
