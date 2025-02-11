@@ -7,7 +7,7 @@
 
 import sys, re, math, svgwrite
 import debug_print_class as dbpc
-dbp = dbpc.dp_env(True)  # debug printing off
+dbp = dbpc.dp_env(False)  # debug printing off
 
 class xmlfig_drawing:
     def __init__(self, rdd_fn, asc_b_w, svg_b_w):
