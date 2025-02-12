@@ -26,7 +26,7 @@ You can resize the window by dragging (using b1, your Left mouse button)
 on any of it's edges.  
     
 The **Mode** buttons tell rfc-draw what kind of objects you're currently 
-working on.  Te modes are:  
+working on.  The modes are:  
 
 1. Rectangle  
    &emsp;Lets you draw, resize and move rectangle objects.  
@@ -109,7 +109,6 @@ A line can be modified in various ways, as follows:
 &emsp;- Dragging from middle of a segment expands/shrinks the line in the drag direction.  
 &emsp;- Dragging from start or end of line extends that segment of the line.  
 &emsp;- Dragging from any corner moves the whole line.  
-  
 &emsp;- Dragging a single-segment line from it's middle moves it,  
 &emsp;&emsp;&emsp;dragging it from just outside an end extends it.  
 
@@ -186,6 +185,14 @@ to SVG (python3 rdd_to_svg.py),
 
 &emsp;python3 rdd_to_ascii.py *my-drawing.rdd*  
 &emsp;&emsp;Creates an  ASCII-art file,  *my-drawing.txt* 
+
+&emsp; python3 rdd_to_xmlfig.py *my-drawing.rdd*
+&emsp;&emsp;Creates an svg file and a .txt file for *my-drawing.txt*, 
+&emsp and uses them to create a .xml file (in XML2RFC format)for *my-drawing.txt*,
+
+&emsp; python3 rdd_to_xmlfig.py -rfc *my-drawing.rdd*
+&emsp;&emsp;Creates my-drawing-rfc.xml, an RFC in xml2rfc --v3 format
+&emsp;&emsp;You can test this using the tools at https://author-tools.ietf.org/
 
 Blank borders around drawings can be set by the -p*w* option,  
 *w* units for svg are pixels, for ASCII-art they are chars/lines.

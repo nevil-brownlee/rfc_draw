@@ -45,25 +45,25 @@ if __name__ == "__main__":  # Executing rdd_to_xmlfig.py
         print(">>> sys.argv %s" % sys.argv)
         rdd_fn = sys.argv[1]
     print("rdd_fn %s" % rdd_fn)
-    ##  >>['rdd_to_xmlfig.py', '*rfc', 'test-rectangle.rdd']<<
+    ##  >>['rdd_to_xmlfig.py', '-rfc', 'test-rectangle.rdd']<<
 
     # arg   0       1      2       3        4
     #  prog_name  rdd_fn      # Use defaults for both b_ws, make .xml file
     #  prog_name  rdd_fn asc_b_w  svg_b_w  # Both b_ws specified
     #  prog_name  rdd_fn *rfc # Use defaults for both b_ws, make -rfc.xml file
     #  prog_name  rdd_fn *rfc asc_b_w  svg_b_w  # Ditto
-    #               *rfc is an rdd_to_xmlfig (not a python3) option! <<<
+    #               -rfc is an rdd_to_xmlfig (not a python3) option! <<<
 
     b_ws = [];  rtx_params = sys.argv[1:]
     if len(sys.argv) >= 2:
         #         0              1            2              3    4
-        # 'rdd_to_xmlfig.py', '*rfc', 'test-rectangle.rdd', '2', '5']
+        # 'rdd_to_xmlfig.py', '-rfc', 'test-rectangle.rdd', '2', '5']
         # 'rdd_to_xmlfig.py', 'test-rectangle.rdd',  '2',   '5']
         #
         print(">>%s<< rdd_fn %s" % (sys.argv, rdd_fn))
 
         mk_rfc = False
-        if rtx_params[0] == "*rfc":
+        if rtx_params[0] == "-rfc":
             rtx_params = rtx_params[1:]
             print("**rtx_params: %s" % rtx_params)
             xmlfig_name = rtx_params[0][0:-4] + "-rfc.xml"
