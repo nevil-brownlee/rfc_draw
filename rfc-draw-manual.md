@@ -1,6 +1,6 @@
 1449, Mon 16 Sep 2024 (NZST)
   
-## === rfc-draw Manual, version 2.0 ===  
+## === rfc-draw Manual, version 2.6 ===  
   
 ### Getting started:
 
