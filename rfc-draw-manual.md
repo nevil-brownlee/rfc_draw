@@ -4,7 +4,8 @@
   
 ### Getting started:
 
-rfc-draw is written in python3, and uses the following modules:  
+rfc-draw is written in python3, it uses the GLL v3.0 license, and uses
+the following modules:  
 &emsp; os. path, re, math, sys, time, datetime, threading, tkinter, playsound
 &emsp; termios (for POSIX) or msvcrt (for Windows) 
 You can install these using pip (latest version),  
