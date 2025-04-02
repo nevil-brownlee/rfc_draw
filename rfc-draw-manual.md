@@ -117,7 +117,7 @@ Headers:
 
 Headers are diagrams showing the layout of information within packets.
 They have three separate components;  
-&emsp;- *Headers*,&emsp *Rows*, and %emsp *Fields*.
+&emsp;- *Headers*,&emsp *Rows*, and %emsp %Fields*.
 
 **Keyboard Actions:**
  
