@@ -23,6 +23,9 @@ in three layers, with restrictions to allow for ASCII-art:
 3. Text  
    &emsp; A text object has one or more (centred) lines of text.  
 
+4. Header  
+   &emsp; Lets you draw Header diagrams  
+
 To use rfc-draw you'll need to install the following python modules:  
 &emsp; tkinter, math, sys, re, os, svgwrite, traceback (for POSIX and windows)  
 &emsp; termios (for POSIX) or msvcrt (for Windows)  

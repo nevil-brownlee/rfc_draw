@@ -52,7 +52,7 @@ but allows you to continue.
 
 Layers:
  
-rfc-draw (and SVG) draw their objects in successive *layers.*  
+RFC-Draw (and SVG) draw their objects in successive *layers.*  
 Layer 1 (the lowest) contains all your lines, and is drawn first.  
 Layer 2 is then drawn over layer 1, it contains your rectangles.  
 &emsp;This means that ends of your lines don't need to meet exactly
@@ -77,7 +77,8 @@ You can clear the Message area by pressing the Pg Dn key.
    'Command' keys perform the following actions:  
    &emsp;&emsp;Home&ensp; moves the edit cursor to the text's start  
    &emsp;&emsp;End&ensp;&ensp;&ensp;&ensp;moves the cursor to the text's end  
-   &emsp;&emsp;Return&ensp;starts a new line  
+   &emsp;&emsp;Return&ensp;starts a new line
+   &emso;  
    &emsp;&emsp;Esc&ensp;&ensp;&ensp;&ensp;puts the edited text back, and
      closes the Edit Window  
   
