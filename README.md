@@ -1,7 +1,7 @@
 ## RFC-Draw
 ### A simple drawing package to make SVG and ASCII-art diagrams for RFCs 
 
-RFC-draw is a python tkinter-based drawing system, with three components: 
+RFC-Draw is a python tkinter-based drawing system, with three components: 
 
 * _rfc-draw.py_ - interactive drawing program to create on-screen diagrams,   
    &emsp; and save them to rfc-draw-data (.rdd) files  
@@ -10,7 +10,7 @@ RFC-draw is a python tkinter-based drawing system, with three components:
 
 * _rdd-to-ascii.py_ - creates a drawing's ASCII-art (.txt) file  
 
-rfc-draw.py let's you draw (with your mouse) three kinds of objects, 
+Rfc-Draw.py let's you draw (with your mouse) three kinds of objects, 
 in three layers, with restrictions to allow for ASCII-art:  
 
 1. Lines  
@@ -24,7 +24,7 @@ in three layers, with restrictions to allow for ASCII-art:
    &emsp; A text object has one or more (centred) lines of text.  
 
 4. Header  
-   &emsp; Lets you draw Header diagrams  
+   &emsp; Lets you draw Header diagrams.  
 
 To use rfc-draw you'll need to install the following python modules:  
 &emsp; tkinter, math, sys, re, os, svgwrite, traceback (for POSIX and windows)  
@@ -32,4 +32,6 @@ To use rfc-draw you'll need to install the following python modules:
 
 You can install all of these by running (in your rfc-draw directory)  
   python3 install-modules.py
+
+
 

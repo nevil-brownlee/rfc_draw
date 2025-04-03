@@ -78,7 +78,7 @@ You can clear the Message area by pressing the Pg Dn key.
    &emsp;&emsp;Home&ensp; moves the edit cursor to the text's start  
    &emsp;&emsp;End&ensp;&ensp;&ensp;&ensp;moves the cursor to the text's end  
    &emsp;&emsp;Return&ensp;starts a new line
-   &emso;  
+   &emsp;  
    &emsp;&emsp;Esc&ensp;&ensp;&ensp;&ensp;puts the edited text back, and
      closes the Edit Window  
   
@@ -123,7 +123,7 @@ They have three separate components;
 **Keyboard Actions:**
  
 In any mode:
-&emsp; key&emsp;c&emsp;to copy a tk object  
+&emsp; key&emsp;c&emsp;to copy an rfc-draw object  
 
 In Line mode:  
  
