@@ -30,8 +30,7 @@ To use rfc-draw you'll need to install the following python modules:
 &emsp; tkinter, math, sys, re, os, svgwrite, traceback (for POSIX and windows)  
 &emsp; termios (for POSIX) or msvcrt (for Windows)  
 
-You can install all of these by running (in your rfc-draw directory)  
-  python3 install-modules.py
+RFC-Draw.py tests for all of these, and will install them on your system.
 
 
 
