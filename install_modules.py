@@ -43,7 +43,3 @@ for mn in module_names:
         all_installed = False
         print(">>> %s not installed" % mn)
         importlib.import_module(mn)
-        
-
-if not all_installed:
-    print("Use 'pip3 install' to install missing modules")
