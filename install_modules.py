@@ -24,15 +24,15 @@ import sys
 
 if sys.platform == "win32":
     print("System is Windows")
-    if not module-installed("msvcrt")
+    if not module_installed("msvcrt"):
         importlib.import_module("msvcrt")
 elif sys.platform == "darwin":
     print("System is macOS")
-    if not module-installed("termios")
+    if not module_installed("termios"):
         importlib.import_module("termios")
 elif sys.platform == "linux":
     print("System is Linux")
-    if not module-installed("termios")
+    if not module_installed("termios"):
         importlib.import_module("termios")
 
 module_names = ["os", "pathlib", "re", "math", "sys", "time",

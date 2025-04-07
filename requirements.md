@@ -8,8 +8,10 @@ To use rfc-draw you'll need to install the following python modules:
 &emsp;playsound, tkinter, traceback (for POSIX and windows),  
 &emsp;termios (for POSIX) or msvcrt (for Windows)    
 
-To install a python3 module, e.g. tkinter, use pip3, python's package  
-manager; the (POSIX) command is  
+RFC-Draw tests for these on startup, and will install them for you.
+
+To install a python3 module 'by hand', e.g. tkinter,
+&emsp;use pip3, python's package manager; the (POSIX) command is  
 &emsp;pip3 install tkinter  
 
 If that doesn't work, you may need to use a more up-to-date version of pip,  
