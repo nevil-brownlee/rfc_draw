@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "RFC-Draw"
+version = "2.27"
+description = "A python3 program to draw images for SVG-RFC-1.2 diagrams"
+authors = [
+    {name = "Nevil", email = "nevil.brownlee@gmail.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.9"
+
+[project.urls]
+homepage = "https://github.com/nevil-brownlee/rfc-draw",
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: GPL License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.9",
+]
