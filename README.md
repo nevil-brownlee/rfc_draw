@@ -4,12 +4,13 @@
   
 ### Getting started:
 
-rfc-draw is written in python3, it uses the GPL v3.0 license, and uses
-the following python modules:  
+RFC-Draw is written in python3, it's license is GPL v3.0,
+it uses the following python modules:  
 &emsp; os. path, re, math, sys, time, datetime, threading, tkinter, playsound
 &emsp; termios (for POSIX) or msvcrt (for Windows) 
-You can install these using pip (latest version),  
-&emsp; e.g. pip3 install tkinter
+RFC-Draw wil install all these fpr you on startup, or
+You can install them using pip (latest version),  
+&emsp; e.g. pip3 install path
 
 Install rfc-draw in a new folder, e.g. ~/rfc-draw.  
 In a terminal window, in your new folder, enter  
