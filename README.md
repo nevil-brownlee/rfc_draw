@@ -43,11 +43,11 @@ working on.  The modes are:
    &emsp;Multi-line texts are drawn with the lines centred.
        
 4. Header  
-   &emsp; Introduced in version 3
-   &emsp; Lets you draw Header diagrams  
+   &emsp; Introduced in version 3.  
+   &emsp; Lets you draw Header diagrams.  
   
 5. Save  
-   &emsp;Lets you write an rdd file. That saves your drawing, 
+   &emsp;Lets you write an rdd file. That saves your drawing,  
 but allows you to continue.  
    &emsp;You can edit the filename as you would a text (see below)  
 
