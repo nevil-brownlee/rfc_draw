@@ -193,7 +193,7 @@ to SVG (python3 rdd_to_svg.py),
 &emsp;&emsp;Creates an svg file and a .txt file for *my-drawing.txt*,  
 &emsp;&emsp; and uses them to create a .xml file (in XML2RFC format)for *my-drawing.txt*,  
 
-&emsp; python3 rdd_to_xmlfig.py -rfc *my-drawing.rdd*  
+&emsp; python3 rdd_to_xmlfig.py **-rfc** *my-drawing.rdd*  
 &emsp;&emsp;Creates my-drawing-rfc.xml, an RFC in xml2rfc --v3 format  
 &emsp;&emsp;You can test this using the tools at https://author-tools.ietf.org/  
 
