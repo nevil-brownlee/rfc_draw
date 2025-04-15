@@ -43,11 +43,11 @@ working on.  The modes are:
    &emsp;Multi-line texts are drawn with the lines centred.
        
 4. Header  
-   &emsp; Introduced in version 3.  
-   &emsp; Lets you draw Header diagrams.  
+   &emsp; Introduced in version 3
+   &emsp; Lets you draw Header diagrams  
   
 5. Save  
-   &emsp;Lets you write an rdd file. That saves your drawing,  
+   &emsp;Lets you write an rdd file. That saves your drawing, 
 but allows you to continue.  
    &emsp;You can edit the filename as you would a text (see below)  
 
@@ -189,11 +189,11 @@ to SVG (python3 rdd_to_svg.py),
 &emsp;python3 rdd_to_ascii.py *my-drawing.rdd*  
 &emsp;&emsp;Creates an  ASCII-art file,  *my-drawing.txt* 
 
-&emsp; python3 rdd_to_xmlfig.py *my-drawing.rdd*
+&emsp; python3 rdd_to_xmlfig.py *my-drawing.rdd*  
 &emsp;&emsp;Creates an svg file and a .txt file for *my-drawing.txt*, 
 &emsp and uses them to create a .xml file (in XML2RFC format)for *my-drawing.txt*,
 
-&emsp; python3 rdd_to_xmlfig.py -rfc *my-drawing.rdd*
+&emsp; python3 rdd_to_xmlfig.py -rfc *my-drawing.rdd*  
 &emsp;&emsp;Creates my-drawing-rfc.xml, an RFC in xml2rfc --v3 format
 &emsp;&emsp;You can test this using the tools at https://author-tools.ietf.org/
 
