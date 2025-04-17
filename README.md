@@ -7,8 +7,8 @@
 RFC-Draw is written in python3, it's license is GPL v3.0,
 it uses the following python modules:  
 &emsp; os. path, re, math, sys, time, datetime, threading, tkinter, playsound
-&emsp; termios (for POSIX) or msvcrt (for Windows) 
-RFC-Draw wil install all these fpr you on startup, or
+&emsp; termios (for POSIX) or msvcrt (for Windows)  
+RFC-Draw wil install all these for you on startup, or
 You can install them using pip (latest version),  
 &emsp; e.g. pip3 install path
 
@@ -43,11 +43,11 @@ working on.  The modes are:
    &emsp;Multi-line texts are drawn with the lines centred.
        
 4. Header  
-   &emsp; Introduced in version 3.  
-   &emsp; Lets you draw Header diagrams.  
+   &emsp; Introduced in version 3
+   &emsp; Lets you draw Header diagrams  
   
 5. Save  
-   &emsp;Lets you write an rdd file. That saves your drawing,  
+   &emsp;Lets you write an rdd file. That saves your drawing, 
 but allows you to continue.  
    &emsp;You can edit the filename as you would a text (see below)  
 
@@ -184,24 +184,24 @@ When you have created a drawing, saved as an rdd file, you can convert it
 to SVG (python3 rdd_to_svg.py),
 
 &emsp;python3 rdd_to_svg.py *my-drawing.rdd*  via 
-&emsp;&emsp;Creates an  SVG file,  *my-drawing.svg* 
+&emsp;&emsp;Creates an  SVG file,  *my-drawing.svg*  
 
 &emsp;python3 rdd_to_ascii.py *my-drawing.rdd*  
-&emsp;&emsp;Creates an  ASCII-art file,  *my-drawing.txt* 
+&emsp;&emsp;Creates an  ASCII-art file,  *my-drawing.txt*  
 
 &emsp; python3 rdd_to_xmlfig.py *my-drawing.rdd*  
 &emsp;&emsp;Creates an svg file and a .txt file for *my-drawing.txt*,  
-&emsp and uses them to create a .xml file (in XML2RFC format)for *my-drawing.txt*,
+&emsp;&emsp; and uses them to create a .xml file (in XML2RFC format)for *my-drawing.txt*,  
 
-&emsp; python3 rdd_to_xmlfig.py -rfc *my-drawing.rdd*  
+&emsp; python3 rdd_to_xmlfig.py **-rfc** *my-drawing.rdd*  
 &emsp;&emsp;Creates my-drawing-rfc.xml, an RFC in xml2rfc --v3 format  
-&emsp;&emsp;You can test this using the tools at https://author-tools.ietf.org/
+&emsp;&emsp;You can test this using the tools at https://author-tools.ietf.org/  
 
 Blank borders around drawings can be set by the -p*w* option,  
 *w* units for svg are pixels, for ASCII-art they are chars/lines.
 
 You can check that an svg drawing complies with RFC7996 by using  
-&emsp;&emsp;jing -c SVG-1.2-RFC *my-drawing.svg*
+&emsp;&emsp;jing -c SVG-1.2-RFC *my-drawing.svg*  
   
 jing may give warning messages (about missing java apps), but  
 *not* getting any error messages tells you that your SVG drawing complies.  
