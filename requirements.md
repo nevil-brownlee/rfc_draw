@@ -10,7 +10,11 @@ To use rfc-draw you'll need to install the following python modules:
 
 RFC-Draw tests for these on startup, and will install them for you.
 
+<<<<<<< HEAD
 To install a python3 module 'by hand', e.g. tkinter,
+=======
+To install a python3 module 'by hand', e.g. tkinter,  
+>>>>>>> 6c397d05566914183d8b7b182a0bf21728ed4aac
 &emsp;use pip3, python's package manager; the (POSIX) command is  
 &emsp;pip3 install tkinter  
 

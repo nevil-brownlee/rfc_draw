@@ -38,9 +38,17 @@ elif sys.platform == "linux":
 module_names = ["os", "pathlib", "re", "math", "sys", "time",
                 "datetime", "threading", "tkinter", "playsound"]
 
+<<<<<<< HEAD
 def main():
     for mn in module_names:
         if not module_installed(mn):
             all_installed = False
             print(">>> %s not installed" % mn)
             importlib.import_module(mn)
+=======
+for mn in module_names:
+    if not module_installed(mn):
+        all_installed = False
+        print(">>> %s not installed" % mn)
+        importlib.import_module(mn)
+>>>>>>> 6c397d05566914183d8b7b182a0bf21728ed4aac

@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "RFC-Draw"
+version = "2.27"
+description = "A python3 program to draw images for SVG-RFC-1.2 diagrams"
+authors = [
+    {name = "Nevil", email = "nevil.brownlee@gmail.com"}
+    ]
+license = "GPL-3.0-or-later"
+keywords = ["SVG", "RFC", "Drawing"]
+readme = "README.md"
+requires-python = ">=3.9"
+
+[project.urls]
+homepage = "https://github.com/nevil-brownlee/rfc-draw"
+
+#classifiers = [
+#    "Development Status :: 5 - Production/Stable",
+#    "Natural Language :: English",
+#    "Operating System :: OS Independent"
+#    ]
+
+[tool.setuptools]
+py-modules = []  # Fixes
+  "error: Multiple top-level modules discovered in a flat-layout
+
