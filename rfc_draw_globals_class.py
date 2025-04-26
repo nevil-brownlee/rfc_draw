@@ -11,7 +11,7 @@
 
 import os.path, re, sys, time, datetime, threading
 import faulthandler
-from playsound import playsound
+import pygame  # playsound doesn't work on nebbiolo, sigh
 global posix
 try:
     posix = True
@@ -51,6 +51,8 @@ class rdglob:  # Global variables for rfc-draw's objects
         #self.f_font = ('Space Mono', 10) #, 'bold')  # Google, r,i i different
         #self.f_width = 10.333;  self.f_height = 17  # points on screen
         self.f_width = 8;  self.f_height = 17  # px, from header experiments
+
+        pygame.mixer.init()
 
         self.new_drawing = False  # True if we have a save_file name
         
@@ -281,10 +283,16 @@ class rdglob:  # Global variables for rfc-draw's objects
 #            time.sleep(0.5)
 
     def big_bell(self):
-        playsound("BSB-counter-bell.wav")
+        #playsound("BSB-counter-bell.wav")
+        pygame.mixer.music.load("BSB-counter-bell.wav")
+        pygame.mixer.music.play(loops=0)
+
 
     def small_bell(self):
-        playsound("BSB-small-bell.wav")
+        #playsound("BSB-small-bell.wav")
+        pygame.mixer.music.load("BSB-small-bell.wav")
+        pygame.mixer.music.play(loops=0)
+        
         
     def display_msg(self, text, tag):  # Display text in Message area
         # tags are declared above, i.e. 'normal' and 'error'
@@ -293,12 +301,13 @@ class rdglob:  # Global variables for rfc-draw's objects
         self.m_text.insert('1.0', text, tag)
         #print("\a")  # BEL without using playsound
         if tag == "error":
-            bell_thread = threading.Thread(target=self.big_bell, args=(()))
-            bell_thread.start()
+            #bell_thread = threading.Thread(target=self.big_bell, args=(()))
+            #bell_thread.start()
+            self.big_bell()
         elif tag == "warning":
-            bell_thread = threading.Thread(target=self.small_bell, args=(()))
-            bell_thread.start()
-        
+            #bell_thread = threading.Thread(target=self.small_bell, args=(()))
+            #bell_thread.start()
+            self.small_bell()
     def transform_coords(self, del_x,del_y, obj_coords):  # Returns
         # obj_oords with del_x,del_y subtracted from each pair of it's points
         n_points = int(len(obj_coords)/2)
