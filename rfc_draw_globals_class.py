@@ -277,19 +277,12 @@ class rdglob:  # Global variables for rfc-draw's objects
         self.root.unbind('<KeyPress-plus>')
         self.root.unbind('<KeyPress-minus>')
 
-#    def n_bells(self, n_rings):
-#        for n in range(n_rings):
-#            print("\a",end='')  # BEL
-#            time.sleep(0.5)
-
     def big_bell(self):
-        #playsound("BSB-counter-bell.wav")
         pygame.mixer.music.load("BSB-counter-bell.wav")
         pygame.mixer.music.play(loops=0)
 
 
     def small_bell(self):
-        #playsound("BSB-small-bell.wav")
         pygame.mixer.music.load("BSB-small-bell.wav")
         pygame.mixer.music.play(loops=0)
         
@@ -299,15 +292,12 @@ class rdglob:  # Global variables for rfc-draw's objects
         print("?=-=-=-=-= starting display_msg(%s), tag %s" % (text, tag))
         self.m_text.delete('1.0', tk.END)
         self.m_text.insert('1.0', text, tag)
-        #print("\a")  # BEL without using playsound
+        #print("\a")  # BEL without using .wav sound
         if tag == "error":
-            #bell_thread = threading.Thread(target=self.big_bell, args=(()))
-            #bell_thread.start()
             self.big_bell()
         elif tag == "warning":
-            #bell_thread = threading.Thread(target=self.small_bell, args=(()))
-            #bell_thread.start()
             self.small_bell()
+
     def transform_coords(self, del_x,del_y, obj_coords):  # Returns
         # obj_oords with del_x,del_y subtracted from each pair of it's points
         n_points = int(len(obj_coords)/2)
@@ -394,7 +384,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         self.last_mode = which
         #print("in rdg: self.last_mode now = %s" % self.last_mode)
         if which == "line":
-            self.last_mode = "new_ln"
+            self.last_mode = "line"
 
     def obj_to_str(self, val):
         print("??? obj_to_str: val >%s<" % val)

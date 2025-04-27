@@ -1,25 +1,24 @@
-1202, St 5 Apr 2025 (NZDT)
+1545, Sun 27 Apr 2025 (NZST)
   
 ## === rfc-draw Manual, version 3 ===  
   
 ### Getting started:
 
-RFC-Draw is written in python3, it's license is GPL v3.0,
-it uses the following python modules:  
-&emsp; os. path, re, math, sys, time, datetime, threading, tkinter, playsound
-&emsp; termios (for POSIX) or msvcrt (for Windows)  
-RFC-Draw wil install all these for you on startup, or  
+RFC-Draw is written in python3, it's license is GPL v3.0, 
+Itt uses the following python modules:  
+&emsp; os. path, re, math, sys, time, datetime, threading, tkinter, pygame,
+&emsp; termios (for POSIX) or msvcrt (for Windows) 
+RFC-Draw wil install all these for you on startup, or 
 you can install them using pip (latest version),  
 &emsp; e.g. pip3 install path
 
-Install rfc-draw in a new folder, e.g. ~/rfc-draw.  
-In a terminal window, in your new folder, enter  
-&emsp; python3 rfc-draw.py my-drawing.rdd   
+Install rfc-draw in a new folder, e.g. ~/rfc-draw. 
+In a terminal window, enter python3 rfc-draw.py my-drawing.rdd   
 *my-drawing* specifies the file that rfc-draw should write as a 
 record of your drawing; 
-after that the same command will restore that drawing.  
-If you don't specify a drawing file, rfc-draw will use it's default,  
-&emsp; i.e. save-file.rdd
+after that the same command will restore that drawing to your screen.  
+If you don't specify a drawing file, rfc-draw will use it's default, 
+i.e. save-file.rdd
  
 rfc-draw displays a single tkinter window; at the top is a white space 
 to draw on, below that are a set of grey (on yellow) **Mode** buttons, and a 
@@ -42,9 +41,9 @@ working on.  The modes are:
    &emsp;Puts a text on screen, and allows you to edit and move it.  
    &emsp;Multi-line texts are drawn with the lines centred.
        
-4. Header  
-   &emsp; Introduced in version 3
-   &emsp; Lets you draw Header diagrams  
+4. Header
+   &emsp; Introduced in version 3.  
+   &emsp; Lets you draw Header diagrams.  
   
 5. Save  
    &emsp;Lets you write an rdd file. That saves your drawing, 
@@ -184,6 +183,7 @@ When you have created a drawing, saved as an rdd file, you can convert it
 to SVG (python3 rdd_to_svg.py),
 
 &emsp;python3 rdd_to_svg.py *my-drawing.rdd*  via 
+<<<<<<< HEAD
 &emsp;&emsp;Creates an  SVG file,  *my-drawing.svg*  
 
 &emsp;python3 rdd_to_ascii.py *my-drawing.rdd*  
@@ -196,12 +196,30 @@ to SVG (python3 rdd_to_svg.py),
 &emsp; python3 rdd_to_xmlfig.py **-rfc** *my-drawing.rdd*  
 &emsp;&emsp;Creates my-drawing-rfc.xml, an RFC in xml2rfc --v3 format  
 &emsp;&emsp;You can test this using the tools at https://author-tools.ietf.org/  
+=======
+&emsp;&emsp;Creates an  SVG file,  *my-drawing.svg* 
+
+&emsp;python3 rdd_to_ascii.py *my-drawing.rdd*  
+&emsp;&emsp;Creates an  ASCII-art file,  *my-drawing.txt* 
+
+&emsp; python3 rdd_to_xmlfig.py *my-drawing.rdd*  
+&emsp;&emsp;Creates an svg file and a .txt file for *my-drawing.txt*,  
+&emsp and uses them to create a .xml file (in XML2RFC format)for *my-drawing.txt*,
+
+&emsp; python3 rdd_to_xmlfig.py -rfc *my-drawing.rdd*  
+&emsp;&emsp;Creates my-drawing-rfc.xml, an RFC in xml2rfc --v3 format  
+&emsp;&emsp;You can test this using the tools at https://author-tools.ietf.org/
+>>>>>>> d55bc23 (v3.0 moving towards PyPI)
 
 Blank borders around drawings can be set by the -p*w* option,  
 *w* units for svg are pixels, for ASCII-art they are chars/lines.
 
 You can check that an svg drawing complies with RFC7996 by using  
+<<<<<<< HEAD
 &emsp;&emsp;jing -c SVG-1.2-RFC *my-drawing.svg*  
+=======
+&emsp;&emsp;jing -c SVG-1.2-RFC *my-drawing.svg*
+>>>>>>> d55bc23 (v3.0 moving towards PyPI)
   
 jing may give warning messages (about missing java apps), but  
 *not* getting any error messages tells you that your SVG drawing complies.  
