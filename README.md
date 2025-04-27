@@ -9,7 +9,7 @@ Itt uses the following python modules:
 &emsp; os. path, re, math, sys, time, datetime, threading, tkinter, pygame,
 termios (for POSIX) or msvcrt (for Windows)  
 RFC-Draw wil install all these for you on startup, or 
-you can install them using pip (latest version),  
+you can install them using pip (latest version),
 e.g. pip3 install path
 
 Install rfc-draw in a new folder, e.g. ~/rfc-draw.  
