@@ -1,9 +1,5 @@
 1545, Sun 27 Apr 2025 (NZST)
   
-## === rfc-draw Manual, version 3 ===  
-  
-### Getting started:
-
 RFC-Draw is written in python3, it's license is GPL v3.0, 
 Itt uses the following python modules:  
 &emsp; os. path, re, math, sys, time, datetime, threading, tkinter, pygame,  
@@ -12,26 +8,26 @@ RFC-Draw wil install all these for you on startup, or
 you can install them using pip (latest version),
 e.g. pip3 install path
 
-Install rfc-draw in a new folder, e.g. ~/rfc-draw.  
-In a terminal window, enter python3 rfc-draw.py my-drawing.rdd   
-*my-drawing* specifies the file that rfc-draw should write as a 
+Install RFC-Draw in a new folder, e.g. ~/rfc-draw.  
+In a terminal window, enter python3 RFC-Draw.py my-drawing.rdd   
+*my-drawing* specifies the file that RFC-Draw should write as a 
 record of your drawing; 
 after that the same command will restore that drawing to your screen.  
-If you don't specify a drawing file, rfc-draw will use it's default, 
+If you don't specify a drawing file, RFC-Draw will use it's default, 
 i.e. save-file.rdd
  
-rfc-draw displays a single tkinter window; at the top is a white space 
+RFC-Draw displays a single tkinter window; at the top is a white space 
 to draw on, below that are a set of grey (on yellow) **Mode** buttons, and a 
 white **Message** area.
 You can resize the window by dragging (using b1, your Left mouse button)
 on any of it's edges.  
     
-The **Mode** buttons tell rfc-draw what kind of objects you're currently 
+The **Mode** buttons tell RFC-Draw what kind of objects you're currently 
 working on.  The modes are:  
 
 1. Rectangle  
    &emsp;Lets you draw, resize and move rectangle objects.  
-   &emsp;An rfc-draw Rectangle has a Text (initially just "+") at it's centre.  
+   &emsp;An RFC-Draw Rectangle has a Text (initially just "+") at it's centre.  
   
 2. Line  
    &emsp;Lets you draw lines as a sequence of line segments,  
@@ -48,7 +44,8 @@ working on.  The modes are:
 5. Save  
    &emsp;Lets you write an rdd file. That saves your drawing, 
 but allows you to continue.  
-   &emsp;You can edit the filename as you would a text (see below)  
+   &emsp;You can edit the filename as you would a text (see below),
+   see below under *edit a text*.
 
 Layers:
  
@@ -60,7 +57,7 @@ at rectangle edges,
 &emsp;it's easier to draw them with ends a little inside rectangles!  
 Layer 3 (the highest) contains your texts and headers.  
 
-When your drawing is complete, exit rfc-draw's main window (by clicking on
+When your drawing is complete, exit RFC-Draw's main window (by clicking on
 it's 'close' button).  
 rfc-draw will ask you "Save drawing as my-drawing.rdd*?"  
 Respond by clicking the main window's Yes or No button.  
