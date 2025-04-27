@@ -7,12 +7,12 @@
 RFC-Draw is written in python3, it's license is GPL v3.0, 
 Itt uses the following python modules:  
 &emsp; os. path, re, math, sys, time, datetime, threading, tkinter, pygame,
-&emsp; termios (for POSIX) or msvcrt (for Windows) 
+termios (for POSIX) or msvcrt (for Windows) 
 RFC-Draw wil install all these for you on startup, or 
 you can install them using pip (latest version),  
-&emsp; e.g. pip3 install path
+e.g. pip3 install path
 
-Install rfc-draw in a new folder, e.g. ~/rfc-draw. 
+Install rfc-draw in a new folder, e.g. ~/rfc-draw.  
 In a terminal window, enter python3 rfc-draw.py my-drawing.rdd   
 *my-drawing* specifies the file that rfc-draw should write as a 
 record of your drawing; 
