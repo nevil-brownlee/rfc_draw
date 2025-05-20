@@ -1,0 +1,25 @@
+How to install RFC-Draw from github
+
+Nevil Brownlee nevil/brownlee@github.com
+  1523, Mon 28 Apr 2025 (NZST)
+
+All of RFC-Draw's python code is on github,
+  URL https://github.com/nevil-brownlee/rfc-draw
+
+When you look at that URL, you'll see a button (maybe coloured green)
+labelled '<> Code'.  Now ...
+
+1. Click the '<>Code'  button on RFC-Draw'sgithub page.
+2. That brings up a menu, it's bottom item is 'Download ZIP'.
+   Click 'Download ZIP' to get rfcdraw-main.zip in your ~/Downloads folder.
+3. Move ~/Downloads/rfc-draw-main.zip into your top-level directory.
+4. In rfc-draw-main, tar -cvf RFC-Draw.tar . (or unzip)
+     to unzip RFC-Draw's files into rfc-draw-main
+5. AT this stage, rfc-draw-main is the directory containing all
+   of RFC-Draw's files.  Rename it to whatever seems sensible to you,
+     e.g. RFC-Draw
+6. Now, in your renamed rfc-draw-main directory, you can run RFC-Draw,
+     python3 RFC-Draw.py should start it for you.
+
+RFC-Draw's README.md file has all the instructions you'll need to use it.
+     
