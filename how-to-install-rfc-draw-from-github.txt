@@ -1,0 +1,11 @@
+
+To install RFC-Draw from github:
+
+1. cd to your system's root directory (~/)
+2. mkdir RFC-Draw
+3. git init  # make a git repository there
+3. Clone rfc-draw from github:   # makes ~/RFC-Draw/rfc-draw dir
+     git clone https://github.com/nevil-brownlee/rfc-draw
+4. cd rfc-draw
+5. From there, python3 RFC-Draw.py  ## starts RFC-Draw :-)
+
