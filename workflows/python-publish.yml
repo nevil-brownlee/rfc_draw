@@ -8,10 +8,10 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Upload Python Package
-
 #  release:
 #    types: [published]
+
+name: Upload Python Package
 
 on:
   workflow_dispatch:
