@@ -2,7 +2,7 @@
 # 1531, Sat 21 Oct 2023 (NZDT)  # v1
 #
 # rfc_draw_globals_class:
-#                   contains rfc-draw global data (for event handlers)
+#                   contains rfc_draw global data (for event handlers)
 #                   and functions for Objects, e.g.
 #                      class object (rfc_draw objects)
 #                      object dictionary, get_object()
@@ -27,9 +27,9 @@ import draw_texts_class as dtc    # Handles text objects
 import arrow_lines_class as alc   # Draw lines with direction arrows
 import draw_lines_class as dlc    # Handles line objects
 import draw_n_rects_class as drc  # Handles n_rect objects
-import draw_headers_class as dhc  # Handles rfc-draw headers
+import draw_headers_class as dhc  # Handles rfc_draw headers
 
-class rdglob:  # Global variables for rfc-draw's objects
+class rdglob:  # Global variables for rfc_draw's objects
     def __new__(cls, *args, **kwargs):
         return super().__new__(cls)  # New instance of rdglob
 
@@ -114,7 +114,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         self.pos = ["tl",   "top",  "tr",
                   "left", "middle", "right",
                     "ll", "bottom", "lr",  "far", "new"]
-        self.res_px = 5  # Nearness margin ** was 4
+        self.res_px = 6  # Nearness margin ** was 4
         self.far_px = 8  # This far away to start a new rect
         self.hdr_px = 2  # Min up/down change to detect row-bottom dragging
        
@@ -150,44 +150,54 @@ class rdglob:  # Global variables for rfc-draw's objects
         pix = ts.index(".") 
         print("ELAPSED %s: %s" % (ts[0:pix+4], where_from))
 
+    def display_where(self, rdo, x,y, r):
+        msg = "%d,%d;  %d,%d, %d,%d,  %s" % (
+            x,y, rdo.x0,rdo.y0, rdo.x1,rdo.y1, self.pos[r])
+        self.display_msg(msg, "normal")
+        x = 22/0
+
     def where(self, rdo, x, y):  # Find region of rdo where b1 is pressed
-        print("... ... where: rdo = %s, type %s" % (rdo, type(rdo)))
-        #print("where:  coords %d,%d, %d,%d" % (rdo.x0,rdo.y0, rdo.x1,rdo.y1))
-        if y <= rdo.y0 - self.res_px:  # Top row
-            if y < rdo.y0 - self.far_px:  # Too high
-                return self.far
-            if x <= rdo.x0 + self.res_px:
-                if x < rdo.x0 - self.far_px:
-                    return self.far  # Too far left
-                return self.tl
-            elif x >= rdo.x1 - self.res_px:
+        trace = False
+        print("rdo %s, %s" % (rdo, type(rdo)))
+        if y < rdo.y0 - self.far_px:  # Too high
+            r = self.far;
+        elif y <= rdo.y0 and y >= (rdo.y0 - self.res_px) : # Top edge
+            r = self.top
+            if x >= rdo.x0 - self.res_px:
+                r = self.tl
+                if x <= rdo.x0 - self.far_px:  # Too far left
+                    r = self.far
+            if x >= rdo.x1 - self.res_px:
+                r = self.tr
                 if x > rdo.x1 + self.far_px:  # Too far right
-                    return self.far
-                return self.tr
-            return self.top
-        elif y >= rdo.y1 + self.res_px:  # Bottom row
+                    r = self.far
+        elif y >= rdo.y1 - self.res_px:  # Bottom edge
+            r = self.bot
             if y > rdo.y1 + self.far_px:  # Too low
-                return self.far
-            if x <= rdo.x0 + self.res_px:
+                r = self.far
+            if x <= rdo.x0:
+                r = self.ll
                 if x < rdo.x0 - self.far_px:
-                    return self.far  # Too far left
-                return self.ll
+                    r = self.far  # Too far left
             elif x >= rdo.x1 - self.res_px:
                 if x > rdo.x1 + self.far_px:  # Too far right
-                    return self.far
-                return self.lr
-            return self.bot
+                    r = self.far
+                r = self.lr
         else:  # Middle row
             if x <= rdo.x0 + self.res_px:
                 if x < rdo.x0 - self.far_px:
-                    return self.far  # Too far left
-                return self.left
+                    r = self.far  # Too far left
+                r = self.left
             elif x >= rdo.x1 - self.res_px:
                 if x > rdo.x1 + self.far_px:  # Too far right
-                    return self.far
-                return self.right
-            return self.middle
-
+                    r = self.far
+                r = self.right
+            else:
+                r = self.middle
+        if trace:
+            self.display_where(rdo, x,y, r)
+        return r
+    
     def move_deltas(self, coords, dx,dy):
         x0,y0, x1,y1 = coords
         #print("move_deltas: %d,%d, %d,%d, delta %d,%d" % (
@@ -334,7 +344,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         #print("== scr_coords >%s<" % scr_coords)
         return scr_coords
 
-    class object:  # n_rect/text/line/grp* Objects for rfc-draw
+    class object:  # n_rect/text/line/grp* Objects for rfc_draw
         def __init__(self, key, obj, obj_type, coords, text, parent_id, v1, v2):
             #obj_debug = True
             #if obj_debug:
@@ -465,7 +475,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         if item_ix in self.objects.keys():  # It's a known object
             val = self.objects[item_ix]
             #print("   item_ix %d in objects, val >%s<" % (item_ix, val))
-            return val  # rfc-draw object()
+            return val  # rfc_draw object()
         else:
             #self.display_msg("(Unknown object, item_ix %d, tk type %s %s" % (
             #    item_ix, item_type)), "error")
@@ -531,7 +541,7 @@ class rdglob:  # Global variables for rfc-draw's objects
                     la = ds.split(" ")
                     self.root.geometry(la[1])
                 elif ds.find("drawing_size") >= 0:
-                    # drawing size is set by rfc-draw.py
+                    # drawing size is set by rfc_draw.py
                     # It's used by rdd-to-ascii.py
                     #   but not by rfc_draw_globals*.py and draw*.py
                     pass
@@ -562,8 +572,8 @@ class rdglob:  # Global variables for rfc-draw's objects
         #print("last_mode %s (%s)" % (last_mode, type(last_mode)))
         return last_mode
         
-    def save_to_rdd(self, save_file_name):  # Write rfc-draw data (.rdd) file
-        # Called from 'Save' r_button, and from rfc-draw.on_closing 
+    def save_to_rdd(self, save_file_name):  # Write rfc)draw data (.rdd) file
+        # Called from 'Save' r_button, and from rfc_draw.on_closing 
         print("save_to %s, %d objects" % (save_file_name, len(self.objects)))
         print(r"/\/\/ len(objects) = %d" % len(self.objects))
         self.dump_objects("about to save rdd file")
@@ -781,7 +791,7 @@ class rdglob:  # Global variables for rfc-draw's objects
         return height, width  # 0.5 of h and w (i.e. centre to edges) !!!
  
     def edit_text_object(self, txt_obj):  # txt_obj is an objects[] entry
-        self.text_id = txt_obj.key  # rfc-draw text object is it's tk id
+        self.text_id = txt_obj.key  # rfc_draw text object is it's tk id
         # Open new window to edit the text, then press Esc
         #   tkinter text object uses Home and End to position cursor!
         #print(">>> edit_text_object: centre_texts = %s" % self.centre_texts)

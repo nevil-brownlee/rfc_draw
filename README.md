@@ -1,3 +1,4 @@
+1144, Fri  6 Jun 2025 (NZST)
 1545, Sun 27 Apr 2025 (NZST)
 
 # === rfc-draw Manual, version 3 ===
@@ -75,12 +76,12 @@ You can clear the Message area by pressing the Pg Dn key.
 * You can *edit a text* by clicking it with b3, your Right mouse button;
 that will display the text in a separate Edit Window.
 You can Backspace (erasing characters), or type in new text.
-'Command' keys perform the following actions:
-Home&ensp;moves the edit cursor to the text's start
-End&ensp;&ensp;&ensp;&ensp;moves the cursor to the text's end
-Return&ensp;starts a new line
-
-Esc&ensp;&ensp;&ensp;&ensp;puts the edited text back, and
+* 'Command' keys perform the following actions:  
+    _Home_&ensp;&ensp;&ensp;moves the edit cursor to the text's start  
+    _End_&ensp;&ensp;&ensp;moves the cursor to the text's end  
+    _Return_&ensp;&ensp;&ensp;starts a new line  
+  
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;Esc;&ensp;puts the edited text back, and
 closes the Edit Window
 
 *Deleting objects* from your drawing:
@@ -117,16 +118,10 @@ A line can be modified in various ways, as follows:
 &nbsp;- Dragging a single-segment line from it's middle moves it,  
 &nbsp;&nbsp;&nbsp;&nbsp;dragging it from just outside an end extends it.  
 
-**Headers:**
-
-Headers are diagrams showing the layout of information within packets.  
-They have three separate components;
-&nbsp;- *Headers*,&nbsp;&nbsp; *Rows*, and &nbsp;&nbsp; *Fields*.
-
 **Keyboard Actions:**
 
 In any mode:
-&nbsp; key&nbsp;*c*&nbsp;to copy an rfc-draw object
+&nbsp; key&nbsp;**c**&nbsp;to copy an rfc-draw object
 
 In Line mode:
 

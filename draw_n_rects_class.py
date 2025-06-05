@@ -145,7 +145,7 @@ class draw_n_rects:  #  Rectangle with white fill and centred text
         self.rdg.objects[nro.rect_id] = nro_obj
         self.rdg.current_obj = nro_obj
         print("|2| current_obj >%s<" % self.rdg.current_object)
-        self.rdg.dump_objects("n_rect %d created" % nro.rect_id)
+        #self.rdg.dump_objects("n_rect %d created" % nro.rect_id)
         return nro_obj
         
     def undraw(self, d_obj):  # For rdgc.on_delete_key()
@@ -220,15 +220,15 @@ class draw_n_rects:  #  Rectangle with white fill and centred text
     def nr_closest(self, mx,my):
         item = self.drawing.find_closest(mx,my)
         if len(item) == 0:  # Empty tuple
-            #print("*** nr_closest(): empty tuple")
+            print("*** nr_closest(): empty tuple")
             return None, None
         item_ix = item[0]
         print("''nr_closest:: mx,my %d,%d item %d" % (mx,my, item_ix))
-        self.rdg.dump_objects("nr_closest")
+        #self.rdg.dump_objects("nr_closest")
 
         if item_ix in self.rdg.objects.keys():  # It's a known object
             obj = self.rdg.objects[item_ix]
-            #print("   item_ix %d in objects, obj >%s<" % (item_ix, obj))
+            print("   item_ix %d in objects, obj >%s<" % (item_ix, obj))
             #if obj.o_type == "text":
             #    print(">>>>>>>>> it's a text object")
             #    exit()
@@ -244,14 +244,11 @@ class draw_n_rects:  #  Rectangle with white fill and centred text
         if item_type == "text":  # Is it an n_rect's text?
             obj = self.rdg.objects[item_x]
             print("*** near a text, obj >%s<" % obj)
-            exit()
-
-
-        
+            exit()       
         elif item_type != "rectangle":
             return None, None
       
-        self.rdg.dump_objects("in nr_closest()")
+        #!self.rdg.dump_objects("in nr_closest()")
 
         obj = self.rdg.objects[item_ix]  # obj is a tkinter object id
         print("!!! obj %s" % obj)
@@ -271,14 +268,14 @@ class draw_n_rects:  #  Rectangle with white fill and centred text
 
         print(". . . nr_b1_click: %s mode, %d,%d, %d objects, %s, %s" % (
             self.rdg.last_mode, mx, my, len(self.rdg.objects), 
-               event.widget, event.type)) 
+               event.widget, event.type))
 
         item, obj = self.nr_closest(mx,my)  # Closest tk object
         print("nr_b1_click(%d,%d): closest returned item %s, obj %s" % (
             mx,my, item, obj))
         if not item:  # Empty tuple, nothing drawn yet
             self.rdg.rects_drawn += 1
-            #print("new_rect, n_objs = %d" % len(self.rdg.objects))
+            print("new_rect, n_objs = %d" % len(self.rdg.objects))
             txt = "<%d>" % self.rdg.rects_drawn
             r_coords = [mx,my, mx+5,my+5]
             nro = draw_n_rects.n_rect(self.drawing, self.root, self.rdg,
@@ -287,14 +284,14 @@ class draw_n_rects:  #  Rectangle with white fill and centred text
             self.rdg.current_object = nro.obj
             print("? ? ? nro >%s<" % nro)
             print("self.rdg.current_object %s" % self.rdg.current_object)
-            self.rdg.dump_objects("draw_n_rects")
+            #self.rdg.dump_objects("draw_n_rects")
         else:
             item_ix = item[0]
             print("click >%d<,obj %s  b1<<<<<<<<<<<<" % (item_ix, obj))
-            self.rdg.dump_objects("click >%d< b1" % item_ix)
+            #self.rdg.dump_objects("click >%d< b1" % item_ix)
             if obj.a_obj.type == "n_rect":
                 print("item-ix %d: " % item_ix, end="")
-                obj.a_obj.print_n_rect()
+                #!obj.a_obj.print_n_rect()
                 self.rect_id = obj.a_obj.rect_id
                 self.text_id = obj.a_obj.text_id
                 print("Clicked near n_rect %d, text_id %d" % (
@@ -314,8 +311,7 @@ class draw_n_rects:  #  Rectangle with white fill and centred text
                 print("current_obj = %s" % obj)
                 self.rdg.region = self.rdg.where(
                     self.rdg.current_object.a_obj, mx,my)
-                print("+-+  %d,%d: self.rdg.region = %d" % (
-                    mx,my, self.rdg.region))
+                #?self.rdg.display_where(obj.a_obj, mx,my, region)
                 if self.rdg.region == self.rdg.far:  # Start new rectangle
                     self.rdg.rects_drawn += 1
                     txt = "<%d>" % self.rdg.rects_drawn
@@ -353,32 +349,33 @@ class draw_n_rects:  #  Rectangle with white fill and centred text
         if self.rdg.current_object == None:  # No current_object yet!
             return
         if self.rdg.current_object.o_type == "n_rect":
-            #nro = self.rdg.current_object.a_obj
-            #print("b1_m: mx %d,%d  x0 %d,%d, x1 %d,%d, dx %d/%d" % (
-            #    mx,my, nro.x0,nro.y0, nro.x1,nro.y1, dx,dy))
             r_coords = self.rdg.current_object.a_obj.bbox()
-            print("b1_motion: dr_coords >%s<, region %d" % (
-                r_coords, self.rdg.region))
+            #print("b1_motion, n_rect: %d,%d, r_coords >%s<, region %d" % (
+            #    mx,my, r_coords, self.rdg.region))
             x0,y0, x1,y1 = self.rdg.move_deltas(r_coords, dx,dy)
-            #print("=== %d,%d, %d,%d" % (x0,y0, x1,y1))
+            print("=motion= %d,%d, %d,%d" % (x0,y0, x1,y1))
             self.rdg.current_object.a_obj.coords(
                 x0,y0, x1,y1)  # Resize/Move rect + text
-            print("==current_obj %s" %self.rdg.current_object)
+            #print("==current_obj %s" %self.rdg.current_object)
             ##self.rdg.current_object.a_obj.i_coords = (x0,y0, x1,y1)
             self.rdg.current_object.i_coords = (x0,y0, x1,y1)
-            print("b1_motion %d,%d, %d,%d" % (x0,y0, x1,y1))
+            #print("b1_motion: %d,%d, %d,%d, %d" % (
+            #    x0,y0, x1,y1, self.rdg.region))
 
             self.last_mx = mx;  self.last_my = my  # Last mouse position
 
     def nr_b1_release(self, event):  # Left button released
         mx, my = (event.x, event.y)  # Mouse position
         print("b1r: current_obj >%s<" % self.rdg.current_object)
+        self.rdg.dump_objects("b1_release")
 
         co_type = self.rdg.current_object.o_type
         if co_type != "text" and co_type != "int":
             x0,y0, x1,y1 = self.rdg.current_object.a_obj.bbox()
-            print("b1_release %d,%d, %d,%d" % (x0,y0, x1,y1))  # <-- OK here
+            print("b1_release x %d,y %d, %d,%d, %d,%d" % (
+                mx,my, x0,y0, x1,y1))  # <-- OK here
         nr_rdo = self.rdg.current_object
+        print("   nr_rdo %s" % nr_rdo)
         nr_clo = nr_rdo.a_obj
         print("   nr_clo %s" % nr_clo)
        
@@ -386,11 +383,10 @@ class draw_n_rects:  #  Rectangle with white fill and centred text
         print("... c_o_key = %d" % k)
         self.rdg.objects[k] = nr_rdo
         
-        ##print(">> k %d, objects[k] = %s" % (k, self.rdg.objects[k]))
+        print(">> k %d, objects[k] = %s" % (k, self.rdg.objects[k]))
         print("   nr_clo %s, >coords %s<" % (nr_clo, nr_clo.bbox()))
         self.rdg.objects[k] = nr_rdo
-        self.rdg.dump_objects("b1_release")
-        #print("   saved %s" % self.rdg.objects[nr_clo.rect_id])
+        print("   saved %s" % self.rdg.objects[nr_clo.rect_id])
         self.last_mx = mx;  self.last_my = my  # Last mouse position
 
 if __name__ == "__main__":
@@ -405,7 +401,7 @@ if __name__ == "__main__":
     drawing.m_text.place(x=7, y=7)
     
     rdg = rdgc.rdglob(drawing, root, drawing.m_text)
-    # rfc-draw globals class
+    # rfc_draw globals class
     dno = draw_n_rects(drawing, root, rdg)
     dno.set_event_handlers()
 
